@@ -58,10 +58,10 @@ export default function Home() {
       <StatusBar />
       
       {/* App Header */}
-      <header className="px-6 py-6 bg-white/80 backdrop-blur-sm border-b border-white/30">
+      <header className="px-6 py-6 bg-card/90 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-full overflow-hidden shadow-lg">
+            <div className="w-12 h-12 rounded-full overflow-hidden shadow-sm">
               <img 
                 src={ctosEmblemImg} 
                 alt="Coming to Our Senses Emblem" 
@@ -69,9 +69,9 @@ export default function Home() {
               />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-primary">Coming to Our Senses</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Week {currentWeek} • 8-Week Mindfulness Course
+              <h1 className="text-xl font-bold text-foreground tracking-tight">COMING TO OUR SENSES</h1>
+              <p className="text-sm text-muted-foreground font-medium">
+                Your Guide to the Course
               </p>
             </div>
           </div>
@@ -79,15 +79,15 @@ export default function Home() {
             <Button
               variant="ghost"
               size="sm"
-              className="relative rounded-full"
+              className="relative rounded-full hover:bg-muted"
               onClick={() => setShowNotifications(!showNotifications)}
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></span>
             </Button>
-            <Button variant="ghost" size="sm" className="rounded-full p-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <User className="h-4 w-4 text-white" />
+            <Button variant="ghost" size="sm" className="rounded-full p-2 hover:bg-muted">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                <User className="h-4 w-4 text-primary-foreground" />
               </div>
             </Button>
           </div>

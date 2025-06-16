@@ -68,12 +68,12 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
 
   return (
     <Card className={cn(
-      "overflow-hidden transition-all duration-200",
-      isCurrentSession && "ring-2 ring-accent ring-opacity-20",
+      "overflow-hidden transition-all duration-200 card-elegant hover:shadow-lg",
+      isCurrentSession && "ring-2 ring-primary ring-opacity-30",
       isLocked && "opacity-60"
     )}>
       <div className="flex">
-        <div className="w-20 h-20 flex-shrink-0 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+        <div className="w-20 h-20 flex-shrink-0 session-illustration flex items-center justify-center">
           <img 
             src={getSessionImage(session.illustration)}
             alt={`${session.title} illustration`}
@@ -85,12 +85,12 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
           <div className="flex items-start justify-between mb-2">
             <div className="flex-1">
               <h3 className={cn(
-                "font-medium text-sm mb-1",
-                isLocked ? "text-muted-foreground" : "text-primary"
+                "font-bold text-sm mb-1 tracking-tight",
+                isLocked ? "text-muted-foreground" : "text-foreground"
               )}>
                 Week {session.week}: {session.title}
               </h3>
-              <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
+              <p className="text-xs text-muted-foreground mb-2 line-clamp-2 subtitle">
                 {session.description}
               </p>
             </div>
