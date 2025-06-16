@@ -10,6 +10,10 @@ import mindBodyMovementImg from "@assets/mind in body, body in movement, movemen
 import droppingBalloonImg from "@assets/dropping the balloon_1750084108019.png";
 import greatSmileImg from "@assets/great smile practice_1750084108019.png";
 import fiveElementsImg from "@assets/five elements_1750084108020.png";
+import theSenseBeingAliveImg from "@assets/the sense of being alive_1750084108017.png";
+import whatIfAllThereIsImg from "@assets/what if all there is is this?_1750084108016.png";
+import turningTowardsDiscomfortImg from "@assets/turning towards discomfort_1750084108017.png";
+import fourPillarsImg from "@assets/the four pillars_1750084108018.png";
 
 interface SessionCardProps {
   session: Session;
@@ -20,20 +24,28 @@ interface SessionCardProps {
 
 const getSessionImage = (illustration: string) => {
   switch (illustration) {
-    case "seven-stations-spine":
-      return sevenStationsSpineImg;
-    case "journaling-flow":
-      return journalingFlowImg;
-    case "mind-body-movement":
-      return mindBodyMovementImg;
     case "dropping-balloon":
       return droppingBalloonImg;
+    case "seven-stations-spine":
+      return sevenStationsSpineImg;
+    case "the-sense-being-alive":
+      return theSenseBeingAliveImg;
+    case "mind-body-movement":
+      return mindBodyMovementImg;
+    case "what-if-all-there-is":
+      return whatIfAllThereIsImg;
+    case "turning-towards-discomfort":
+      return turningTowardsDiscomfortImg;
+    case "four-pillars":
+      return fourPillarsImg;
     case "great-smile":
       return greatSmileImg;
     case "five-elements":
       return fiveElementsImg;
+    case "journaling-flow":
+      return journalingFlowImg;
     default:
-      return sevenStationsSpineImg;
+      return droppingBalloonImg;
   }
 };
 
