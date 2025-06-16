@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Lightbulb, CheckCircle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { HandyHack } from "@shared/schema";
+import type { HandyHack, User } from "@shared/schema";
 
 interface HandyHacksProps {
   userId: number;
@@ -14,9 +14,28 @@ export function HandyHacks({ userId }: HandyHacksProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: currentHack } = useQuery<HandyHack>({
-    queryKey: ["/api/handy-hacks/random"],
-    refetchInterval: 5 * 60 * 1000, // Refresh every 5 minutes
+  const { data: user } = useQuery<User>({
+    queryKey: ["/api/users", userId],
+  });
+
+  const { data: allHacks } = useQuery<HandyHack[]>({
+    queryKey: ["/api/handy-hacks"],
+  });
+
+  // Get the current week's hack based on user progress
+  const currentWeek = user?.currentWeek || 1;
+  const currentHack = allHacks?.find(hack => {
+    const weekMapping: Record<string, number> = {
+      "week-1": 1,
+      "week-2": 2, 
+      "week-3": 3,
+      "week-4": 4,
+      "week-5": 5,
+      "week-6": 6,
+      "week-7": 7,
+      "week-8": 8,
+    };
+    return weekMapping[hack.category] === currentWeek;
   });
 
   const completeHackMutation = useMutation({
