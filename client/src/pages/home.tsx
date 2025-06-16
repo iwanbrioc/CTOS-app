@@ -8,9 +8,11 @@ import { BottomNavigation } from "@/components/bottom-navigation";
 import { NotificationBanner } from "@/components/notification-banner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bell, User } from "lucide-react";
-import { useState } from "react";
+import { Bell, User, Play } from "lucide-react";
+import { useState, useEffect } from "react";
 import type { Session, UserProgress } from "@shared/schema";
+import { useNotifications } from "@/hooks/use-notifications";
+import ctosEmblemImg from "@assets/CTOS-Emblem_1750088130527.jpg";
 
 // Mock user ID for demo - in production this would come from auth
 const DEMO_USER_ID = 1;
@@ -18,6 +20,7 @@ const DEMO_USER_ID = 1;
 export default function Home() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [currentAudioSession, setCurrentAudioSession] = useState<Session | null>(null);
+  const notifications = useNotifications();
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
     queryKey: ["/api/sessions"],
@@ -55,13 +58,22 @@ export default function Home() {
       <StatusBar />
       
       {/* App Header */}
-      <header className="px-6 py-4 bg-white border-b border-gray-100">
+      <header className="px-6 py-6 bg-white/80 backdrop-blur-sm border-b border-white/30">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-primary">Coming to Our Senses</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Week {currentWeek} of {totalSessions}
-            </p>
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 rounded-full overflow-hidden shadow-lg">
+              <img 
+                src={ctosEmblemImg} 
+                alt="Coming to Our Senses Emblem" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold text-primary">Coming to Our Senses</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Week {currentWeek} • 8-Week Mindfulness Course
+              </p>
+            </div>
           </div>
           <div className="flex items-center space-x-3">
             <Button
@@ -71,10 +83,10 @@ export default function Home() {
               onClick={() => setShowNotifications(!showNotifications)}
             >
               <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full"></span>
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></span>
             </Button>
             <Button variant="ghost" size="sm" className="rounded-full p-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                 <User className="h-4 w-4 text-white" />
               </div>
             </Button>
