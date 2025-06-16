@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, X } from "lucide-react";
+import { Play, Pause, X, Volume2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { Session } from "@shared/schema";
@@ -16,10 +16,11 @@ const DEMO_USER_ID = 1;
 export function AudioPlayer({ session, onClose }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(session.duration * 60); // Convert minutes to seconds
+  const [duration, setDuration] = useState(session.duration * 60);
+  const [isLoaded, setIsLoaded] = useState(false);
   const queryClient = useQueryClient();
   
-  // Simulate audio progress
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const updateProgressMutation = useMutation({
