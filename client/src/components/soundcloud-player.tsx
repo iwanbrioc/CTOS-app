@@ -9,9 +9,19 @@ interface SoundCloudPlayerProps {
 }
 
 export function SoundCloudPlayer({ session, onClose }: SoundCloudPlayerProps) {
-  // For demo purposes, using a working SoundCloud track
-  // In production, replace with actual course meditation tracks
-  const embedUrl = `https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=true&visual=true`;
+  // Using working SoundCloud meditation tracks
+  const meditationTracks: Record<number, string> = {
+    1: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%23003366&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false",
+    2: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%23003366&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false",
+    3: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%23003366&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false",
+    4: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%23003366&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false",
+    5: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%23003366&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false",
+    6: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%23003366&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false",
+    7: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%23003366&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false",
+    8: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%23003366&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
+  };
+  
+  const embedUrl = meditationTracks[session.week] || meditationTracks[1];
 
   return (
     <div className="fixed bottom-20 left-4 right-4 z-50 animate-in slide-in-from-bottom-5">
