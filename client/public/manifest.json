@@ -1,0 +1,59 @@
+{
+  "name": "Coming to Our Senses",
+  "short_name": "Mindfulness",
+  "description": "Transform your phone into a mindfulness resource with guided practices and awareness tools",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2D3748",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["health", "lifestyle", "wellness"],
+  "shortcuts": [
+    {
+      "name": "Today's Practice",
+      "short_name": "Practice",
+      "description": "Start your daily mindfulness session",
+      "url": "/?action=practice",
+      "icons": [
+        {
+          "src": "/favicon-32x32.png",
+          "sizes": "32x32"
+        }
+      ]
+    },
+    {
+      "name": "Journal",
+      "short_name": "Journal",
+      "description": "Open your mindfulness journal",
+      "url": "/journal",
+      "icons": [
+        {
+          "src": "/favicon-32x32.png",
+          "sizes": "32x32"
+        }
+      ]
+    }
+  ]
+}

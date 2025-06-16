@@ -1,0 +1,199 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { insertUserSchema, insertJournalEntrySchema, insertNotificationSchema } from "@shared/schema";
+import { z } from "zod";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // User routes
+  app.post("/api/users", async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      const user = await storage.createUser(userData);
+      res.json(user);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid user data" });
+    }
+  });
+
+  app.get("/api/users/:id", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user" });
+    }
+  });
+
+  app.put("/api/users/:id/week", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { week } = req.body;
+      await storage.updateUserWeek(userId, week);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update user week" });
+    }
+  });
+
+  // Session routes
+  app.get("/api/sessions", async (req, res) => {
+    try {
+      const sessions = await storage.getAllSessions();
+      res.json(sessions);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch sessions" });
+    }
+  });
+
+  app.get("/api/sessions/week/:week", async (req, res) => {
+    try {
+      const week = parseInt(req.params.week);
+      const sessions = await storage.getSessionsByWeek(week);
+      res.json(sessions);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch sessions for week" });
+    }
+  });
+
+  // Progress routes
+  app.get("/api/users/:userId/progress", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const progress = await storage.getUserProgress(userId);
+      res.json(progress);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user progress" });
+    }
+  });
+
+  app.post("/api/users/:userId/progress/:sessionId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const sessionId = parseInt(req.params.sessionId);
+      const { audioProgress, completed } = req.body;
+      
+      await storage.updateSessionProgress(userId, sessionId, { audioProgress, completed });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update progress" });
+    }
+  });
+
+  app.post("/api/users/:userId/complete/:sessionId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const sessionId = parseInt(req.params.sessionId);
+      
+      await storage.completeSession(userId, sessionId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to complete session" });
+    }
+  });
+
+  // Journal routes
+  app.get("/api/users/:userId/journal", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const entries = await storage.getUserJournalEntries(userId);
+      res.json(entries);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch journal entries" });
+    }
+  });
+
+  app.post("/api/users/:userId/journal", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const entryData = insertJournalEntrySchema.parse(req.body);
+      const entry = await storage.createJournalEntry(userId, entryData);
+      res.json(entry);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid journal entry data" });
+    }
+  });
+
+  // Handy Hacks routes
+  app.get("/api/handy-hacks", async (req, res) => {
+    try {
+      const hacks = await storage.getAllHandyHacks();
+      res.json(hacks);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch handy hacks" });
+    }
+  });
+
+  app.get("/api/handy-hacks/random", async (req, res) => {
+    try {
+      const hack = await storage.getRandomHandyHack();
+      if (!hack) {
+        return res.status(404).json({ error: "No handy hacks available" });
+      }
+      res.json(hack);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch random handy hack" });
+    }
+  });
+
+  app.post("/api/users/:userId/hacks/:hackId/complete", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const hackId = parseInt(req.params.hackId);
+      
+      await storage.markHackComplete(userId, hackId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to mark hack as complete" });
+    }
+  });
+
+  app.get("/api/users/:userId/hack-completions", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const completions = await storage.getUserHackCompletions(userId);
+      res.json(completions);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch hack completions" });
+    }
+  });
+
+  // Notification routes
+  app.get("/api/users/:userId/notifications", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const notifications = await storage.getUserNotifications(userId);
+      res.json(notifications);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch notifications" });
+    }
+  });
+
+  app.post("/api/users/:userId/notifications", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const notificationData = insertNotificationSchema.parse(req.body);
+      const notification = await storage.createNotification(userId, notificationData);
+      res.json(notification);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid notification data" });
+    }
+  });
+
+  app.put("/api/notifications/:id/read", async (req, res) => {
+    try {
+      const notificationId = parseInt(req.params.id);
+      await storage.markNotificationRead(notificationId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to mark notification as read" });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}
