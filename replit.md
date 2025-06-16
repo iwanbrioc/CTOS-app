@@ -113,9 +113,17 @@ This is a mobile-first mindfulness application built as a progressive web app (P
 - **DATABASE_URL**: PostgreSQL connection string (required)
 - **NODE_ENV**: Environment mode (development/production)
 
+## Recent Changes
+- June 16, 2025: Updated color palette and typography to match course guide aesthetic
+- Implemented course emblem integration with sophisticated cream and black design
+- Enhanced "Remember to..." notification system with 8-week course concepts
+- Applied elegant typography with proper font weights and letter spacing
+- Updated session cards with refined styling and improved visual hierarchy
+
 ## Changelog
 - June 16, 2025. Initial setup
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Design aesthetic: Course guide inspired - cream background, black typography, sophisticated and elegant presentation.

@@ -126,7 +126,7 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
               <Button
                 size="sm"
                 variant={isCurrentSession ? "default" : "outline"}
-                className="text-xs"
+                className="text-xs btn-primary font-medium"
                 onClick={() => onStartPractice(session)}
               >
                 <Play className="h-3 w-3 mr-1" />
