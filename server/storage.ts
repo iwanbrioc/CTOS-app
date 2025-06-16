@@ -149,7 +149,7 @@ export class MemStorage implements IStorage {
         audioUrl: "https://soundcloud.com/undoing-agency/mind-in-body-body-in-movement-movement-in-mind",
         duration: 10,
         illustration: "mind-body-movement",
-        isLocked: true,
+        isLocked: false,
       },
       {
         week: 5,
@@ -158,16 +158,25 @@ export class MemStorage implements IStorage {
         audioUrl: "https://soundcloud.com/undoing-agency/what-if-all-there-is-is-this",
         duration: 10,
         illustration: "what-if-all-there-is",
-        isLocked: true,
+        isLocked: false,
       },
       {
         week: 6,
-        title: "Turning Towards Discomfort & Five Elements",
-        description: "Learning to face difficulty with awareness and elemental grounding",
+        title: "Turning Towards Discomfort",
+        description: "Learning to face difficulty with awareness",
         audioUrl: "https://soundcloud.com/undoing-agency/turning-towards-discomfort",
         duration: 15,
         illustration: "turning-towards-discomfort",
-        isLocked: true,
+        isLocked: false,
+      },
+      {
+        week: 6,
+        title: "Five Elements Practice",
+        description: "Harmonizing with natural elements for deeper awareness",
+        audioUrl: "https://soundcloud.com/undoing-agency/5-elements-practice",
+        duration: 15,
+        illustration: "five-elements",
+        isLocked: false,
       },
       {
         week: 7,
@@ -176,7 +185,7 @@ export class MemStorage implements IStorage {
         audioUrl: "https://soundcloud.com/undoing-agency/four-pillars-of-wellbeing",
         duration: 22,
         illustration: "four-pillars",
-        isLocked: true,
+        isLocked: false,
       },
       {
         week: 8,
@@ -185,7 +194,7 @@ export class MemStorage implements IStorage {
         audioUrl: "https://soundcloud.com/undoing-agency/great-smile-practice",
         duration: 16,
         illustration: "great-smile",
-        isLocked: true,
+        isLocked: false,
       },
     ];
 
