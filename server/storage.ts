@@ -302,34 +302,52 @@ export class MemStorage implements IStorage {
   async initializeHandyHacks(): Promise<void> {
     const hacksData = [
       {
-        title: "Great Smile Practice",
-        description: "Take a moment to smile genuinely. Notice how it changes your internal state and the energy around you.",
-        category: "joy",
+        title: "Remember to Drop the Balloon!",
+        description: "Let go of what you're carrying that isn't yours to hold. Release mental burdens and find lightness.",
+        category: "week-1",
+        illustration: "dropping-balloon",
+      },
+      {
+        title: "Remember to Unclench and Breathe",
+        description: "Notice where you're holding tension and soften. Allow your breath to flow naturally.",
+        category: "week-2",
+        illustration: "seven-stations-spine",
+      },
+      {
+        title: "Remember to Take the Three Precious Pills!",
+        description: "Connect with the fundamental aliveness within. Feel the sense of being alive in this moment.",
+        category: "week-3",
+        illustration: "the-sense-being-alive",
+      },
+      {
+        title: "Remember to Explore Opening and Closing to Experience",
+        description: "Notice how you open to pleasant experiences and close to difficult ones. Practice staying present with both.",
+        category: "week-4",
+        illustration: "mind-body-movement",
+      },
+      {
+        title: "Remember to Watch the Wanting",
+        description: "Observe your desires and wanting without being swept away by them. What if all there is is this moment?",
+        category: "week-5",
+        illustration: "what-if-all-there-is",
+      },
+      {
+        title: "Remember to Connect with the 5 Elements",
+        description: "Ground yourself by connecting with earth, water, fire, air, and space. Feel your place in the natural world.",
+        category: "week-6",
+        illustration: "five-elements",
+      },
+      {
+        title: "Remember to Add Scripting and Reflecting to Your Journaling",
+        description: "Use the four pillars of wellbeing: script your day, reflect on what went well, and plan mindfully.",
+        category: "week-7",
+        illustration: "four-pillars",
+      },
+      {
+        title: "Remember to Do a Great Smile",
+        description: "Let a genuine smile arise from within. Feel how it transforms your inner state and radiates outward.",
+        category: "week-8",
         illustration: "great-smile",
-      },
-      {
-        title: "Three Conscious Breaths",
-        description: "Pause and take three deep, mindful breaths. Feel your body settling with each exhale.",
-        category: "breathing",
-        illustration: "conscious-breathing",
-      },
-      {
-        title: "Gratitude Moment",
-        description: "Notice one thing you're grateful for right now. Really feel the appreciation in your body.",
-        category: "gratitude",
-        illustration: "gratitude-moment",
-      },
-      {
-        title: "Body Scan Check-in",
-        description: "Quickly scan your body from head to toe. Notice any tension and breathe into those areas.",
-        category: "body-awareness",
-        illustration: "body-scan",
-      },
-      {
-        title: "Mindful Listening",
-        description: "Stop and listen to the sounds around you for 30 seconds. Be completely present with what you hear.",
-        category: "awareness",
-        illustration: "mindful-listening",
       },
     ];
 
