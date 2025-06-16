@@ -3,7 +3,7 @@ import { StatusBar } from "@/components/status-bar";
 import { ProgressIndicator } from "@/components/progress-indicator";
 import { SessionCard } from "@/components/session-card";
 import { HandyHacks } from "@/components/handy-hacks";
-import { AudioPlayer } from "@/components/audio-player";
+import { SoundCloudPlayer } from "@/components/soundcloud-player";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { NotificationBanner } from "@/components/notification-banner";
 import { Button } from "@/components/ui/button";
@@ -69,10 +69,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground tracking-tight">COMING TO OUR SENSES</h1>
-              <p className="text-sm text-muted-foreground font-medium">
-                Your Guide to the Course
-              </p>
+              <h1 className="text-xl font-semibold text-primary">Coming to Our Senses</h1>
             </div>
           </div>
           <div className="flex items-center space-x-3">
@@ -161,7 +158,7 @@ export default function Home() {
       </main>
 
       {currentAudioSession && (
-        <AudioPlayer
+        <SoundCloudPlayer
           session={currentAudioSession}
           onClose={() => setCurrentAudioSession(null)}
         />

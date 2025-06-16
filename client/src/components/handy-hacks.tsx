@@ -70,22 +70,22 @@ export function HandyHacks({ userId }: HandyHacksProps) {
 
   return (
     <section>
-      <h2 className="text-lg font-semibold text-primary mb-4">Handy Hacks</h2>
-      <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
+      <h2 className="text-lg font-semibold text-foreground mb-4">Handy Hacks</h2>
+      <Card className="card-elegant bg-gradient-to-br from-secondary to-card border-border">
         <CardContent className="p-4">
           <div className="flex items-start space-x-3">
-            <div className="w-10 h-10 bg-yellow-200 rounded-full flex items-center justify-center flex-shrink-0">
-              <Lightbulb className="h-5 w-5 text-yellow-700" />
+            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+              <Lightbulb className="h-5 w-5 text-primary-foreground" />
             </div>
             <div className="flex-1">
-              <h3 className="font-medium text-primary mb-2">{currentHack.title}</h3>
-              <p className="text-sm text-muted-foreground mb-3">
+              <h3 className="font-semibold text-foreground mb-2">{currentHack.title}</h3>
+              <p className="text-sm text-muted-foreground mb-3 subtitle">
                 {currentHack.description}
               </p>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-yellow-700 hover:text-yellow-800 hover:bg-yellow-100 p-0 h-auto"
+                className="text-primary hover:text-primary hover:bg-muted p-0 h-auto font-medium"
                 onClick={handleMarkComplete}
                 disabled={completeHackMutation.isPending}
               >
