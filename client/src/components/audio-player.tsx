@@ -38,10 +38,12 @@ export function AudioPlayer({ session, onClose }: AudioPlayerProps) {
   // Initialize audio element
   useEffect(() => {
     if (session.audioUrl) {
+      console.log('Loading audio:', session.audioUrl);
       audioRef.current = new Audio(session.audioUrl);
       const audio = audioRef.current;
       
       const handleLoadedMetadata = () => {
+        console.log('Audio metadata loaded, duration:', audio.duration);
         setDuration(Math.floor(audio.duration));
         setIsLoaded(true);
       };
@@ -61,14 +63,20 @@ export function AudioPlayer({ session, onClose }: AudioPlayerProps) {
         updateProgressMutation.mutate(Math.floor(audio.duration));
       };
       
+      const handleError = (e: Event) => {
+        console.error('Audio loading error:', e);
+      };
+      
       audio.addEventListener('loadedmetadata', handleLoadedMetadata);
       audio.addEventListener('timeupdate', handleTimeUpdate);
       audio.addEventListener('ended', handleEnded);
+      audio.addEventListener('error', handleError);
       
       return () => {
         audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
         audio.removeEventListener('timeupdate', handleTimeUpdate);
         audio.removeEventListener('ended', handleEnded);
+        audio.removeEventListener('error', handleError);
         audio.pause();
       };
     }
