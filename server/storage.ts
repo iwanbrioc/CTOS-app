@@ -164,7 +164,7 @@ export class MemStorage implements IStorage {
         week: 6,
         title: "Turning Towards Discomfort",
         description: "Learning to face difficulty with awareness",
-        audioUrl: "https://soundcloud.com/undoing-agency/turning-towards-discomfort",
+        audioUrl: "/attached_assets/turning towards the difficult 15 Minutes_1751650302023.mp3",
         duration: 15,
         illustration: "turning-towards-discomfort",
         isLocked: false,
