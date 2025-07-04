@@ -146,7 +146,7 @@ export class MemStorage implements IStorage {
         week: 4,
         title: "Mind in Body, Body in Movement, Movement in Mind",
         description: "Integrating physical awareness with mental presence",
-        audioUrl: "https://soundcloud.com/undoing-agency/mind-in-body-body-in-movement-movement-in-mind",
+        audioUrl: "/attached_assets/Mind in Body, Body in Movement, Movement n Mind (10min)_1751649693383.mp3",
         duration: 10,
         illustration: "mind-body-movement",
         isLocked: false,
