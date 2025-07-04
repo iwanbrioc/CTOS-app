@@ -116,13 +116,14 @@ This is a mobile-first mindfulness application built as a progressive web app (P
 ## Recent Changes
 - July 4, 2025: Integrated authentic meditation audio files
   - Replaced placeholder SoundCloud URLs with real MP3 meditation recordings
-  - Updated six sessions with authentic content:
+  - Updated seven sessions with authentic content:
     - "Dropping the Balloon" (10 min)
     - "Seven Stations of the Spine" (20 min) 
     - "The Sense of Being Alive" (20 min)
     - "Mind in Body, Body in Movement, Movement in Mind" (10 min)
     - "What if All There is Is This?" (10 min)
     - "Turning Towards Discomfort" (15 min)
+    - "The Four Pillars of Wellbeing" (22 min)
   - Implemented HTML5 audio player with real-time progress tracking
   - Audio player now supports actual meditation content with proper duration and timeline
 - July 4, 2025: Complete UI redesign inspired by NYT Games aesthetic

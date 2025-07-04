@@ -182,7 +182,7 @@ export class MemStorage implements IStorage {
         week: 7,
         title: "The Four Pillars of Wellbeing",
         description: "Building sustainable foundations for mindful living",
-        audioUrl: "https://soundcloud.com/undoing-agency/four-pillars-of-wellbeing",
+        audioUrl: "/attached_assets/fourpillarspractice_1751651309349.mp3",
         duration: 22,
         illustration: "four-pillars",
         isLocked: false,
