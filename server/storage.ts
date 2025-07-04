@@ -42,6 +42,7 @@ export interface IStorage {
   // Journal
   getUserJournalEntries(userId: number): Promise<JournalEntry[]>;
   createJournalEntry(userId: number, entry: InsertJournalEntry): Promise<JournalEntry>;
+  updateJournalEntry(userId: number, entryId: number, entry: Partial<InsertJournalEntry>): Promise<JournalEntry>;
 
   // Handy Hacks
   getAllHandyHacks(): Promise<HandyHack[]>;
@@ -297,12 +298,55 @@ export class MemStorage implements IStorage {
       id,
       userId,
       date: new Date(),
-      feeling: entry.feeling || null,
-      gratitude: entry.gratitude || null,
-      reflection: entry.reflection || null,
+      gratitude1: entry.gratitude1 || null,
+      gratitude2: entry.gratitude2 || null,
+      gratitude3: entry.gratitude3 || null,
+      highValuePriority1: entry.highValuePriority1 || null,
+      highValuePriority2: entry.highValuePriority2 || null,
+      highValuePriority3: entry.highValuePriority3 || null,
+      highFlowPriority1: entry.highFlowPriority1 || null,
+      highFlowPriority2: entry.highFlowPriority2 || null,
+      highFlowPriority3: entry.highFlowPriority3 || null,
+      scriptingVoiceNote: entry.scriptingVoiceNote || null,
+      scriptingText: entry.scriptingText || null,
+      reflectionVoiceNote: entry.reflectionVoiceNote || null,
+      reflectionText: entry.reflectionText || null,
+      morningCompleted: entry.morningCompleted || false,
+      eveningCompleted: entry.eveningCompleted || false,
+      completedAt: null,
     };
     this.journalEntries.set(id, journalEntry);
     return journalEntry;
+  }
+
+  async updateJournalEntry(userId: number, entryId: number, entryData: Partial<InsertJournalEntry>): Promise<JournalEntry> {
+    const existingEntry = this.journalEntries.get(entryId);
+    if (!existingEntry || existingEntry.userId !== userId) {
+      throw new Error("Journal entry not found");
+    }
+
+    const updatedEntry: JournalEntry = {
+      ...existingEntry,
+      gratitude1: entryData.gratitude1 !== undefined ? entryData.gratitude1 : existingEntry.gratitude1,
+      gratitude2: entryData.gratitude2 !== undefined ? entryData.gratitude2 : existingEntry.gratitude2,
+      gratitude3: entryData.gratitude3 !== undefined ? entryData.gratitude3 : existingEntry.gratitude3,
+      highValuePriority1: entryData.highValuePriority1 !== undefined ? entryData.highValuePriority1 : existingEntry.highValuePriority1,
+      highValuePriority2: entryData.highValuePriority2 !== undefined ? entryData.highValuePriority2 : existingEntry.highValuePriority2,
+      highValuePriority3: entryData.highValuePriority3 !== undefined ? entryData.highValuePriority3 : existingEntry.highValuePriority3,
+      highFlowPriority1: entryData.highFlowPriority1 !== undefined ? entryData.highFlowPriority1 : existingEntry.highFlowPriority1,
+      highFlowPriority2: entryData.highFlowPriority2 !== undefined ? entryData.highFlowPriority2 : existingEntry.highFlowPriority2,
+      highFlowPriority3: entryData.highFlowPriority3 !== undefined ? entryData.highFlowPriority3 : existingEntry.highFlowPriority3,
+      scriptingVoiceNote: entryData.scriptingVoiceNote !== undefined ? entryData.scriptingVoiceNote : existingEntry.scriptingVoiceNote,
+      scriptingText: entryData.scriptingText !== undefined ? entryData.scriptingText : existingEntry.scriptingText,
+      reflectionVoiceNote: entryData.reflectionVoiceNote !== undefined ? entryData.reflectionVoiceNote : existingEntry.reflectionVoiceNote,
+      reflectionText: entryData.reflectionText !== undefined ? entryData.reflectionText : existingEntry.reflectionText,
+      morningCompleted: entryData.morningCompleted !== undefined ? entryData.morningCompleted : existingEntry.morningCompleted,
+      eveningCompleted: entryData.eveningCompleted !== undefined ? entryData.eveningCompleted : existingEntry.eveningCompleted,
+      completedAt: (entryData.morningCompleted && entryData.eveningCompleted) ? new Date() : existingEntry.completedAt,
+    };
+
+    this.journalEntries.set(entryId, updatedEntry);
+    return updatedEntry;
   }
 
   async getAllHandyHacks(): Promise<HandyHack[]> {

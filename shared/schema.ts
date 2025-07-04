@@ -58,9 +58,28 @@ export const journalEntries = pgTable("journal_entries", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   date: timestamp("date").defaultNow(),
-  feeling: text("feeling"),
-  gratitude: text("gratitude"),
-  reflection: text("reflection"),
+  
+  // Morning routine
+  gratitude1: text("gratitude_1"),
+  gratitude2: text("gratitude_2"),
+  gratitude3: text("gratitude_3"),
+  highValuePriority1: text("high_value_priority_1"),
+  highValuePriority2: text("high_value_priority_2"),
+  highValuePriority3: text("high_value_priority_3"),
+  highFlowPriority1: text("high_flow_priority_1"),
+  highFlowPriority2: text("high_flow_priority_2"),
+  highFlowPriority3: text("high_flow_priority_3"),
+  scriptingVoiceNote: text("scripting_voice_note"), // URL or path to voice recording
+  scriptingText: text("scripting_text"), // Optional text version
+  
+  // Evening routine
+  reflectionVoiceNote: text("reflection_voice_note"), // URL or path to voice recording
+  reflectionText: text("reflection_text"), // Optional text version
+  
+  // Status tracking
+  morningCompleted: boolean("morning_completed").default(false),
+  eveningCompleted: boolean("evening_completed").default(false),
+  completedAt: timestamp("completed_at"),
 });
 
 export const handyHacks = pgTable("handy_hacks", {
@@ -98,9 +117,21 @@ export const insertUserSchema = createInsertSchema(users).pick({
 });
 
 export const insertJournalEntrySchema = createInsertSchema(journalEntries).pick({
-  feeling: true,
-  gratitude: true,
-  reflection: true,
+  gratitude1: true,
+  gratitude2: true,
+  gratitude3: true,
+  highValuePriority1: true,
+  highValuePriority2: true,
+  highValuePriority3: true,
+  highFlowPriority1: true,
+  highFlowPriority2: true,
+  highFlowPriority3: true,
+  scriptingVoiceNote: true,
+  scriptingText: true,
+  reflectionVoiceNote: true,
+  reflectionText: true,
+  morningCompleted: true,
+  eveningCompleted: true,
 });
 
 export const insertNotificationSchema = createInsertSchema(notifications).pick({

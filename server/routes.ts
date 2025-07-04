@@ -122,6 +122,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/users/:userId/journal/:entryId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const entryId = parseInt(req.params.entryId);
+      const entryData = insertJournalEntrySchema.parse(req.body);
+      
+      const entry = await storage.updateJournalEntry(userId, entryId, entryData);
+      res.json(entry);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid journal entry data" });
+    }
+  });
+
   // Handy Hacks routes
   app.get("/api/handy-hacks", async (req, res) => {
     try {
