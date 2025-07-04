@@ -3,7 +3,7 @@ import { StatusBar } from "@/components/status-bar";
 import { ProgressIndicator } from "@/components/progress-indicator";
 import { SessionCard } from "@/components/session-card";
 import { HandyHacks } from "@/components/handy-hacks";
-import { AudioUpload } from "@/components/audio-upload";
+import { AudioPlayer } from "@/components/audio-player";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { NotificationBanner } from "@/components/notification-banner";
 import { Button } from "@/components/ui/button";
@@ -160,7 +160,7 @@ export default function Home() {
       </main>
 
       {currentAudioSession && (
-        <AudioUpload
+        <AudioPlayer
           session={currentAudioSession}
           onClose={() => setCurrentAudioSession(null)}
         />

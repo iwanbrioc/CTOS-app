@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { StatusBar } from "@/components/status-bar";
 import { SessionCard } from "@/components/session-card";
-import { AudioUpload } from "@/components/audio-upload";
+import { AudioPlayer } from "@/components/audio-player";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -70,7 +70,7 @@ export default function Sessions() {
       </main>
 
       {currentAudioSession && (
-        <AudioUpload
+        <AudioPlayer
           session={currentAudioSession}
           onClose={() => setCurrentAudioSession(null)}
         />
