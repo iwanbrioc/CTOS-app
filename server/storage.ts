@@ -119,7 +119,7 @@ export class MemStorage implements IStorage {
         week: 1,
         title: "Dropping the Balloon",
         description: "Letting go of mental burdens and finding lightness",
-        audioUrl: "https://soundcloud.com/undoing-agency/grounding-10min-1",
+        audioUrl: "/attached_assets/Grounding 10min_1751647354223.mp3",
         duration: 10,
         illustration: "dropping-balloon",
         isLocked: false,

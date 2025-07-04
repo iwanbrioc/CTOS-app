@@ -16,7 +16,7 @@ const DEMO_USER_ID = 1;
 export function AudioPlayer({ session, onClose }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(session.duration * 60);
+  const [duration, setDuration] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const queryClient = useQueryClient();
   
@@ -35,42 +35,59 @@ export function AudioPlayer({ session, onClose }: AudioPlayerProps) {
     },
   });
 
+  // Initialize audio element
   useEffect(() => {
-    if (isPlaying) {
-      intervalRef.current = setInterval(() => {
-        setCurrentTime(prev => {
-          const newTime = prev + 1;
-          
-          // Update progress every 10 seconds
-          if (newTime % 10 === 0) {
-            updateProgressMutation.mutate(newTime);
-          }
-          
-          // Auto-pause when reaching the end
-          if (newTime >= duration) {
-            setIsPlaying(false);
-            updateProgressMutation.mutate(newTime);
-            return duration;
-          }
-          
-          return newTime;
-        });
-      }, 1000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+    if (session.audioUrl) {
+      audioRef.current = new Audio(session.audioUrl);
+      const audio = audioRef.current;
+      
+      const handleLoadedMetadata = () => {
+        setDuration(Math.floor(audio.duration));
+        setIsLoaded(true);
+      };
+      
+      const handleTimeUpdate = () => {
+        const currentSeconds = Math.floor(audio.currentTime);
+        setCurrentTime(currentSeconds);
+        
+        // Update progress every 10 seconds
+        if (currentSeconds % 10 === 0) {
+          updateProgressMutation.mutate(currentSeconds);
+        }
+      };
+      
+      const handleEnded = () => {
+        setIsPlaying(false);
+        updateProgressMutation.mutate(Math.floor(audio.duration));
+      };
+      
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.addEventListener('timeupdate', handleTimeUpdate);
+      audio.addEventListener('ended', handleEnded);
+      
+      return () => {
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('timeupdate', handleTimeUpdate);
+        audio.removeEventListener('ended', handleEnded);
+        audio.pause();
+      };
     }
+  }, [session.audioUrl, updateProgressMutation]);
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+  const togglePlayback = async () => {
+    if (!audioRef.current || !isLoaded) return;
+    
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlaying(true);
       }
-    };
-  }, [isPlaying, duration, updateProgressMutation]);
-
-  const togglePlayback = () => {
-    setIsPlaying(!isPlaying);
+    } catch (error) {
+      console.error('Audio playback error:', error);
+    }
   };
 
   const formatTime = (seconds: number) => {

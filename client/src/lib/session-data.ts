@@ -5,8 +5,8 @@ export const sessionData = [
     title: "Dropping the Balloon",
     description: "Letting go of mental burdens and finding lightness",
     illustration: "dropping-balloon",
-    soundcloudUrl: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1234567890&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true",
-    duration: 15,
+    audioUrl: "/attached_assets/Grounding 10min_1751647354223.mp3",
+    duration: 10,
   },
   {
     week: 2,
