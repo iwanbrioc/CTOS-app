@@ -128,7 +128,7 @@ export class MemStorage implements IStorage {
         week: 2,
         title: "Seven Stations of the Spine",
         description: "Foundation practice for grounding and spinal awareness",
-        audioUrl: "https://soundcloud.com/undoing-agency/the-seven-stations-of-the",
+        audioUrl: "/attached_assets/The Seven Stations of the Spine_1751648246548.mp3",
         duration: 20,
         illustration: "seven-stations-spine",
         isLocked: false,
