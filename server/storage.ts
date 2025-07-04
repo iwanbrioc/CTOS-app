@@ -60,6 +60,14 @@ export interface IStorage {
   getUserMilestones(userId: number): Promise<UserMilestone[]>;
   checkAndUpdateMilestones(userId: number): Promise<UserMilestone[]>;
   initializeMilestones(): Promise<void>;
+
+  // Notification Settings
+  updateUserNotificationSettings(userId: number, settings: {
+    notificationsEnabled: boolean;
+    reminderTime: string;
+    reminderDays: number[];
+  }): Promise<void>;
+  scheduleUserReminders(userId: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -107,6 +115,10 @@ export class MemStorage implements IStorage {
       id,
       currentWeek: 1,
       joinedAt: new Date(),
+      notificationsEnabled: true,
+      reminderTime: "09:00",
+      reminderDays: [1, 2, 3, 4, 5],
+      timezone: "UTC",
     };
     this.users.set(id, user);
     return user;
@@ -386,6 +398,9 @@ export class MemStorage implements IStorage {
       userId,
       sent: false,
       read: false,
+      isRecurring: false,
+      recurringPattern: null,
+      nextScheduled: null,
     };
     this.notifications.set(id, newNotification);
     return newNotification;
@@ -544,6 +559,84 @@ export class MemStorage implements IStorage {
     milestoneData.forEach(milestone => {
       this.milestones.set(milestone.id, milestone);
     });
+  }
+
+  // Notification Settings methods
+  async updateUserNotificationSettings(userId: number, settings: {
+    notificationsEnabled: boolean;
+    reminderTime: string;
+    reminderDays: number[];
+  }): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      const updatedUser = {
+        ...user,
+        notificationsEnabled: settings.notificationsEnabled,
+        reminderTime: settings.reminderTime,
+        reminderDays: settings.reminderDays,
+      };
+      this.users.set(userId, updatedUser);
+    }
+  }
+
+  async scheduleUserReminders(userId: number): Promise<void> {
+    const user = this.users.get(userId);
+    if (!user || !user.notificationsEnabled) {
+      return;
+    }
+
+    // Clear existing reminders for this user
+    const existingReminders = Array.from(this.notifications.values()).filter(
+      n => n.userId === userId && n.type === 'reminder'
+    );
+    existingReminders.forEach(reminder => {
+      this.notifications.delete(reminder.id);
+    });
+
+    // Schedule new reminders for the next 7 days
+    const reminderDays = (user.reminderDays as number[]) || [1, 2, 3, 4, 5];
+    const reminderTime = user.reminderTime || "09:00";
+    const [hours, minutes] = reminderTime.split(':').map(Number);
+
+    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + dayOffset);
+      const dayOfWeek = targetDate.getDay();
+
+      if (reminderDays.includes(dayOfWeek)) {
+        targetDate.setHours(hours, minutes, 0, 0);
+        
+        // Only schedule future reminders
+        if (targetDate > new Date()) {
+          const reminderMessages = [
+            "Time for your daily mindfulness practice! 🧘‍♀️",
+            "Take a moment to breathe and be present 🌱",
+            "Your meditation session is waiting for you ✨",
+            "Remember to pause and practice mindfulness today 🌸",
+            "A few minutes of mindfulness can transform your day 🌟"
+          ];
+          
+          const randomMessage = reminderMessages[Math.floor(Math.random() * reminderMessages.length)];
+          
+          const id = this.currentId++;
+          const reminder: Notification = {
+            id,
+            userId,
+            type: 'reminder',
+            title: 'Practice Reminder',
+            message: randomMessage,
+            scheduledFor: targetDate,
+            sent: false,
+            read: false,
+            isRecurring: true,
+            recurringPattern: 'daily',
+            nextScheduled: targetDate,
+          };
+          
+          this.notifications.set(id, reminder);
+        }
+      }
+    }
   }
 }
 

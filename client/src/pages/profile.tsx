@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { StatusBar } from "@/components/status-bar";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { MilestoneTracker } from "@/components/milestone-tracker";
+import { NotificationSettings } from "@/components/notification-settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, User, Calendar, Award, Bell, Settings } from "lucide-react";
 import { Link } from "wouter";
 import type { User as UserType, UserProgress, UserHackCompletion } from "@shared/schema";
@@ -53,10 +56,10 @@ export default function Profile() {
         </div>
       </header>
 
-      <main className="px-6 py-6 pb-24 space-y-6">
+      <main className="px-6 py-6 pb-24">
         
         {/* Profile Header */}
-        <Card>
+        <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="flex items-start space-x-4">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
@@ -80,61 +83,68 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Progress Stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Award className="h-5 w-5 text-success" />
-              <span>Your Progress</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{completedSessions}</div>
-                <div className="text-sm text-muted-foreground">Sessions Completed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{totalMinutesPracticed}</div>
-                <div className="text-sm text-muted-foreground">Minutes Practiced</div>
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-lg font-semibold text-primary">Week {user?.currentWeek || 1}</div>
-              <div className="text-sm text-muted-foreground">Current Progress</div>
-            </div>
-            
-            <div className="flex justify-center space-x-2 mt-4">
-              <Badge variant="secondary">
-                {hackCompletions.length} Handy Hacks Completed
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Tabbed Content */}
+        <Tabs defaultValue="progress" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="progress" className="flex items-center gap-2">
+              <Award className="h-4 w-4" />
+              Progress
+            </TabsTrigger>
+            <TabsTrigger value="achievements" className="flex items-center gap-2">
+              <Award className="h-4 w-4" />
+              Journey
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Settings
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Milestone Tracker */}
-        <MilestoneTracker userId={DEMO_USER_ID} />
+          <TabsContent value="progress" className="space-y-6 mt-6">
+            {/* Progress Stats */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Award className="h-5 w-5 text-success" />
+                  <span>Your Progress</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{completedSessions}</div>
+                    <div className="text-sm text-muted-foreground">Sessions Completed</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{totalMinutesPracticed}</div>
+                    <div className="text-sm text-muted-foreground">Minutes Practiced</div>
+                  </div>
+                </div>
+                
+                <div className="text-center">
+                  <div className="text-lg font-semibold text-primary">Week {user?.currentWeek || 1}</div>
+                  <div className="text-sm text-muted-foreground">Current Progress</div>
+                </div>
+                
+                <div className="flex justify-center space-x-2 mt-4">
+                  <Badge variant="secondary">
+                    {hackCompletions.length} Handy Hacks Completed
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        {/* Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Settings className="h-5 w-5" />
-              <span>Settings</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button variant="ghost" className="w-full justify-start">
-              <Bell className="h-4 w-4 mr-2" />
-              Notification Settings
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <User className="h-4 w-4 mr-2" />
-              Account Settings
-            </Button>
-          </CardContent>
-        </Card>
+          <TabsContent value="achievements" className="space-y-6 mt-6">
+            {/* Milestone Tracker */}
+            <MilestoneTracker userId={DEMO_USER_ID} />
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6 mt-6">
+            {/* Notification Settings */}
+            <NotificationSettings userId={DEMO_USER_ID} />
+          </TabsContent>
+        </Tabs>
       </main>
 
       <BottomNavigation />

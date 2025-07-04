@@ -61,7 +61,10 @@ export default function Home() {
       <header className="px-6 py-4 bg-background border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <h1 className="text-2xl font-bold text-foreground">Coming to Our Senses</h1>
+            <h1 className="text-2xl font-bold text-foreground leading-tight">
+              <div>Coming to</div>
+              <div>Our Senses</div>
+            </h1>
             <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
               <div className="w-3 h-3 bg-white rounded-full"></div>
             </div>

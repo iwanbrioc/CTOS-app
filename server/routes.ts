@@ -228,6 +228,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Notification settings routes
+  app.put("/api/users/:userId/notification-settings", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { notificationsEnabled, reminderTime, reminderDays } = req.body;
+      
+      await storage.updateUserNotificationSettings(userId, {
+        notificationsEnabled,
+        reminderTime,
+        reminderDays,
+      });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update notification settings" });
+    }
+  });
+
+  app.post("/api/users/:userId/schedule-reminders", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      await storage.scheduleUserReminders(userId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to schedule reminders" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

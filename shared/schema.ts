@@ -8,6 +8,10 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   currentWeek: integer("current_week").default(1),
   joinedAt: timestamp("joined_at").defaultNow(),
+  notificationsEnabled: boolean("notifications_enabled").default(true),
+  reminderTime: text("reminder_time").default("09:00"), // HH:MM format
+  reminderDays: jsonb("reminder_days").$type<number[]>().default([1, 2, 3, 4, 5]), // 0 = Sunday, 1 = Monday, etc.
+  timezone: text("timezone").default("UTC"),
 });
 
 export const sessions = pgTable("sessions", {
@@ -77,12 +81,15 @@ export const userHackCompletions = pgTable("user_hack_completions", {
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  type: text("type").notNull(), // 'practice', 'hack', 'weekly'
+  type: text("type").notNull(), // 'practice', 'hack', 'weekly', 'reminder'
   title: text("title").notNull(),
   message: text("message").notNull(),
   scheduledFor: timestamp("scheduled_for").notNull(),
   sent: boolean("sent").default(false),
   read: boolean("read").default(false),
+  isRecurring: boolean("is_recurring").default(false),
+  recurringPattern: text("recurring_pattern"), // 'daily', 'weekly', 'custom'
+  nextScheduled: timestamp("next_scheduled"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
