@@ -43,16 +43,44 @@ export default function Sessions() {
               onClick={() => toggleExpanded(session.id)}
             >
               <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                      Week {session.week}
-                    </Badge>
+                <div className="flex items-center gap-4 flex-1">
+                  {/* Session Image */}
+                  <div className="flex-shrink-0">
+                    <img 
+                      src={(() => {
+                        const imageMap: Record<string, string> = {
+                          "dropping-balloon": "/attached_assets/dropping the balloon_1750084108019.png",
+                          "seven-stations-spine": "/attached_assets/seven stations of the spine_1750084108018.png",
+                          "the-sense-being-alive": "/attached_assets/the sense of being alive_1750084108017.png",
+                          "mind-body-movement": "/attached_assets/mind in body, body in movement, movement in mind_1750084108019.png",
+                          "what-if-all-there-is": "/attached_assets/what if all there is is this?_1751649927283.png",
+                          "turning-towards-discomfort": "/attached_assets/turning towards discomfort_1750084108017.png",
+                          "four-pillars": "/attached_assets/the four pillars_1750084108018.png",
+                          "great-smile": "/attached_assets/great smile practice_1750084108019.png"
+                        };
+                        return imageMap[session.illustration] || "/attached_assets/what if all there is is this?_1751649927283.png";
+                      })()}
+                      alt={session.title}
+                      className="w-16 h-16 object-contain rounded-lg bg-white/10 p-2"
+                      onError={(e) => {
+                        e.currentTarget.src = `/attached_assets/what if all there is is this?_1751649927283.png`;
+                      }}
+                    />
                   </div>
-                  <CardTitle className="text-white text-lg">
-                    {session.title}
-                  </CardTitle>
+                  
+                  {/* Title and Badge */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                        Week {session.week}
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-white text-lg">
+                      {session.title}
+                    </CardTitle>
+                  </div>
                 </div>
+                
                 <div className="flex items-center">
                   {expandedSession === session.id ? (
                     <ChevronDown className="h-5 w-5 text-white" />
@@ -73,31 +101,6 @@ export default function Sessions() {
                   className="overflow-hidden"
                 >
                   <CardContent className="p-6 bg-gray-50">
-                    {/* Session Image */}
-                    <div className="mb-6 flex justify-center">
-                      <img 
-                        src={(() => {
-                          const imageMap: Record<string, string> = {
-                            "dropping-balloon": "/attached_assets/dropping the balloon_1750084108019.png",
-                            "seven-stations-spine": "/attached_assets/seven stations of the spine_1750084108018.png",
-                            "the-sense-being-alive": "/attached_assets/the sense of being alive_1750084108017.png",
-                            "mind-body-movement": "/attached_assets/mind in body, body in movement, movement in mind_1750084108019.png",
-                            "what-if-all-there-is": "/attached_assets/what if all there is is this?_1751649927283.png",
-                            "turning-towards-discomfort": "/attached_assets/turning towards discomfort_1750084108017.png",
-                            "four-pillars": "/attached_assets/the four pillars_1750084108018.png",
-                            "great-smile": "/attached_assets/great smile practice_1750084108019.png"
-                          };
-                          return imageMap[session.illustration] || "/attached_assets/what if all there is is this?_1751649927283.png";
-                        })()}
-                        alt={session.title}
-                        className="w-32 h-32 object-contain rounded-lg"
-                        onError={(e) => {
-                          // Fallback to generic illustration if specific image not found
-                          e.currentTarget.src = `/attached_assets/what if all there is is this?_1751649927283.png`;
-                        }}
-                      />
-                    </div>
-
                     {/* Quote Section */}
                     <div className="mb-6 p-4 bg-white rounded-lg border-l-4 border-gray-300">
                       <div className="flex items-start gap-3">
