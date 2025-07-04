@@ -60,6 +60,11 @@ export function DailyJournal({ userId }: DailyJournalProps) {
     evening: 0
   });
   const [currentRecordingType, setCurrentRecordingType] = useState<'morning' | 'evening' | null>(null);
+  const [waveformData, setWaveformData] = useState<{ morning: number[]; evening: number[] }>({
+    morning: Array(50).fill(0),
+    evening: Array(50).fill(0)
+  });
+  const [animationFrameId, setAnimationFrameId] = useState<number | null>(null);
   
   // Get today's date for filtering
   const today = new Date().toDateString();
@@ -155,12 +160,30 @@ export function DailyJournal({ userId }: DailyJournalProps) {
 
       const updateAudioLevel = () => {
         analyser.getByteFrequencyData(dataArray);
+        
+        // Calculate overall audio level
         const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
         const normalizedLevel = Math.min(100, (average / 255) * 100);
         setAudioLevel(prev => ({ ...prev, [type]: normalizedLevel }));
         
+        // Create waveform data for visualization
+        const waveformSize = 50;
+        const step = Math.floor(dataArray.length / waveformSize);
+        const newWaveform: number[] = [];
+        
+        for (let i = 0; i < waveformSize; i++) {
+          const index = i * step;
+          const value = dataArray[index] || 0;
+          // Normalize to 0-100 range and add some smoothing
+          const normalizedValue = Math.min(100, (value / 255) * 100);
+          newWaveform.push(normalizedValue);
+        }
+        
+        setWaveformData(prev => ({ ...prev, [type]: newWaveform }));
+        
         if (isRecording[type]) {
-          requestAnimationFrame(updateAudioLevel);
+          const frameId = requestAnimationFrame(updateAudioLevel);
+          setAnimationFrameId(frameId);
         }
       };
 
@@ -181,6 +204,13 @@ export function DailyJournal({ userId }: DailyJournalProps) {
         setIsRecording(prev => ({ ...prev, [type]: false }));
         setCurrentRecordingType(null);
         setAudioLevel(prev => ({ ...prev, [type]: 0 }));
+        setWaveformData(prev => ({ ...prev, [type]: Array(50).fill(0) }));
+        
+        // Clean up animation frame
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          setAnimationFrameId(null);
+        }
         
         stream.getTracks().forEach(track => track.stop());
         audioContext.close();
@@ -439,18 +469,48 @@ export function DailyJournal({ userId }: DailyJournalProps) {
                   )}
                 </div>
 
-                {/* Audio Level Indicator */}
+                {/* Sound Wave Visualization */}
                 {isRecording.morning && (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Mic className="h-4 w-4 text-purple-500" />
                       <span className="text-sm text-gray-600">Recording...</span>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm text-red-500 font-medium">LIVE</span>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-purple-500 h-2 rounded-full transition-all duration-100"
-                        style={{ width: `${audioLevel.morning}%` }}
-                      />
+                    
+                    {/* Interactive Waveform */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-end justify-center space-x-1 h-20">
+                        {waveformData.morning.map((amplitude, index) => (
+                          <div
+                            key={index}
+                            className="bg-gradient-to-t from-purple-600 to-purple-400 rounded-full transition-all duration-100 ease-out"
+                            style={{
+                              height: `${Math.max(2, amplitude * 0.8)}px`,
+                              width: '4px',
+                              opacity: amplitude > 5 ? 1 : 0.3,
+                              transform: `scaleY(${1 + (amplitude / 100) * 0.5})`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                      
+                      {/* Audio Level Bar */}
+                      <div className="mt-3">
+                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                          <span>Volume</span>
+                          <span>{Math.round(audioLevel.morning)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-100"
+                            style={{ width: `${audioLevel.morning}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -522,18 +582,48 @@ export function DailyJournal({ userId }: DailyJournalProps) {
                   )}
                 </div>
 
-                {/* Audio Level Indicator */}
+                {/* Sound Wave Visualization */}
                 {isRecording.evening && (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Mic className="h-4 w-4 text-indigo-500" />
                       <span className="text-sm text-gray-600">Recording...</span>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm text-red-500 font-medium">LIVE</span>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-indigo-500 h-2 rounded-full transition-all duration-100"
-                        style={{ width: `${audioLevel.evening}%` }}
-                      />
+                    
+                    {/* Interactive Waveform */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-end justify-center space-x-1 h-20">
+                        {waveformData.evening.map((amplitude, index) => (
+                          <div
+                            key={index}
+                            className="bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-full transition-all duration-100 ease-out"
+                            style={{
+                              height: `${Math.max(2, amplitude * 0.8)}px`,
+                              width: '4px',
+                              opacity: amplitude > 5 ? 1 : 0.3,
+                              transform: `scaleY(${1 + (amplitude / 100) * 0.5})`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                      
+                      {/* Audio Level Bar */}
+                      <div className="mt-3">
+                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                          <span>Volume</span>
+                          <span>{Math.round(audioLevel.evening)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-2 rounded-full transition-all duration-100"
+                            style={{ width: `${audioLevel.evening}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
