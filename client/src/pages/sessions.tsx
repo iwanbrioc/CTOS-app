@@ -48,31 +48,12 @@ export default function Sessions() {
                     <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
                       Week {session.week}
                     </Badge>
-                    <div className="flex items-center gap-1 text-white/90">
-                      <Clock className="h-4 w-4" />
-                      <span className="text-sm">{session.duration} min</span>
-                    </div>
                   </div>
-                  <CardTitle className="text-white text-lg mb-1">
+                  <CardTitle className="text-white text-lg">
                     {session.title}
                   </CardTitle>
-                  <CardDescription className="text-white/90 text-sm">
-                    {session.description}
-                  </CardDescription>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant="secondary" 
-                    size="sm"
-                    className="bg-white/20 text-white border-white/30 hover:bg-white/30"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Handle play action here
-                    }}
-                  >
-                    <Play className="h-4 w-4 mr-1" />
-                    Play
-                  </Button>
+                <div className="flex items-center">
                   {expandedSession === session.id ? (
                     <ChevronDown className="h-5 w-5 text-white" />
                   ) : (
@@ -92,6 +73,19 @@ export default function Sessions() {
                   className="overflow-hidden"
                 >
                   <CardContent className="p-6 bg-gray-50">
+                    {/* Session Image */}
+                    <div className="mb-6 flex justify-center">
+                      <img 
+                        src={`/attached_assets/${session.illustration}.png`}
+                        alt={session.title}
+                        className="w-32 h-32 object-contain rounded-lg"
+                        onError={(e) => {
+                          // Fallback to generic illustration if specific image not found
+                          e.currentTarget.src = `/attached_assets/what if all there is is this?_1751649927283.png`;
+                        }}
+                      />
+                    </div>
+
                     {/* Quote Section */}
                     <div className="mb-6 p-4 bg-white rounded-lg border-l-4 border-gray-300">
                       <div className="flex items-start gap-3">
@@ -112,10 +106,18 @@ export default function Sessions() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">
                         Session Overview
                       </h3>
-                      <div className="prose prose-gray max-w-none">
-                        <p className="text-gray-700 leading-relaxed">
-                          {session.longDescription}
-                        </p>
+                      <div className="prose prose-gray max-w-none space-y-4">
+                        {Array.isArray(session.longDescription) ? (
+                          session.longDescription.map((paragraph, index) => (
+                            <p key={index} className="text-gray-700 leading-relaxed">
+                              {paragraph}
+                            </p>
+                          ))
+                        ) : (
+                          <p className="text-gray-700 leading-relaxed">
+                            {session.longDescription}
+                          </p>
+                        )}
                       </div>
                     </div>
 
