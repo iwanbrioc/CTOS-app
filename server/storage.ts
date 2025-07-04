@@ -6,6 +6,8 @@ import {
   handyHacks,
   userHackCompletions,
   notifications,
+  milestones,
+  userMilestones,
   type User,
   type InsertUser,
   type Session,
@@ -16,6 +18,8 @@ import {
   type UserHackCompletion,
   type Notification,
   type InsertNotification,
+  type Milestone,
+  type UserMilestone,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -50,6 +54,12 @@ export interface IStorage {
   createNotification(userId: number, notification: InsertNotification): Promise<Notification>;
   getUserNotifications(userId: number): Promise<Notification[]>;
   markNotificationRead(notificationId: number): Promise<void>;
+
+  // Milestones
+  getAllMilestones(): Promise<Milestone[]>;
+  getUserMilestones(userId: number): Promise<UserMilestone[]>;
+  checkAndUpdateMilestones(userId: number): Promise<UserMilestone[]>;
+  initializeMilestones(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -60,6 +70,8 @@ export class MemStorage implements IStorage {
   private handyHacks: Map<number, HandyHack>;
   private userHackCompletions: Map<number, UserHackCompletion>;
   private notifications: Map<number, Notification>;
+  private milestones: Map<number, Milestone>;
+  private userMilestones: Map<number, UserMilestone>;
   private currentId: number;
 
   constructor() {
@@ -70,11 +82,14 @@ export class MemStorage implements IStorage {
     this.handyHacks = new Map();
     this.userHackCompletions = new Map();
     this.notifications = new Map();
+    this.milestones = new Map();
+    this.userMilestones = new Map();
     this.currentId = 1;
     
     // Initialize default data
     this.initializeSessions();
     this.initializeHandyHacks();
+    this.initializeMilestones();
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -226,6 +241,8 @@ export class MemStorage implements IStorage {
         completed: false,
         completedAt: null,
         audioProgress: 0,
+        totalListenTime: 0,
+        streakDays: 0,
         ...progress,
       };
       this.userProgress.set(key, newProgress);
@@ -249,6 +266,8 @@ export class MemStorage implements IStorage {
         completed: true,
         completedAt: new Date(),
         audioProgress: 0,
+        totalListenTime: 0,
+        streakDays: 0,
       };
       this.userProgress.set(key, newProgress);
     }
@@ -263,10 +282,12 @@ export class MemStorage implements IStorage {
   async createJournalEntry(userId: number, entry: InsertJournalEntry): Promise<JournalEntry> {
     const id = this.currentId++;
     const journalEntry: JournalEntry = {
-      ...entry,
       id,
       userId,
       date: new Date(),
+      feeling: entry.feeling || null,
+      gratitude: entry.gratitude || null,
+      reflection: entry.reflection || null,
     };
     this.journalEntries.set(id, journalEntry);
     return journalEntry;
@@ -382,6 +403,147 @@ export class MemStorage implements IStorage {
       notification.read = true;
       this.notifications.set(notificationId, notification);
     }
+  }
+
+  // Milestone methods
+  async getAllMilestones(): Promise<Milestone[]> {
+    return Array.from(this.milestones.values());
+  }
+
+  async getUserMilestones(userId: number): Promise<UserMilestone[]> {
+    return Array.from(this.userMilestones.values()).filter(
+      milestone => milestone.userId === userId
+    );
+  }
+
+  async checkAndUpdateMilestones(userId: number): Promise<UserMilestone[]> {
+    // Get user's current progress
+    const userProgress = await this.getUserProgress(userId);
+    const userHackCompletions = await this.getUserHackCompletions(userId);
+    const allMilestones = await this.getAllMilestones();
+    const userMilestones = await this.getUserMilestones(userId);
+    
+    const newMilestones: UserMilestone[] = [];
+    
+    for (const milestone of allMilestones) {
+      const existingMilestone = userMilestones.find(um => um.milestoneId === milestone.id);
+      if (existingMilestone) continue; // Already achieved
+      
+      let currentProgress = 0;
+      let achieved = false;
+      
+      switch (milestone.type) {
+        case 'sessions':
+          currentProgress = userProgress.filter(p => p.completed).length;
+          achieved = currentProgress >= milestone.target;
+          break;
+        case 'time':
+          currentProgress = userProgress.reduce((total, p) => total + (p.totalListenTime || 0), 0);
+          achieved = currentProgress >= milestone.target;
+          break;
+        case 'streak':
+          currentProgress = userProgress.length > 0 ? Math.max(...userProgress.map(p => p.streakDays || 0)) : 0;
+          achieved = currentProgress >= milestone.target;
+          break;
+        case 'weekly':
+          const completedWeeks = new Set(userProgress.filter(p => p.completed).map(p => {
+            const session = Array.from(this.sessions.values()).find(s => s.id === p.sessionId);
+            return session?.week;
+          }));
+          currentProgress = completedWeeks.size;
+          achieved = currentProgress >= milestone.target;
+          break;
+      }
+      
+      if (achieved) {
+        const id = this.currentId++;
+        const newUserMilestone: UserMilestone = {
+          id,
+          userId,
+          milestoneId: milestone.id,
+          achievedAt: new Date(),
+          progress: currentProgress,
+        };
+        this.userMilestones.set(id, newUserMilestone);
+        newMilestones.push(newUserMilestone);
+      }
+    }
+    
+    return newMilestones;
+  }
+
+  async initializeMilestones(): Promise<void> {
+    if (this.milestones.size > 0) return;
+    
+    const milestoneData = [
+      {
+        id: 1,
+        title: "First Steps",
+        description: "Complete your first meditation session",
+        type: "sessions",
+        target: 1,
+        badge: "🌱",
+        color: "#10B981"
+      },
+      {
+        id: 2,
+        title: "Building Momentum",
+        description: "Complete 5 meditation sessions",
+        type: "sessions",
+        target: 5,
+        badge: "🌿",
+        color: "#3B82F6"
+      },
+      {
+        id: 3,
+        title: "Dedication",
+        description: "Complete 10 meditation sessions",
+        type: "sessions",
+        target: 10,
+        badge: "🌳",
+        color: "#8B5CF6"
+      },
+      {
+        id: 4,
+        title: "Time Traveler",
+        description: "Meditate for 30 minutes total",
+        type: "time",
+        target: 1800, // 30 minutes in seconds
+        badge: "⏰",
+        color: "#F59E0B"
+      },
+      {
+        id: 5,
+        title: "Mindful Hour",
+        description: "Meditate for 60 minutes total",
+        type: "time",
+        target: 3600, // 60 minutes in seconds
+        badge: "🕐",
+        color: "#EF4444"
+      },
+      {
+        id: 6,
+        title: "Week Explorer",
+        description: "Complete sessions from 3 different weeks",
+        type: "weekly",
+        target: 3,
+        badge: "🗓️",
+        color: "#06B6D4"
+      },
+      {
+        id: 7,
+        title: "Journey Master",
+        description: "Complete sessions from all 8 weeks",
+        type: "weekly",
+        target: 8,
+        badge: "🏆",
+        color: "#DC2626"
+      }
+    ];
+    
+    milestoneData.forEach(milestone => {
+      this.milestones.set(milestone.id, milestone);
+    });
   }
 }
 

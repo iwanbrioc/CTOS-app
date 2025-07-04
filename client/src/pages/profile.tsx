@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { StatusBar } from "@/components/status-bar";
 import { BottomNavigation } from "@/components/bottom-navigation";
+import { MilestoneTracker } from "@/components/milestone-tracker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -112,57 +113,8 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Achievements */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Achievements</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {completedSessions > 0 && (
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-success flex items-center justify-center">
-                    <Award className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-primary">First Steps</p>
-                    <p className="text-sm text-muted-foreground">Completed your first session</p>
-                  </div>
-                </div>
-              )}
-              
-              {completedSessions >= 3 && (
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-success flex items-center justify-center">
-                    <Award className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-primary">Building Momentum</p>
-                    <p className="text-sm text-muted-foreground">Completed 3 sessions</p>
-                  </div>
-                </div>
-              )}
-              
-              {hackCompletions.length >= 5 && (
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-success flex items-center justify-center">
-                    <Award className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-primary">Handy Helper</p>
-                    <p className="text-sm text-muted-foreground">Completed 5 handy hacks</p>
-                  </div>
-                </div>
-              )}
-              
-              {completedSessions === 0 && hackCompletions.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Complete your first session to unlock achievements!
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Milestone Tracker */}
+        <MilestoneTracker userId={DEMO_USER_ID} />
 
         {/* Settings */}
         <Card>

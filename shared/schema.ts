@@ -28,6 +28,26 @@ export const userProgress = pgTable("user_progress", {
   completed: boolean("completed").default(false),
   completedAt: timestamp("completed_at"),
   audioProgress: integer("audio_progress").default(0), // seconds
+  totalListenTime: integer("total_listen_time").default(0), // total seconds listened
+  streakDays: integer("streak_days").default(0), // consecutive days practiced
+});
+
+export const milestones = pgTable("milestones", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  type: text("type").notNull(), // 'sessions', 'time', 'streak', 'weekly'
+  target: integer("target").notNull(),
+  badge: text("badge").notNull(), // emoji or icon identifier
+  color: text("color").notNull(), // hex color for the milestone
+});
+
+export const userMilestones = pgTable("user_milestones", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  milestoneId: integer("milestone_id").references(() => milestones.id).notNull(),
+  achievedAt: timestamp("achieved_at").defaultNow(),
+  progress: integer("progress").default(0), // current progress toward milestone
 });
 
 export const journalEntries = pgTable("journal_entries", {
@@ -91,5 +111,7 @@ export type JournalEntry = typeof journalEntries.$inferSelect;
 export type HandyHack = typeof handyHacks.$inferSelect;
 export type UserHackCompletion = typeof userHackCompletions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
+export type Milestone = typeof milestones.$inferSelect;
+export type UserMilestone = typeof userMilestones.$inferSelect;
 export type InsertJournalEntry = z.infer<typeof insertJournalEntrySchema>;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;

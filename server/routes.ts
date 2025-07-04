@@ -75,9 +75,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       const sessionId = parseInt(req.params.sessionId);
-      const { audioProgress, completed } = req.body;
+      const { audioProgress, completed, totalListenTime } = req.body;
       
-      await storage.updateSessionProgress(userId, sessionId, { audioProgress, completed });
+      await storage.updateSessionProgress(userId, sessionId, { 
+        audioProgress, 
+        completed, 
+        totalListenTime 
+      });
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to update progress" });
@@ -191,6 +195,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to mark notification as read" });
+    }
+  });
+
+  // Milestone routes
+  app.get("/api/milestones", async (req, res) => {
+    try {
+      const milestones = await storage.getAllMilestones();
+      res.json(milestones);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch milestones" });
+    }
+  });
+
+  app.get("/api/users/:userId/milestones", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const userMilestones = await storage.getUserMilestones(userId);
+      res.json(userMilestones);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user milestones" });
+    }
+  });
+
+  app.post("/api/users/:userId/milestones/check", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const newMilestones = await storage.checkAndUpdateMilestones(userId);
+      res.json(newMilestones);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to check milestones" });
     }
   });
 

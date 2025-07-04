@@ -25,13 +25,21 @@ export function AudioPlayer({ session, onClose }: AudioPlayerProps) {
 
   const updateProgressMutation = useMutation({
     mutationFn: async (progress: number) => {
+      const isCompleted = progress >= duration * 0.9;
       await apiRequest("POST", `/api/users/${DEMO_USER_ID}/progress/${session.id}`, {
         audioProgress: progress,
-        completed: progress >= duration * 0.9, // Mark as completed when 90% done
+        totalListenTime: progress, // Track total time listened
+        completed: isCompleted,
       });
+      return isCompleted;
     },
-    onSuccess: () => {
+    onSuccess: (isCompleted) => {
       queryClient.invalidateQueries({ queryKey: ["/api/users", DEMO_USER_ID, "progress"] });
+      
+      // Check for new milestones when session is completed
+      if (isCompleted && (window as any).checkMilestones) {
+        (window as any).checkMilestones();
+      }
     },
   });
 
