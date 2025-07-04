@@ -39,6 +39,27 @@ export function DailyJournal({ userId }: DailyJournalProps) {
     evening: false
   });
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [isPlaying, setIsPlaying] = useState<{ morning: boolean; evening: boolean }>({
+    morning: false,
+    evening: false
+  });
+  const [audioElements, setAudioElements] = useState<{ morning: HTMLAudioElement | null; evening: HTMLAudioElement | null }>({
+    morning: null,
+    evening: null
+  });
+  const [isTranscribing, setIsTranscribing] = useState<{ morning: boolean; evening: boolean }>({
+    morning: false,
+    evening: false
+  });
+  const [recordedBlobs, setRecordedBlobs] = useState<{ morning: Blob | null; evening: Blob | null }>({
+    morning: null,
+    evening: null
+  });
+  const [audioLevel, setAudioLevel] = useState<{ morning: number; evening: number }>({
+    morning: 0,
+    evening: 0
+  });
+  const [currentRecordingType, setCurrentRecordingType] = useState<'morning' | 'evening' | null>(null);
   
   // Get today's date for filtering
   const today = new Date().toDateString();
@@ -123,10 +144,33 @@ export function DailyJournal({ userId }: DailyJournalProps) {
       const recorder = new MediaRecorder(stream);
       const chunks: BlobPart[] = [];
 
+      // Set up audio level monitoring
+      const audioContext = new AudioContext();
+      const analyser = audioContext.createAnalyser();
+      const microphone = audioContext.createMediaStreamSource(stream);
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      
+      microphone.connect(analyser);
+      analyser.fftSize = 256;
+
+      const updateAudioLevel = () => {
+        analyser.getByteFrequencyData(dataArray);
+        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+        const normalizedLevel = Math.min(100, (average / 255) * 100);
+        setAudioLevel(prev => ({ ...prev, [type]: normalizedLevel }));
+        
+        if (isRecording[type]) {
+          requestAnimationFrame(updateAudioLevel);
+        }
+      };
+
       recorder.ondataavailable = (e) => chunks.push(e.data);
-      recorder.onstop = () => {
+      recorder.onstop = async () => {
         const blob = new Blob(chunks, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(blob);
+        
+        // Store the blob for transcription
+        setRecordedBlobs(prev => ({ ...prev, [type]: blob }));
         
         if (type === 'morning') {
           updateField('scriptingVoiceNote', audioUrl);
@@ -135,12 +179,21 @@ export function DailyJournal({ userId }: DailyJournalProps) {
         }
         
         setIsRecording(prev => ({ ...prev, [type]: false }));
+        setCurrentRecordingType(null);
+        setAudioLevel(prev => ({ ...prev, [type]: 0 }));
+        
         stream.getTracks().forEach(track => track.stop());
+        audioContext.close();
+
+        // Start transcription
+        transcribeAudio(blob, type);
       };
 
       setMediaRecorder(recorder);
+      setCurrentRecordingType(type);
       recorder.start();
       setIsRecording(prev => ({ ...prev, [type]: true }));
+      updateAudioLevel();
       
       toast({
         title: "Recording Started",
@@ -158,6 +211,72 @@ export function DailyJournal({ userId }: DailyJournalProps) {
   const stopVoiceRecording = () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
+    }
+  };
+
+  const transcribeAudio = async (blob: Blob, type: 'morning' | 'evening') => {
+    setIsTranscribing(prev => ({ ...prev, [type]: true }));
+    
+    try {
+      const formData = new FormData();
+      formData.append('audio', blob, `${type}-note.wav`);
+
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Transcription failed');
+      }
+
+      const { transcription } = await response.json();
+      
+      // Update the appropriate text field with transcription
+      if (type === 'morning') {
+        updateField('scriptingText', transcription);
+      } else {
+        updateField('reflectionText', transcription);
+      }
+
+      toast({
+        title: "Transcription Complete",
+        description: `Your ${type} voice note has been transcribed.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Transcription Failed",
+        description: "Unable to transcribe audio. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTranscribing(prev => ({ ...prev, [type]: false }));
+    }
+  };
+
+  const playVoiceNote = (type: 'morning' | 'evening') => {
+    const voiceNote = type === 'morning' ? todayEntry.scriptingVoiceNote : todayEntry.reflectionVoiceNote;
+    if (!voiceNote) return;
+
+    if (audioElements[type]) {
+      audioElements[type]?.pause();
+      audioElements[type]?.remove();
+    }
+
+    const audio = new Audio(voiceNote);
+    audio.onplay = () => setIsPlaying({ ...isPlaying, [type]: true });
+    audio.onpause = () => setIsPlaying({ ...isPlaying, [type]: false });
+    audio.onended = () => setIsPlaying({ ...isPlaying, [type]: false });
+    
+    setAudioElements({ ...audioElements, [type]: audio });
+    audio.play();
+  };
+
+  const stopVoiceNote = (type: 'morning' | 'evening') => {
+    if (audioElements[type]) {
+      audioElements[type]?.pause();
+      audioElements[type]!.currentTime = 0;
+      setIsPlaying({ ...isPlaying, [type]: false });
     }
   };
 
@@ -289,17 +408,51 @@ export function DailyJournal({ userId }: DailyJournalProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => isRecording.morning ? stopVoiceRecording() : startVoiceRecording('morning')}
-                  variant={isRecording.morning ? "destructive" : "outline"}
-                  size="sm"
-                >
-                  {isRecording.morning ? <MicOff className="h-4 w-4 mr-2" /> : <Mic className="h-4 w-4 mr-2" />}
-                  {isRecording.morning ? "Stop Recording" : "Record Voice Note"}
-                </Button>
-                {todayEntry.scriptingVoiceNote && (
-                  <Badge variant="secondary">Voice note recorded</Badge>
+              <div className="space-y-3">
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    onClick={() => isRecording.morning ? stopVoiceRecording() : startVoiceRecording('morning')}
+                    variant={isRecording.morning ? "destructive" : "outline"}
+                    size="sm"
+                  >
+                    {isRecording.morning ? <MicOff className="h-4 w-4 mr-2" /> : <Mic className="h-4 w-4 mr-2" />}
+                    {isRecording.morning ? "Stop Recording" : "Record Voice Note"}
+                  </Button>
+                  
+                  {todayEntry.scriptingVoiceNote && (
+                    <Button
+                      onClick={() => isPlaying.morning ? stopVoiceNote('morning') : playVoiceNote('morning')}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {isPlaying.morning ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                      {isPlaying.morning ? "Pause" : "Play"}
+                    </Button>
+                  )}
+                  
+                  {isTranscribing.morning && (
+                    <Badge variant="secondary">Transcribing...</Badge>
+                  )}
+                  
+                  {todayEntry.scriptingVoiceNote && !isTranscribing.morning && (
+                    <Badge variant="secondary">Voice note recorded</Badge>
+                  )}
+                </div>
+
+                {/* Audio Level Indicator */}
+                {isRecording.morning && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Mic className="h-4 w-4 text-purple-500" />
+                      <span className="text-sm text-gray-600">Recording...</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-purple-500 h-2 rounded-full transition-all duration-100"
+                        style={{ width: `${audioLevel.morning}%` }}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
               
@@ -338,17 +491,51 @@ export function DailyJournal({ userId }: DailyJournalProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => isRecording.evening ? stopVoiceRecording() : startVoiceRecording('evening')}
-                  variant={isRecording.evening ? "destructive" : "outline"}
-                  size="sm"
-                >
-                  {isRecording.evening ? <MicOff className="h-4 w-4 mr-2" /> : <Mic className="h-4 w-4 mr-2" />}
-                  {isRecording.evening ? "Stop Recording" : "Record Reflection"}
-                </Button>
-                {todayEntry.reflectionVoiceNote && (
-                  <Badge variant="secondary">Reflection recorded</Badge>
+              <div className="space-y-3">
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    onClick={() => isRecording.evening ? stopVoiceRecording() : startVoiceRecording('evening')}
+                    variant={isRecording.evening ? "destructive" : "outline"}
+                    size="sm"
+                  >
+                    {isRecording.evening ? <MicOff className="h-4 w-4 mr-2" /> : <Mic className="h-4 w-4 mr-2" />}
+                    {isRecording.evening ? "Stop Recording" : "Record Reflection"}
+                  </Button>
+                  
+                  {todayEntry.reflectionVoiceNote && (
+                    <Button
+                      onClick={() => isPlaying.evening ? stopVoiceNote('evening') : playVoiceNote('evening')}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {isPlaying.evening ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                      {isPlaying.evening ? "Pause" : "Play"}
+                    </Button>
+                  )}
+                  
+                  {isTranscribing.evening && (
+                    <Badge variant="secondary">Transcribing...</Badge>
+                  )}
+                  
+                  {todayEntry.reflectionVoiceNote && !isTranscribing.evening && (
+                    <Badge variant="secondary">Reflection recorded</Badge>
+                  )}
+                </div>
+
+                {/* Audio Level Indicator */}
+                {isRecording.evening && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Mic className="h-4 w-4 text-indigo-500" />
+                      <span className="text-sm text-gray-600">Recording...</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-indigo-500 h-2 rounded-full transition-all duration-100"
+                        style={{ width: `${audioLevel.evening}%` }}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
               
