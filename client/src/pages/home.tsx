@@ -68,7 +68,7 @@ export default function Home() {
             <img 
               src="/attached_assets/CTOS Emblem_1751662222205.png" 
               alt="Coming to Our Senses Emblem"
-              className="w-12 h-12 object-contain"
+              className="w-16 h-16 object-contain"
             />
           </div>
           <div className="flex items-center space-x-2">
