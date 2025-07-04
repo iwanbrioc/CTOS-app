@@ -131,6 +131,47 @@
   .btn-primary:hover {
     background: hsl(220, 50%, 20%);
   }
+
+  /* Duotone filters for session images */
+  .duotone-yellow {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(30deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-blue {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(200deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-purple {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(270deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-red {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(350deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-green {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(120deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-orange {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(15deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-mint {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(160deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-purple-variant {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(280deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
 }
 
 @keyframes slideInFromTop {

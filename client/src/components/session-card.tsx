@@ -75,6 +75,20 @@ const getSessionColor = (week: number) => {
   return colors[(week - 1) % colors.length];
 };
 
+const getDuotoneFilter = (week: number) => {
+  const filters = [
+    "duotone-yellow", // Yellow
+    "duotone-blue", // Blue
+    "duotone-purple", // Purple
+    "duotone-red", // Red
+    "duotone-green", // Green
+    "duotone-orange", // Orange
+    "duotone-mint", // Mint
+    "duotone-purple-variant", // Purple variant
+  ];
+  return filters[(week - 1) % filters.length];
+};
+
 export function SessionCard({ session, isCurrentSession, onStartPractice, userProgress }: SessionCardProps) {
   const isCompleted = userProgress?.completed || false;
   const isLocked = session.isLocked && session.week > 3;
@@ -87,53 +101,70 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
       isCurrentSession && "ring-2 ring-white ring-opacity-50",
       isLocked && "opacity-60"
     )}>
-      <CardContent className="p-4 text-white">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1">
-            <h3 className={cn(
-              "font-bold text-base mb-1 tracking-tight",
-              isLocked ? "text-white/70" : "text-white"
-            )}>
-              {session.title}
-            </h3>
-            <p className="text-sm text-white/80 mb-2 line-clamp-2">
-              {session.description}
-            </p>
-          </div>
-          <div className="ml-3 flex-shrink-0">
-            {getSessionIcon(session.week, isCompleted)}
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 text-sm text-white/80">
-            <span className="flex items-center space-x-1">
-              <Clock className="h-4 w-4" />
-              <span>{session.duration} min</span>
-            </span>
-            <span className="text-xs font-medium">
-              Week {session.week}
-            </span>
+      <CardContent className="p-0 text-white">
+        <div className="flex">
+          {/* Image Section */}
+          <div className="w-20 h-20 flex-shrink-0 relative overflow-hidden">
+            <img 
+              src={getSessionImage(session.illustration)}
+              alt={`${session.title} illustration`}
+              className={cn(
+                "w-full h-full object-cover",
+                getDuotoneFilter(session.week)
+              )}
+            />
           </div>
           
-          {canPlay && (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="text-white hover:bg-white/20 border border-white/30 font-medium"
-              onClick={() => onStartPractice(session)}
-            >
-              <Play className="h-4 w-4 mr-1" />
-              {isCompleted ? "Replay" : "Start"}
-            </Button>
-          )}
-        </div>
-        
-        {isCompleted && (
-          <div className="mt-3 text-center">
-            <span className="text-xs text-white/90 font-medium">✓ Completed</span>
+          {/* Content Section */}
+          <div className="flex-1 p-4">
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1">
+                <h3 className={cn(
+                  "font-bold text-base mb-1 tracking-tight",
+                  isLocked ? "text-white/70" : "text-white"
+                )}>
+                  {session.title}
+                </h3>
+                <p className="text-sm text-white/80 mb-2 line-clamp-2">
+                  {session.description}
+                </p>
+              </div>
+              <div className="ml-3 flex-shrink-0">
+                {getSessionIcon(session.week, isCompleted)}
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4 text-sm text-white/80">
+                <span className="flex items-center space-x-1">
+                  <Clock className="h-4 w-4" />
+                  <span>{session.duration} min</span>
+                </span>
+                <span className="text-xs font-medium">
+                  Week {session.week}
+                </span>
+              </div>
+              
+              {canPlay && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-white hover:bg-white/20 border border-white/30 font-medium"
+                  onClick={() => onStartPractice(session)}
+                >
+                  <Play className="h-4 w-4 mr-1" />
+                  {isCompleted ? "Replay" : "Start"}
+                </Button>
+              )}
+            </div>
+            
+            {isCompleted && (
+              <div className="mt-3 text-center">
+                <span className="text-xs text-white/90 font-medium">✓ Completed</span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );
