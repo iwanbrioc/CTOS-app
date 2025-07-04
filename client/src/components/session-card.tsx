@@ -51,14 +51,28 @@ const getSessionImage = (illustration: string) => {
 
 const getSessionIcon = (week: number, completed: boolean) => {
   if (completed) {
-    return <CheckCircle className="h-5 w-5 text-success" />;
+    return <CheckCircle className="h-5 w-5 text-white" />;
   }
   
   if (week <= 3) {
-    return <Play className="h-5 w-5 text-primary" />;
+    return <Play className="h-5 w-5 text-white" />;
   }
   
-  return <Lock className="h-5 w-5 text-muted-foreground" />;
+  return <Lock className="h-5 w-5 text-white/70" />;
+};
+
+const getSessionColor = (week: number) => {
+  const colors = [
+    "bg-[hsl(45,100%,60%)]", // Yellow
+    "bg-[hsl(218,100%,60%)]", // Blue
+    "bg-[hsl(270,60%,70%)]", // Purple
+    "bg-[hsl(350,89%,60%)]", // Red
+    "bg-[hsl(142,76%,55%)]", // Green
+    "bg-[hsl(35,100%,60%)]", // Orange
+    "bg-[hsl(165,45%,70%)]", // Mint
+    "bg-[hsl(280,70%,65%)]", // Purple variant
+  ];
+  return colors[(week - 1) % colors.length];
 };
 
 export function SessionCard({ session, isCurrentSession, onStartPractice, userProgress }: SessionCardProps) {
@@ -68,74 +82,59 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
 
   return (
     <Card className={cn(
-      "overflow-hidden transition-all duration-200 card-elegant hover:shadow-lg",
-      isCurrentSession && "ring-2 ring-primary ring-opacity-30",
+      "overflow-hidden transition-all duration-200 hover:shadow-lg border-0 rounded-2xl",
+      getSessionColor(session.week),
+      isCurrentSession && "ring-2 ring-white ring-opacity-50",
       isLocked && "opacity-60"
     )}>
-      <div className="flex">
-        <div className="w-20 h-20 flex-shrink-0 session-illustration flex items-center justify-center">
-          <img 
-            src={getSessionImage(session.illustration)}
-            alt={`${session.title} illustration`}
-            className="w-full h-full object-cover"
-          />
+      <CardContent className="p-4 text-white">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <h3 className={cn(
+              "font-bold text-base mb-1 tracking-tight",
+              isLocked ? "text-white/70" : "text-white"
+            )}>
+              {session.title}
+            </h3>
+            <p className="text-sm text-white/80 mb-2 line-clamp-2">
+              {session.description}
+            </p>
+          </div>
+          <div className="ml-3 flex-shrink-0">
+            {getSessionIcon(session.week, isCompleted)}
+          </div>
         </div>
         
-        <CardContent className="flex-1 p-4">
-          <div className="flex items-start justify-between mb-2">
-            <div className="flex-1">
-              <h3 className={cn(
-                "font-bold text-sm mb-1 tracking-tight",
-                isLocked ? "text-muted-foreground" : "text-foreground"
-              )}>
-                Week {session.week}: {session.title}
-              </h3>
-              <p className="text-xs text-muted-foreground mb-2 line-clamp-2 subtitle">
-                {session.description}
-              </p>
-            </div>
-            <div className="ml-2">
-              {getSessionIcon(session.week, isCompleted)}
-            </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4 text-sm text-white/80">
+            <span className="flex items-center space-x-1">
+              <Clock className="h-4 w-4" />
+              <span>{session.duration} min</span>
+            </span>
+            <span className="text-xs font-medium">
+              Week {session.week}
+            </span>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-              <span className="flex items-center space-x-1">
-                <Clock className="h-3 w-3" />
-                <span>{session.duration} min</span>
-              </span>
-              {isCompleted && (
-                <Badge variant="secondary" className="text-xs">
-                  Completed
-                </Badge>
-              )}
-              {isCurrentSession && !isCompleted && (
-                <Badge variant="destructive" className="text-xs animate-pulse">
-                  In Progress
-                </Badge>
-              )}
-              {isLocked && (
-                <Badge variant="outline" className="text-xs">
-                  Unlocks Soon
-                </Badge>
-              )}
-            </div>
-            
-            {canPlay && (
-              <Button
-                size="sm"
-                variant={isCurrentSession ? "default" : "outline"}
-                className="text-xs btn-primary font-medium"
-                onClick={() => onStartPractice(session)}
-              >
-                <Play className="h-3 w-3 mr-1" />
-                {isCompleted ? "Replay" : "Start"}
-              </Button>
-            )}
+          {canPlay && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-white hover:bg-white/20 border border-white/30 font-medium"
+              onClick={() => onStartPractice(session)}
+            >
+              <Play className="h-4 w-4 mr-1" />
+              {isCompleted ? "Replay" : "Start"}
+            </Button>
+          )}
+        </div>
+        
+        {isCompleted && (
+          <div className="mt-3 text-center">
+            <span className="text-xs text-white/90 font-medium">✓ Completed</span>
           </div>
-        </CardContent>
-      </div>
+        )}
+      </CardContent>
     </Card>
   );
 }

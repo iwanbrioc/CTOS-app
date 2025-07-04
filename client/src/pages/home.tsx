@@ -8,9 +8,9 @@ import { BottomNavigation } from "@/components/bottom-navigation";
 import { NotificationBanner } from "@/components/notification-banner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bell, User, Play } from "lucide-react";
+import { Bell, User as UserIcon, Play } from "lucide-react";
 import { useState, useEffect } from "react";
-import type { Session, UserProgress } from "@shared/schema";
+import type { Session, UserProgress, User } from "@shared/schema";
 import { useNotifications } from "@/hooks/use-notifications";
 import ctosEmblemImg from "@assets/CTOS-Emblem_1750088130527.jpg";
 
@@ -30,7 +30,7 @@ export default function Home() {
     queryKey: ["/api/users", DEMO_USER_ID, "progress"],
   });
 
-  const { data: user } = useQuery({
+  const { data: user } = useQuery<User>({
     queryKey: ["/api/users", DEMO_USER_ID],
   });
 
@@ -58,33 +58,27 @@ export default function Home() {
       <StatusBar />
       
       {/* App Header */}
-      <header className="px-6 py-6 bg-card/90 backdrop-blur-sm border-b border-border">
+      <header className="px-6 py-4 bg-background border-b border-border">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-full overflow-hidden shadow-sm">
-              <img 
-                src={ctosEmblemImg} 
-                alt="Coming to Our Senses Emblem" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-primary">Coming to Our Senses</h1>
+          <div className="flex items-center space-x-3">
+            <h1 className="text-2xl font-bold text-foreground">Mindfulness</h1>
+            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+              <div className="w-3 h-3 bg-white rounded-full"></div>
             </div>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <Button
               variant="ghost"
               size="sm"
-              className="relative rounded-full hover:bg-muted"
+              className="relative rounded-full hover:bg-muted p-2"
               onClick={() => setShowNotifications(!showNotifications)}
             >
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></span>
             </Button>
             <Button variant="ghost" size="sm" className="rounded-full p-2 hover:bg-muted">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                <User className="h-4 w-4 text-primary-foreground" />
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                <UserIcon className="h-4 w-4 text-muted-foreground" />
               </div>
             </Button>
           </div>
@@ -100,10 +94,19 @@ export default function Home() {
       {/* Main Content */}
       <main className="px-6 py-6 pb-24 space-y-6">
         
+        {/* Welcome Message */}
+        <div className="text-center py-4">
+          <h2 className="text-lg font-medium text-muted-foreground mb-2">
+            Welcome back.
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Continue your mindfulness journey.
+          </p>
+        </div>
+        
         {/* Today's Practice */}
         {currentSession && (
           <section>
-            <h2 className="text-lg font-semibold text-primary mb-4">Today's Practice</h2>
             <SessionCard
               session={currentSession}
               isCurrentSession={true}
@@ -115,8 +118,7 @@ export default function Home() {
 
         {/* 8-Week Journey */}
         <section>
-          <h2 className="text-lg font-semibold text-primary mb-4">8-Week Journey</h2>
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-4">
             {sessions.map((session) => {
               const progress = userProgress.find(p => p.sessionId === session.id);
               return (

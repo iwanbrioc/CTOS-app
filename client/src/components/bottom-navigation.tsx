@@ -14,7 +14,7 @@ export function BottomNavigation() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-6 py-2">
       <div className="flex items-center justify-around max-w-sm mx-auto">
         {navItems.map(({ path, icon: Icon, label }) => {
           const isActive = location === path;
@@ -25,7 +25,7 @@ export function BottomNavigation() {
                 size="sm"
                 className={cn(
                   "flex flex-col items-center py-2 h-auto space-y-1",
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  isActive ? "text-foreground" : "text-muted-foreground"
                 )}
               >
                 <Icon className="h-5 w-5" />
@@ -35,6 +35,7 @@ export function BottomNavigation() {
           );
         })}
       </div>
+      <div className="w-32 h-1 bg-foreground rounded-full mx-auto mt-2 mb-1"></div>
     </nav>
   );
 }
