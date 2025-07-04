@@ -137,7 +137,7 @@ export class MemStorage implements IStorage {
         week: 3,
         title: "The Sense of Being Alive",
         description: "Awakening to the fundamental aliveness within",
-        audioUrl: "https://soundcloud.com/undoing-agency/session-3-the-sense-of-being-alive-1",
+        audioUrl: "/attached_assets/The Sense of Being Alive (20 minutes)_1751649276591.mp3",
         duration: 20,
         illustration: "the-sense-being-alive",
         isLocked: false,
