@@ -155,7 +155,7 @@ export class MemStorage implements IStorage {
         week: 5,
         title: "What if All There is Is This?",
         description: "Exploring presence and acceptance of the current moment",
-        audioUrl: "https://soundcloud.com/undoing-agency/what-if-all-there-is-is-this",
+        audioUrl: "/attached_assets/What if all there is is this 10 minute version_1751649984256.mp3",
         duration: 10,
         illustration: "what-if-all-there-is",
         isLocked: false,
