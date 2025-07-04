@@ -114,6 +114,16 @@ This is a mobile-first mindfulness application built as a progressive web app (P
 - **NODE_ENV**: Environment mode (development/production)
 
 ## Recent Changes
+- July 4, 2025: Completely redesigned journal system with structured morning and evening routines
+  - Created comprehensive daily journal with tabbed interface for morning/evening sections
+  - Implemented morning routine with 3 gratitude fields, 3 high value priorities, 3 high flow priorities
+  - Added voice recording functionality for "Script the Day" morning routine and evening reflection
+  - Enhanced database schema with detailed journaling fields and completion tracking
+  - Built progress indicators and completion badges for morning/evening routines
+  - Added API endpoints for creating and updating journal entries
+- July 4, 2025: Updated header logo to use authentic CTOS emblem
+  - Replaced blue circle placeholder with official CTOS emblem (16x16 pixels)
+  - Integrated authentic course branding throughout the app
 - July 4, 2025: Integrated authentic meditation audio files
   - Replaced placeholder SoundCloud URLs with real MP3 meditation recordings
   - Updated seven sessions with authentic content:
