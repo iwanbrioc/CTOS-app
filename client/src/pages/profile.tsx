@@ -4,6 +4,7 @@ import { StatusBar } from "@/components/status-bar";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { MilestoneTracker } from "@/components/milestone-tracker";
 import { NotificationSettings } from "@/components/notification-settings";
+import { NotificationTest } from "@/components/notification-test";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -143,6 +144,9 @@ export default function Profile() {
           <TabsContent value="settings" className="space-y-6 mt-6">
             {/* Notification Settings */}
             <NotificationSettings userId={DEMO_USER_ID} />
+            
+            {/* Notification Test Center */}
+            <NotificationTest />
           </TabsContent>
         </Tabs>
       </main>
