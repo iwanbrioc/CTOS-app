@@ -11,7 +11,7 @@ import droppingBalloonImg from "@assets/dropping the balloon_1750084108019.png";
 import greatSmileImg from "@assets/great smile practice_1750084108019.png";
 import fiveElementsImg from "@assets/five elements_1750084108020.png";
 import theSenseBeingAliveImg from "@assets/the sense of being alive_1750084108017.png";
-import whatIfAllThereIsImg from "@assets/the sense of being alive_1750084108017.png";
+import whatIfAllThereIsImg from "@assets/what-if-all-there-is-new.png";
 import turningTowardsDiscomfortImg from "@assets/turning towards discomfort_1750084108017.png";
 import fourPillarsImg from "@assets/the four pillars_1750084108018.png";
 
