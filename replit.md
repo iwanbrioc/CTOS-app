@@ -114,6 +114,13 @@ This is a mobile-first mindfulness application built as a progressive web app (P
 - **NODE_ENV**: Environment mode (development/production)
 
 ## Recent Changes
+- July 4, 2025: Enhanced sessions page with expandable cards and integrated images
+  - Created concertina-style expandable cards with smooth Framer Motion animations
+  - Integrated session images directly into collapsed card headers while preserving gradient colors
+  - Updated "What You Really Want" session with new custom illustration showing two figures in contemplation
+  - Improved text readability by breaking course descriptions into digestible paragraphs
+  - Removed duplicate elements (play buttons, duration from headers) for cleaner design
+  - Each card now shows week badge, session image, title, and expand arrow in perfect visual hierarchy
 - July 4, 2025: Completely redesigned journal system with structured morning and evening routines
   - Created comprehensive daily journal with tabbed interface for morning/evening sections
   - Implemented morning routine with 3 gratitude fields, 3 high value priorities, 3 high flow priorities
