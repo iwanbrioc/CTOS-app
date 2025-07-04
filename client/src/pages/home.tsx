@@ -9,6 +9,7 @@ import { NotificationBanner } from "@/components/notification-banner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bell, User as UserIcon, Play } from "lucide-react";
+import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import type { Session, UserProgress, User } from "@shared/schema";
 import { useNotifications } from "@/hooks/use-notifications";
@@ -81,11 +82,17 @@ export default function Home() {
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></span>
             </Button>
-            <Button variant="ghost" size="sm" className="rounded-full p-2 hover:bg-muted">
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                <UserIcon className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </Button>
+            <Link href="/profile">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="rounded-full p-2 hover:bg-muted"
+              >
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                  <UserIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
