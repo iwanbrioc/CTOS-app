@@ -55,8 +55,8 @@ export default function Sessions() {
                           "mind-body-movement": "/attached_assets/mind in body, body in movement, movement in mind_1750084108019.png",
                           "what-if-all-there-is": "/attached_assets/iwan00246_an_illustrative_drawing._Two_figures_are_sitting_on_c_52dacb42-5706-464a-8ebe-3bcde4a039ac_1751664237810.png",
                           "turning-towards-discomfort": "/attached_assets/turning towards discomfort_1750084108017.png",
-                          "four-pillars": "/attached_assets/the four pillars_1750084108018.png",
-                          "great-smile": "/attached_assets/great smile practice_1750084108019.png"
+                          "four-pillars": "/attached_assets/journaling for flow_1751664270006.png",
+                          "great-smile": "/attached_assets/iwan00246_an_illustrative_drawing_of_a_figure_standing_infront__14bcc794-4d7f-4138-90e3-b0216262e521_1751664292207.png"
                         };
                         return imageMap[session.illustration] || "/attached_assets/what if all there is is this?_1751649927283.png";
                       })()}

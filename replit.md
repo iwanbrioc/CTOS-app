@@ -118,6 +118,8 @@ This is a mobile-first mindfulness application built as a progressive web app (P
   - Created concertina-style expandable cards with smooth Framer Motion animations
   - Integrated session images directly into collapsed card headers while preserving gradient colors
   - Updated "What You Really Want" session with new custom illustration showing two figures in contemplation
+  - Updated "Finding Your Flow" session with new custom illustration showing journaling for flow with flowing creative energy
+  - Updated "Falling Awake" session with new custom illustration showing a figure sharing before a supportive group
   - Improved text readability by breaking course descriptions into digestible paragraphs
   - Removed duplicate elements (play buttons, duration from headers) for cleaner design
   - Each card now shows week badge, session image, title, and expand arrow in perfect visual hierarchy
