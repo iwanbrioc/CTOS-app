@@ -65,9 +65,11 @@ export default function Home() {
               <div>Coming to</div>
               <div>Our Senses</div>
             </h1>
-            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-              <div className="w-3 h-3 bg-white rounded-full"></div>
-            </div>
+            <img 
+              src="/attached_assets/CTOS Emblem_1751662222205.png" 
+              alt="Coming to Our Senses Emblem"
+              className="w-12 h-12 object-contain"
+            />
           </div>
           <div className="flex items-center space-x-2">
             <Button
