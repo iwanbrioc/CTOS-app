@@ -83,14 +83,21 @@ export function AudioPlayer({ session, onClose }: AudioPlayerProps) {
   }, [session.audioUrl, updateProgressMutation]);
 
   const togglePlayback = async () => {
-    if (!audioRef.current || !isLoaded) return;
+    console.log('togglePlayback called, audioRef.current:', !!audioRef.current, 'isLoaded:', isLoaded);
+    if (!audioRef.current || !isLoaded) {
+      console.log('Audio not ready - audioRef:', !!audioRef.current, 'isLoaded:', isLoaded);
+      return;
+    }
     
     try {
       if (isPlaying) {
+        console.log('Pausing audio');
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
+        console.log('Attempting to play audio from URL:', session.audioUrl);
         await audioRef.current.play();
+        console.log('Audio play() called successfully');
         setIsPlaying(true);
       }
     } catch (error) {
@@ -115,8 +122,11 @@ export function AudioPlayer({ session, onClose }: AudioPlayerProps) {
               size="sm"
               className="rounded-full w-10 h-10 p-0"
               onClick={togglePlayback}
+              disabled={!isLoaded}
             >
-              {isPlaying ? (
+              {!isLoaded ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+              ) : isPlaying ? (
                 <Pause className="h-4 w-4" />
               ) : (
                 <Play className="h-4 w-4" />
