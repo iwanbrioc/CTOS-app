@@ -76,7 +76,19 @@ export default function Sessions() {
                     {/* Session Image */}
                     <div className="mb-6 flex justify-center">
                       <img 
-                        src={`/attached_assets/${session.illustration}.png`}
+                        src={(() => {
+                          const imageMap: Record<string, string> = {
+                            "dropping-balloon": "/attached_assets/dropping the balloon_1750084108019.png",
+                            "seven-stations-spine": "/attached_assets/seven stations of the spine_1750084108018.png",
+                            "the-sense-being-alive": "/attached_assets/the sense of being alive_1750084108017.png",
+                            "mind-body-movement": "/attached_assets/mind in body, body in movement, movement in mind_1750084108019.png",
+                            "what-if-all-there-is": "/attached_assets/what if all there is is this?_1751649927283.png",
+                            "turning-towards-discomfort": "/attached_assets/turning towards discomfort_1750084108017.png",
+                            "four-pillars": "/attached_assets/the four pillars_1750084108018.png",
+                            "great-smile": "/attached_assets/great smile practice_1750084108019.png"
+                          };
+                          return imageMap[session.illustration] || "/attached_assets/what if all there is is this?_1751649927283.png";
+                        })()}
                         alt={session.title}
                         className="w-32 h-32 object-contain rounded-lg"
                         onError={(e) => {
