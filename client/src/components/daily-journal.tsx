@@ -215,8 +215,8 @@ export function DailyJournal({ userId }: DailyJournalProps) {
         stream.getTracks().forEach(track => track.stop());
         audioContext.close();
 
-        // Start transcription
-        transcribeAudio(blob, type);
+        // Start transcription (temporarily disabled due to API key issue)
+        // transcribeAudio(blob, type);
       };
 
       setMediaRecorder(recorder);
