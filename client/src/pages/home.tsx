@@ -13,7 +13,6 @@ import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import type { Session, UserProgress, User } from "@shared/schema";
 import { useNotifications } from "@/hooks/use-notifications";
-import ctosEmblemImg from "@assets/CTOS-Emblem_1750088130527.jpg";
 
 // Mock user ID for demo - in production this would come from auth
 const DEMO_USER_ID = 1;
@@ -21,7 +20,7 @@ const DEMO_USER_ID = 1;
 export default function Home() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [currentAudioSession, setCurrentAudioSession] = useState<Session | null>(null);
-  const notifications = useNotifications();
+  const { scheduleNotification } = useNotifications();
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
     queryKey: ["/api/sessions"],

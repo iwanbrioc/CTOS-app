@@ -80,14 +80,6 @@ export default function Sessions() {
                     </CardTitle>
                   </div>
                 </div>
-                
-                <div className="flex items-center">
-                  {expandedSession === session.id ? (
-                    <ChevronDown className="h-5 w-5 text-white" />
-                  ) : (
-                    <ChevronRight className="h-5 w-5 text-white" />
-                  )}
-                </div>
               </div>
             </CardHeader>
 
