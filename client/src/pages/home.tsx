@@ -8,9 +8,7 @@ import { SessionCard } from "@/components/session-card";
 import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
 import { useQuery } from "@tanstack/react-query";
-import { AudioPlayer } from "@/components/audio-player";
-import { SoundCloudPlayer } from "@/components/soundcloud-player";
-import { AudioUpload } from "@/components/audio-upload";
+import { SimpleAudioPlayer } from "@/components/simple-audio-player";
 
 interface User {
   id: string;
@@ -47,7 +45,7 @@ export default function Home() {
   // Temporarily using demo user for preview
   const user = { id: "demo-user", firstName: "Demo", currentWeek: 1 } as User;
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [audioPlayerType, setAudioPlayerType] = useState<'player' | 'soundcloud' | 'upload' | null>(null);
+  const [audioPlayerType, setAudioPlayerType] = useState<'html5' | null>(null);
   const [showNotificationBanner, setShowNotificationBanner] = useState(false);
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
@@ -66,13 +64,8 @@ export default function Home() {
 
   const handleStartPractice = (session: Session) => {
     setSelectedSession(session);
-    if (session.audioUrl.includes('soundcloud.com')) {
-      setAudioPlayerType('soundcloud');
-    } else if (session.audioUrl === 'upload') {
-      setAudioPlayerType('upload');
-    } else {
-      setAudioPlayerType('player');
-    }
+    // Always use the simple HTML5 audio player for all sessions
+    setAudioPlayerType('html5');
   };
 
   const handleClosePlayer = () => {
@@ -156,17 +149,9 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Audio Players */}
-        {selectedSession && audioPlayerType === 'player' && (
-          <AudioPlayer session={selectedSession} onClose={handleClosePlayer} />
-        )}
-        
-        {selectedSession && audioPlayerType === 'soundcloud' && (
-          <SoundCloudPlayer session={selectedSession} onClose={handleClosePlayer} />
-        )}
-        
-        {selectedSession && audioPlayerType === 'upload' && (
-          <AudioUpload session={selectedSession} onClose={handleClosePlayer} />
+        {/* Audio Player */}
+        {selectedSession && audioPlayerType === 'html5' && (
+          <SimpleAudioPlayer session={selectedSession} onClose={handleClosePlayer} />
         )}
 
         {/* Notification Banner */}
