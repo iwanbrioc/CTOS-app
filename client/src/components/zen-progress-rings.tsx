@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
 import type { Milestone, UserMilestone, UserProgress } from "@shared/schema";
 
 interface ZenProgressRingsProps {
@@ -45,7 +44,7 @@ function ProgressRing({
           fill="transparent"
         />
         {/* Progress circle */}
-        <motion.circle
+        <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -54,12 +53,9 @@ function ProgressRing({
           fill="transparent"
           strokeLinecap="round"
           strokeDasharray={strokeDasharray}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset }}
-          transition={{ 
-            duration: 1.5, 
-            ease: "easeInOut",
-            delay: 0.2 
+          strokeDashoffset={strokeDashoffset}
+          style={{ 
+            transition: 'stroke-dashoffset 1.5s ease-in-out'
           }}
         />
       </svg>
@@ -153,11 +149,8 @@ export function ZenProgressRings({ userId }: ZenProgressRingsProps) {
       {/* Main Progress Rings */}
       <div className="flex justify-center items-center space-x-8 mb-8">
         {rings.map((ring, index) => (
-          <motion.div
+          <div
             key={ring.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2 }}
             className="text-center"
           >
             <ProgressRing
@@ -177,17 +170,12 @@ export function ZenProgressRings({ userId }: ZenProgressRingsProps) {
               <h3 className="text-sm font-medium text-foreground">{ring.title}</h3>
               <p className="text-xs text-muted-foreground font-light mt-1">{ring.subtitle}</p>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       {/* Overall Achievement Ring */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.8 }}
-        className="flex justify-center"
-      >
+      <div className="flex justify-center">
         <div className="text-center">
           <ProgressRing
             progress={overallProgress}
@@ -212,44 +200,31 @@ export function ZenProgressRings({ userId }: ZenProgressRingsProps) {
             </p>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Zen Quote */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="text-center mt-8 px-6"
-      >
+      <div className="text-center mt-8 px-6">
         <p className="text-sm text-muted-foreground italic font-light max-w-md mx-auto">
           "The present moment is the only moment available to us, and it is the door to all moments."
         </p>
         <p className="text-xs text-muted-foreground/70 mt-2">— Thích Nhất Hạnh</p>
-      </motion.div>
+      </div>
 
       {/* Achievement Badges */}
       {achievedMilestones.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4 }}
-          className="mt-8 px-6"
-        >
+        <div className="mt-8 px-6">
           <h3 className="text-center text-sm font-medium text-foreground mb-4">Recent Achievements</h3>
           <div className="flex justify-center flex-wrap gap-2 max-w-md mx-auto">
             {achievedMilestones.slice(-3).map((milestone, index) => (
-              <motion.div
+              <div
                 key={milestone.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.6 + index * 0.1 }}
                 className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 px-3 py-1.5 rounded-full"
               >
                 <span className="text-xs font-medium text-yellow-800">{milestone.title}</span>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       )}
     </div>
   );
