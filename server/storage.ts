@@ -113,7 +113,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async initializeSessions(): Promise<void> {
-    // Sessions are initialized separately, no need to implement here for database
+    const { db } = await import("./db");
+    const { sessionData } = await import("../client/src/lib/session-data");
+    
+    // Check if sessions already exist
+    const existingSessions = await db.select().from(meditationSessions).limit(1);
+    if (existingSessions.length > 0) {
+      return; // Sessions already initialized
+    }
+
+    // Insert session data
+    for (const session of sessionData) {
+      await db.insert(meditationSessions).values({
+        week: session.week,
+        title: session.title,
+        description: session.description || session.desc || `Week ${session.week} meditation session`,
+        audioUrl: session.audioUrl || '/attached_assets/placeholder.mp3',
+        duration: session.duration || 10,
+        illustration: session.illustration || 'default',
+        isLocked: false,
+      });
+    }
   }
 
   async getUserProgress(userId: string): Promise<UserProgress[]> {
@@ -190,7 +210,24 @@ export class DatabaseStorage implements IStorage {
   }
 
   async initializeHandyHacks(): Promise<void> {
-    // Handy hacks are initialized separately
+    const { db } = await import("./db");
+    const { handyHacksData } = await import("../client/src/lib/session-data");
+    
+    // Check if handy hacks already exist
+    const existingHacks = await db.select().from(handyHacks).limit(1);
+    if (existingHacks.length > 0) {
+      return; // Handy hacks already initialized
+    }
+
+    // Insert handy hacks data
+    for (const hack of handyHacksData) {
+      await db.insert(handyHacks).values({
+        title: hack.title,
+        description: hack.description,
+        category: hack.category,
+        illustration: hack.illustration,
+      });
+    }
   }
 
   async createNotification(userId: string, notification: InsertNotification): Promise<Notification> {
@@ -233,7 +270,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async initializeMilestones(): Promise<void> {
-    // Milestones are initialized separately
+    const { db } = await import("./db");
+    
+    // Check if milestones already exist
+    const existingMilestones = await db.select().from(milestones).limit(1);
+    if (existingMilestones.length > 0) {
+      return; // Milestones already initialized
+    }
+
+    // Insert milestone data
+    const milestonesData = [
+      { title: "First Session", description: "Complete your first meditation session", type: "sessions", target: 1, badge: "🧘", color: "#3B82F6" },
+      { title: "Week Warrior", description: "Complete all sessions in a week", type: "weekly", target: 1, badge: "⭐", color: "#10B981" },
+      { title: "Consistent Practice", description: "Meditate for 7 days in a row", type: "streak", target: 7, badge: "🔥", color: "#F59E0B" },
+      { title: "Deep Listener", description: "Listen for 60 minutes total", type: "time", target: 3600, badge: "🎧", color: "#8B5CF6" },
+    ];
+
+    for (const milestone of milestonesData) {
+      await db.insert(milestones).values(milestone);
+    }
   }
 
   async updateUserNotificationSettings(userId: string, settings: {

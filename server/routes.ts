@@ -11,6 +11,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication middleware (temporarily disabled for demo)
   // await setupAuth(app);
 
+  // Initialize storage data
+  try {
+    await storage.initializeSessions();
+    await storage.initializeHandyHacks();
+    await storage.initializeMilestones();
+  } catch (error) {
+    console.error("Failed to initialize storage:", error);
+  }
+
   // Configure multer for file uploads
   const upload = multer({
     storage: multer.memoryStorage(),
