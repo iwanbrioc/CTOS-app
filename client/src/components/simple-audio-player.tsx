@@ -45,7 +45,7 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
             controls 
             className="w-full"
             preload="metadata"
-            autoPlay={false}
+            autoPlay={true}
           >
             <source src={session.audioUrl} type="audio/mpeg" />
             Your browser does not support the audio element.
