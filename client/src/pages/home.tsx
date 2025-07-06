@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { StatusBar } from "@/components/status-bar";
-import { ZenProgressRings } from "@/components/zen-progress-rings";
+import { SimpleZenRings } from "@/components/simple-zen-rings";
 import { SessionCard } from "@/components/session-card";
 import { HandyHacks } from "@/components/handy-hacks";
 import { AudioPlayer } from "@/components/audio-player";
@@ -111,7 +111,7 @@ export default function Home() {
         
         {/* Zen Progress Rings */}
         <section>
-          <ZenProgressRings userId={DEMO_USER_ID} />
+          <SimpleZenRings userId={DEMO_USER_ID} />
         </section>
 
         {/* Today's Practice */}
