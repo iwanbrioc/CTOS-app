@@ -1,12 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertJournalEntrySchema, insertNotificationSchema } from "@shared/schema";
+import { setupAuth, isAuthenticated } from "./replitAuth";
+import { upsertUserSchema, insertJournalEntrySchema, insertNotificationSchema } from "@shared/schema";
 import { transcribeAudio } from "./transcription";
 import multer from "multer";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication middleware (temporarily disabled for demo)
+  // await setupAuth(app);
+
   // Configure multer for file uploads
   const upload = multer({
     storage: multer.memoryStorage(),
@@ -20,20 +24,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   });
-  // User routes
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // User routes  
   app.post("/api/users", async (req, res) => {
     try {
-      const userData = insertUserSchema.parse(req.body);
-      const user = await storage.createUser(userData);
+      const userData = upsertUserSchema.parse(req.body);
+      const user = await storage.upsertUser(userData);
       res.json(user);
     } catch (error) {
       res.status(400).json({ error: "Invalid user data" });
     }
   });
 
-  app.get("/api/users/:id", async (req, res) => {
+  app.get("/api/users/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.id);
+      const userId = req.user.claims.sub; // Use authenticated user's ID
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -44,9 +60,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/users/:id/week", async (req, res) => {
+  app.put("/api/users/:id/week", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.id);
+      const userId = req.user.claims.sub; // Use authenticated user's ID
       const { week } = req.body;
       await storage.updateUserWeek(userId, week);
       res.json({ success: true });
@@ -76,9 +92,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Progress routes
-  app.get("/api/users/:userId/progress", async (req, res) => {
+  app.get("/api/users/:userId/progress", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.user.claims.sub; // Use authenticated user's ID
       const progress = await storage.getUserProgress(userId);
       res.json(progress);
     } catch (error) {
@@ -86,9 +102,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/users/:userId/progress/:sessionId", async (req, res) => {
+  app.post("/api/users/:userId/progress/:sessionId", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.user.claims.sub; // Use authenticated user's ID
       const sessionId = parseInt(req.params.sessionId);
       const { audioProgress, completed, totalListenTime } = req.body;
       

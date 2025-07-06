@@ -1,6 +1,6 @@
 import {
   users,
-  sessions,
+  meditationSessions,
   userProgress,
   journalEntries,
   handyHacks,
@@ -9,7 +9,7 @@ import {
   milestones,
   userMilestones,
   type User,
-  type InsertUser,
+  type UpsertUser,
   type Session,
   type UserProgress,
   type JournalEntry,
@@ -23,11 +23,10 @@ import {
 } from "@shared/schema";
 
 export interface IStorage {
-  // User management
-  getUser(id: number): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-  updateUserWeek(userId: number, week: number): Promise<void>;
+  // User management (Replit Auth compatible)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  updateUserWeek(userId: string, week: number): Promise<void>;
 
   // Sessions
   getAllSessions(): Promise<Session[]>;
@@ -35,40 +34,227 @@ export interface IStorage {
   initializeSessions(): Promise<void>;
 
   // User Progress
-  getUserProgress(userId: number): Promise<UserProgress[]>;
-  updateSessionProgress(userId: number, sessionId: number, progress: Partial<UserProgress>): Promise<void>;
-  completeSession(userId: number, sessionId: number): Promise<void>;
+  getUserProgress(userId: string): Promise<UserProgress[]>;
+  updateSessionProgress(userId: string, sessionId: number, progress: Partial<UserProgress>): Promise<void>;
+  completeSession(userId: string, sessionId: number): Promise<void>;
 
   // Journal
-  getUserJournalEntries(userId: number): Promise<JournalEntry[]>;
-  createJournalEntry(userId: number, entry: InsertJournalEntry): Promise<JournalEntry>;
-  updateJournalEntry(userId: number, entryId: number, entry: Partial<InsertJournalEntry>): Promise<JournalEntry>;
+  getUserJournalEntries(userId: string): Promise<JournalEntry[]>;
+  createJournalEntry(userId: string, entry: InsertJournalEntry): Promise<JournalEntry>;
+  updateJournalEntry(userId: string, entryId: number, entry: Partial<InsertJournalEntry>): Promise<JournalEntry>;
 
   // Handy Hacks
   getAllHandyHacks(): Promise<HandyHack[]>;
   getRandomHandyHack(): Promise<HandyHack | undefined>;
-  markHackComplete(userId: number, hackId: number): Promise<void>;
-  getUserHackCompletions(userId: number): Promise<UserHackCompletion[]>;
+  markHackComplete(userId: string, hackId: number): Promise<void>;
+  getUserHackCompletions(userId: string): Promise<UserHackCompletion[]>;
   initializeHandyHacks(): Promise<void>;
 
   // Notifications
-  createNotification(userId: number, notification: InsertNotification): Promise<Notification>;
-  getUserNotifications(userId: number): Promise<Notification[]>;
+  createNotification(userId: string, notification: InsertNotification): Promise<Notification>;
+  getUserNotifications(userId: string): Promise<Notification[]>;
   markNotificationRead(notificationId: number): Promise<void>;
 
   // Milestones
   getAllMilestones(): Promise<Milestone[]>;
-  getUserMilestones(userId: number): Promise<UserMilestone[]>;
-  checkAndUpdateMilestones(userId: number): Promise<UserMilestone[]>;
+  getUserMilestones(userId: string): Promise<UserMilestone[]>;
+  checkAndUpdateMilestones(userId: string): Promise<UserMilestone[]>;
   initializeMilestones(): Promise<void>;
 
   // Notification Settings
-  updateUserNotificationSettings(userId: number, settings: {
+  updateUserNotificationSettings(userId: string, settings: {
     notificationsEnabled: boolean;
     reminderTime: string;
     reminderDays: number[];
   }): Promise<void>;
-  scheduleUserReminders(userId: number): Promise<void>;
+  scheduleUserReminders(userId: string): Promise<void>;
+}
+
+// Database storage implementation for Replit Auth
+export class DatabaseStorage implements IStorage {
+  async getUser(id: string): Promise<User | undefined> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const { db } = await import("./db");
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUserWeek(userId: string, week: number): Promise<void> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    await db.update(users).set({ currentWeek: week }).where(eq(users.id, userId));
+  }
+
+  async getAllSessions(): Promise<Session[]> {
+    const { db } = await import("./db");
+    return await db.select().from(meditationSessions);
+  }
+
+  async getSessionsByWeek(week: number): Promise<Session[]> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    return await db.select().from(meditationSessions).where(eq(meditationSessions.week, week));
+  }
+
+  async initializeSessions(): Promise<void> {
+    // Sessions are initialized separately, no need to implement here for database
+  }
+
+  async getUserProgress(userId: string): Promise<UserProgress[]> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    return await db.select().from(userProgress).where(eq(userProgress.userId, userId));
+  }
+
+  async updateSessionProgress(userId: string, sessionId: number, progress: Partial<UserProgress>): Promise<void> {
+    const { db } = await import("./db");
+    const { eq, and } = await import("drizzle-orm");
+    await db.update(userProgress)
+      .set(progress)
+      .where(and(eq(userProgress.userId, userId), eq(userProgress.sessionId, sessionId)));
+  }
+
+  async completeSession(userId: string, sessionId: number): Promise<void> {
+    const { db } = await import("./db");
+    const { eq, and } = await import("drizzle-orm");
+    await db.update(userProgress)
+      .set({ completed: true, completedAt: new Date() })
+      .where(and(eq(userProgress.userId, userId), eq(userProgress.sessionId, sessionId)));
+  }
+
+  async getUserJournalEntries(userId: string): Promise<JournalEntry[]> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    return await db.select().from(journalEntries).where(eq(journalEntries.userId, userId));
+  }
+
+  async createJournalEntry(userId: string, entry: InsertJournalEntry): Promise<JournalEntry> {
+    const { db } = await import("./db");
+    const [journalEntry] = await db
+      .insert(journalEntries)
+      .values({ ...entry, userId })
+      .returning();
+    return journalEntry;
+  }
+
+  async updateJournalEntry(userId: string, entryId: number, entryData: Partial<InsertJournalEntry>): Promise<JournalEntry> {
+    const { db } = await import("./db");
+    const { eq, and } = await import("drizzle-orm");
+    const [updatedEntry] = await db
+      .update(journalEntries)
+      .set(entryData)
+      .where(and(eq(journalEntries.id, entryId), eq(journalEntries.userId, userId)))
+      .returning();
+    return updatedEntry;
+  }
+
+  async getAllHandyHacks(): Promise<HandyHack[]> {
+    const { db } = await import("./db");
+    return await db.select().from(handyHacks);
+  }
+
+  async getRandomHandyHack(): Promise<HandyHack | undefined> {
+    const { db } = await import("./db");
+    const { sql } = await import("drizzle-orm");
+    const [hack] = await db.select().from(handyHacks).orderBy(sql`RANDOM()`).limit(1);
+    return hack;
+  }
+
+  async markHackComplete(userId: string, hackId: number): Promise<void> {
+    const { db } = await import("./db");
+    await db.insert(userHackCompletions)
+      .values({ userId, hackId })
+      .onConflictDoNothing();
+  }
+
+  async getUserHackCompletions(userId: string): Promise<UserHackCompletion[]> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    return await db.select().from(userHackCompletions).where(eq(userHackCompletions.userId, userId));
+  }
+
+  async initializeHandyHacks(): Promise<void> {
+    // Handy hacks are initialized separately
+  }
+
+  async createNotification(userId: string, notification: InsertNotification): Promise<Notification> {
+    const { db } = await import("./db");
+    const [newNotification] = await db
+      .insert(notifications)
+      .values({ ...notification, userId })
+      .returning();
+    return newNotification;
+  }
+
+  async getUserNotifications(userId: string): Promise<Notification[]> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    return await db.select().from(notifications).where(eq(notifications.userId, userId));
+  }
+
+  async markNotificationRead(notificationId: number): Promise<void> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    await db.update(notifications)
+      .set({ read: true })
+      .where(eq(notifications.id, notificationId));
+  }
+
+  async getAllMilestones(): Promise<Milestone[]> {
+    const { db } = await import("./db");
+    return await db.select().from(milestones);
+  }
+
+  async getUserMilestones(userId: string): Promise<UserMilestone[]> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    return await db.select().from(userMilestones).where(eq(userMilestones.userId, userId));
+  }
+
+  async checkAndUpdateMilestones(userId: string): Promise<UserMilestone[]> {
+    // Milestone checking logic would go here
+    return [];
+  }
+
+  async initializeMilestones(): Promise<void> {
+    // Milestones are initialized separately
+  }
+
+  async updateUserNotificationSettings(userId: string, settings: {
+    notificationsEnabled: boolean;
+    reminderTime: string;
+    reminderDays: number[];
+  }): Promise<void> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    await db.update(users)
+      .set({
+        notificationsEnabled: settings.notificationsEnabled,
+        reminderTime: settings.reminderTime,
+        reminderDays: settings.reminderDays,
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async scheduleUserReminders(userId: string): Promise<void> {
+    // Reminder scheduling logic would go here
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -684,4 +870,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

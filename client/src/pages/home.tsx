@@ -1,182 +1,182 @@
-import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 import { StatusBar } from "@/components/status-bar";
 import { ProgressIndicator } from "@/components/progress-indicator";
-import { SessionCard } from "@/components/session-card";
-import { HandyHacks } from "@/components/handy-hacks";
-import { AudioPlayer } from "@/components/audio-player";
 import { BottomNavigation } from "@/components/bottom-navigation";
+import { SessionCard } from "@/components/session-card";
+import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Bell, User as UserIcon, Play } from "lucide-react";
-import { useState, useEffect } from "react";
-import type { Session, UserProgress, User } from "@shared/schema";
-import { useNotifications } from "@/hooks/use-notifications";
-import ctosEmblemImg from "@assets/CTOS-Emblem_1750088130527.jpg";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { AudioPlayer } from "@/components/audio-player";
+import { SoundCloudPlayer } from "@/components/soundcloud-player";
+import { AudioUpload } from "@/components/audio-upload";
 
-// Mock user ID for demo - in production this would come from auth
-const DEMO_USER_ID = 1;
+interface User {
+  id: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  profileImageUrl?: string;
+  currentWeek: number;
+}
+
+interface Session {
+  id: number;
+  week: number;
+  title: string;
+  description: string;
+  audioUrl: string;
+  duration: number;
+  illustration: string;
+  isLocked: boolean;
+}
+
+interface UserProgress {
+  id: number;
+  userId: string;
+  sessionId: number;
+  completed: boolean;
+  completedAt?: string;
+  audioProgress: number;
+  totalListenTime: number;
+  streakDays: number;
+}
 
 export default function Home() {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [currentAudioSession, setCurrentAudioSession] = useState<Session | null>(null);
-  const notifications = useNotifications();
+  // Temporarily using demo user for preview
+  const user = { id: "demo-user", firstName: "Demo", currentWeek: 1 } as User;
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+  const [audioPlayerType, setAudioPlayerType] = useState<'player' | 'soundcloud' | 'upload' | null>(null);
+  const [showNotificationBanner, setShowNotificationBanner] = useState(false);
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
     queryKey: ["/api/sessions"],
   });
 
   const { data: userProgress = [] } = useQuery<UserProgress[]>({
-    queryKey: ["/api/users", DEMO_USER_ID, "progress"],
+    queryKey: ["/api/users", user?.id, "progress"],
+    enabled: !!user?.id,
   });
 
-  const { data: user } = useQuery<User>({
-    queryKey: ["/api/users", DEMO_USER_ID],
-  });
-
+  const currentWeekSessions = sessions.filter(session => session.week <= (user?.currentWeek || 1));
   const completedSessions = userProgress.filter(p => p.completed).length;
-  const totalSessions = sessions.length;
+  const totalSessions = Math.min(sessions.length, (user?.currentWeek || 1) * 1); // Approximate sessions per week
   const progressPercentage = totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0;
 
-  const currentWeek = user?.currentWeek || 1;
-  const currentSession = sessions.find(s => s.week === currentWeek);
-
   const handleStartPractice = (session: Session) => {
-    setCurrentAudioSession(session);
+    setSelectedSession(session);
+    if (session.audioUrl.includes('soundcloud.com')) {
+      setAudioPlayerType('soundcloud');
+    } else if (session.audioUrl === 'upload') {
+      setAudioPlayerType('upload');
+    } else {
+      setAudioPlayerType('player');
+    }
+  };
+
+  const handleClosePlayer = () => {
+    setSelectedSession(null);
+    setAudioPlayerType(null);
+  };
+
+  const getUserProgressForSession = (sessionId: number) => {
+    return userProgress.find(p => p.sessionId === sessionId);
   };
 
   if (sessionsLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p>Loading your mindfulness journey...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <>
-      <StatusBar />
-      
-      {/* App Header */}
-      <header className="px-6 py-4 bg-background border-b border-border">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <h1 className="text-2xl font-bold text-foreground leading-tight">
-              <div>Coming to</div>
-              <div>Our Senses</div>
-            </h1>
-            <img 
-              src="/attached_assets/CTOS Emblem_1751662222205.png" 
-              alt="Coming to Our Senses Emblem"
-              className="w-16 h-16 object-contain"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="relative rounded-full hover:bg-muted p-2"
-              onClick={() => setShowNotifications(!showNotifications)}
-            >
-              <Bell className="h-5 w-5 text-muted-foreground" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></span>
-            </Button>
-            <Button variant="ghost" size="sm" className="rounded-full p-2 hover:bg-muted">
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                <UserIcon className="h-4 w-4 text-muted-foreground" />
+    <MilestoneManager userId={user?.id}>
+      <div className="min-h-screen bg-gray-50">
+        <StatusBar />
+        
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/attached_assets/CTOS Emblem_1751662222205.png" 
+                alt="CTOS" 
+                className="w-8 h-8"
+              />
+              <div>
+                <h1 className="text-lg font-semibold text-gray-900">
+                  Coming to Our Senses
+                </h1>
+                <p className="text-sm text-gray-500">
+                  Welcome back, {user?.firstName || 'Practitioner'}
+                </p>
               </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.location.href = '/api/logout'}
+            >
+              Sign Out
             </Button>
           </div>
         </div>
-      </header>
 
-      <ProgressIndicator 
-        completedSessions={completedSessions}
-        totalSessions={totalSessions}
-        progressPercentage={progressPercentage}
-      />
-
-      {/* Main Content */}
-      <main className="px-6 py-6 pb-24 space-y-6">
-        
-        {/* Welcome Message */}
-        <div className="text-center py-4">
-          <h2 className="text-lg font-medium text-muted-foreground mb-2">
-            Welcome back.
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Continue your mindfulness journey.
-          </p>
+        {/* Progress Indicator */}
+        <div className="px-4 py-4">
+          <ProgressIndicator 
+            completedSessions={completedSessions}
+            totalSessions={totalSessions}
+            progressPercentage={progressPercentage}
+          />
         </div>
-        
-        {/* Today's Practice */}
-        {currentSession && (
-          <section>
+
+        {/* Current Week Sessions */}
+        <div className="px-4 space-y-4 pb-20">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Week {user?.currentWeek || 1} Sessions
+            </h2>
+          </div>
+          
+          {currentWeekSessions.map((session) => (
             <SessionCard
-              session={currentSession}
-              isCurrentSession={true}
+              key={session.id}
+              session={session}
+              isCurrentSession={session.week === (user?.currentWeek || 1)}
               onStartPractice={handleStartPractice}
-              userProgress={userProgress.find(p => p.sessionId === currentSession.id)}
+              userProgress={getUserProgressForSession(session.id)}
             />
-          </section>
+          ))}
+        </div>
+
+        {/* Audio Players */}
+        {selectedSession && audioPlayerType === 'player' && (
+          <AudioPlayer session={selectedSession} onClose={handleClosePlayer} />
+        )}
+        
+        {selectedSession && audioPlayerType === 'soundcloud' && (
+          <SoundCloudPlayer session={selectedSession} onClose={handleClosePlayer} />
+        )}
+        
+        {selectedSession && audioPlayerType === 'upload' && (
+          <AudioUpload session={selectedSession} onClose={handleClosePlayer} />
         )}
 
-        {/* 8-Week Journey */}
-        <section>
-          <div className="grid grid-cols-1 gap-4">
-            {sessions.map((session) => {
-              const progress = userProgress.find(p => p.sessionId === session.id);
-              return (
-                <SessionCard
-                  key={session.id}
-                  session={session}
-                  isCurrentSession={session.week === currentWeek}
-                  onStartPractice={handleStartPractice}
-                  userProgress={progress}
-                />
-              );
-            })}
-          </div>
-        </section>
-
-        <HandyHacks userId={DEMO_USER_ID} />
-
-        {/* Flow Journal Preview */}
-        <section>
-          <h2 className="text-lg font-semibold text-primary mb-4">Flow Journal</h2>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium text-primary">Today's Reflection</h3>
-                <span className="text-xs text-muted-foreground">
-                  {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Capture your mindful moments and insights from today's practice.
-              </p>
-              <Button variant="outline" className="w-full">
-                Open Journal
-              </Button>
-            </CardContent>
-          </Card>
-        </section>
-
-      </main>
-
-      {currentAudioSession && (
-        <AudioPlayer
-          session={currentAudioSession}
-          onClose={() => setCurrentAudioSession(null)}
+        {/* Notification Banner */}
+        <NotificationBanner 
+          show={showNotificationBanner}
+          onClose={() => setShowNotificationBanner(false)}
         />
-      )}
 
-      <NotificationBanner 
-        show={showNotifications}
-        onClose={() => setShowNotifications(false)}
-      />
-
-      <BottomNavigation />
-    </>
+        <BottomNavigation />
+      </div>
+    </MilestoneManager>
   );
 }

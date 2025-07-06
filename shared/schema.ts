@@ -1,20 +1,35 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Session storage table for Replit Auth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User storage table for Replit Auth
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  email: text("email").notNull().unique(),
+  id: varchar("id").primaryKey().notNull(), // Replit user ID (string)
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
   currentWeek: integer("current_week").default(1),
   joinedAt: timestamp("joined_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
   notificationsEnabled: boolean("notifications_enabled").default(true),
   reminderTime: text("reminder_time").default("09:00"), // HH:MM format
   reminderDays: jsonb("reminder_days").$type<number[]>().default([1, 2, 3, 4, 5]), // 0 = Sunday, 1 = Monday, etc.
   timezone: text("timezone").default("UTC"),
 });
 
-export const sessions = pgTable("sessions", {
+export const meditationSessions = pgTable("meditation_sessions", {
   id: serial("id").primaryKey(),
   week: integer("week").notNull(),
   title: text("title").notNull(),
@@ -27,8 +42,8 @@ export const sessions = pgTable("sessions", {
 
 export const userProgress = pgTable("user_progress", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  sessionId: integer("session_id").references(() => sessions.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  sessionId: integer("session_id").references(() => meditationSessions.id).notNull(),
   completed: boolean("completed").default(false),
   completedAt: timestamp("completed_at"),
   audioProgress: integer("audio_progress").default(0), // seconds
@@ -48,7 +63,7 @@ export const milestones = pgTable("milestones", {
 
 export const userMilestones = pgTable("user_milestones", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   milestoneId: integer("milestone_id").references(() => milestones.id).notNull(),
   achievedAt: timestamp("achieved_at").defaultNow(),
   progress: integer("progress").default(0), // current progress toward milestone
@@ -56,7 +71,7 @@ export const userMilestones = pgTable("user_milestones", {
 
 export const journalEntries = pgTable("journal_entries", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   date: timestamp("date").defaultNow(),
   
   // Morning routine
@@ -92,14 +107,14 @@ export const handyHacks = pgTable("handy_hacks", {
 
 export const userHackCompletions = pgTable("user_hack_completions", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   hackId: integer("hack_id").references(() => handyHacks.id).notNull(),
   completedAt: timestamp("completed_at").defaultNow(),
 });
 
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
   type: text("type").notNull(), // 'practice', 'hack', 'weekly', 'reminder'
   title: text("title").notNull(),
   message: text("message").notNull(),
@@ -111,9 +126,12 @@ export const notifications = pgTable("notifications", {
   nextScheduled: timestamp("next_scheduled"),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
+export const upsertUserSchema = createInsertSchema(users).pick({
+  id: true,
   email: true,
+  firstName: true,
+  lastName: true,
+  profileImageUrl: true,
 });
 
 export const insertJournalEntrySchema = createInsertSchema(journalEntries).pick({
@@ -141,9 +159,9 @@ export const insertNotificationSchema = createInsertSchema(notifications).pick({
   scheduledFor: true,
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
+export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
-export type Session = typeof sessions.$inferSelect;
+export type Session = typeof meditationSessions.$inferSelect;
 export type UserProgress = typeof userProgress.$inferSelect;
 export type JournalEntry = typeof journalEntries.$inferSelect;
 export type HandyHack = typeof handyHacks.$inferSelect;
