@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { StatusBar } from "@/components/status-bar";
-import { ProgressIndicator } from "@/components/progress-indicator";
+import { ZenProgressRings } from "@/components/zen-progress-rings";
 import { SessionCard } from "@/components/session-card";
 import { HandyHacks } from "@/components/handy-hacks";
 import { AudioPlayer } from "@/components/audio-player";
@@ -96,12 +96,6 @@ export default function Home() {
         </div>
       </header>
 
-      <ProgressIndicator 
-        completedSessions={completedSessions}
-        totalSessions={totalSessions}
-        progressPercentage={progressPercentage}
-      />
-
       {/* Main Content */}
       <main className="px-6 py-6 pb-24 space-y-6">
         
@@ -115,61 +109,17 @@ export default function Home() {
           </p>
         </div>
         
-        {/* Today's Practice with Gamified Tracker */}
+        {/* Zen Progress Rings */}
+        <section>
+          <ZenProgressRings userId={DEMO_USER_ID} />
+        </section>
+
+        {/* Today's Practice */}
         {currentSession && (
           <section>
             <div className="mb-4">
               <h2 className="text-lg font-semibold text-primary mb-2">Today's Practice</h2>
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-                {/* Practice Goal Tracker - Skittles Style */}
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Practice Goal</span>
-                    <span className="text-xs text-gray-500">5 sessions this week</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {[1, 2, 3, 4, 5].map((skittle) => {
-                      const isCompleted = completedSessions >= skittle;
-                      return (
-                        <div
-                          key={skittle}
-                          className={`relative transition-all duration-300 ${
-                            isCompleted 
-                              ? 'transform rotate-12 scale-90 opacity-40' 
-                              : 'transform rotate-0 scale-100 opacity-100'
-                          }`}
-                        >
-                          <div className={`w-8 h-12 rounded-full shadow-md transition-all duration-300 ${
-                            isCompleted 
-                              ? 'bg-gray-300 border-2 border-gray-400' 
-                              : 'bg-gradient-to-b from-blue-400 to-blue-600 border-2 border-blue-700'
-                          }`}>
-                            <div className={`w-full h-2 rounded-full mt-1 ${
-                              isCompleted ? 'bg-gray-400' : 'bg-blue-300'
-                            }`}></div>
-                          </div>
-                          {isCompleted && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                                </svg>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="text-xs text-gray-600 mt-2">
-                    {completedSessions}/5 practices completed
-                    {completedSessions === 5 && (
-                      <span className="ml-2 text-green-600 font-medium">🎉 Goal achieved!</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Current Session Card */}
                 <SessionCard
                   session={currentSession}
                   isCurrentSession={true}

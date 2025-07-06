@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { StatusBar } from "@/components/status-bar";
 import { BottomNavigation } from "@/components/bottom-navigation";
-import { MilestoneTracker } from "@/components/milestone-tracker";
+import { ZenProgressRings } from "@/components/zen-progress-rings";
 import { NotificationSettings } from "@/components/notification-settings";
 import { NotificationTest } from "@/components/notification-test";
 import { Button } from "@/components/ui/button";
@@ -138,7 +138,7 @@ export default function Profile() {
 
           <TabsContent value="achievements" className="space-y-6 mt-6">
             {/* Milestone Tracker */}
-            <MilestoneTracker userId={DEMO_USER_ID} />
+            <ZenProgressRings userId={DEMO_USER_ID} />
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6 mt-6">
