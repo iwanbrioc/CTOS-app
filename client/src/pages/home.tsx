@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { StatusBar } from "@/components/status-bar";
@@ -7,7 +8,6 @@ import { SessionCard } from "@/components/session-card";
 import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 import { AudioPlayer } from "@/components/audio-player";
 import { SoundCloudPlayer } from "@/components/soundcloud-player";
 import { AudioUpload } from "@/components/audio-upload";

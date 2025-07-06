@@ -1,3 +1,5 @@
+import React from "react";
+
 export function StatusBar() {
   const now = new Date();
   const timeString = now.toLocaleTimeString('en-US', { 
