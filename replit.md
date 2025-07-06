@@ -114,6 +114,12 @@ This is a mobile-first mindfulness application built as a progressive web app (P
 - **NODE_ENV**: Environment mode (development/production)
 
 ## Recent Changes
+- July 4, 2025: Configured iOS App Store deployment with Capacitor
+  - Added Capacitor configuration for native iOS app conversion
+  - Installed native plugins for notifications, splash screen, device access, and file system
+  - Created comprehensive deployment guide and build scripts
+  - Set up app identity: "Coming to Our Senses" (com.ctos.mindfulness)
+  - Ready for Mac-based Xcode development and App Store submission
 - July 4, 2025: Enhanced sessions page with expandable cards and integrated images
   - Created concertina-style expandable cards with smooth Framer Motion animations
   - Integrated session images directly into collapsed card headers while preserving gradient colors
