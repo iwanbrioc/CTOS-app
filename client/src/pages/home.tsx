@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { StatusBar } from "@/components/status-bar";
+import { MinimalZenProgress } from "@/components/minimal-zen-progress";
 
 import { SessionCard } from "@/components/session-card";
 import { HandyHacks } from "@/components/handy-hacks";
 
 import { BottomNavigation } from "@/components/bottom-navigation";
-import { NotificationBanner } from "@/components/notification-banner";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bell, User as UserIcon, Play } from "lucide-react";
@@ -18,7 +19,7 @@ import type { Session, UserProgress, User } from "@shared/schema";
 const DEMO_USER_ID = 1;
 
 export default function Home() {
-  const [showNotifications, setShowNotifications] = useState(false);
+
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
     queryKey: ["/api/sessions"],
@@ -75,7 +76,6 @@ export default function Home() {
               variant="ghost"
               size="sm"
               className="relative rounded-full hover:bg-muted p-2"
-              onClick={() => setShowNotifications(!showNotifications)}
             >
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></span>
@@ -108,41 +108,9 @@ export default function Home() {
           </p>
         </div>
         
-        {/* Progress Overview */}
-        <section className="bg-gradient-to-b from-background to-muted/20 py-6 rounded-xl">
-          <div className="text-center mb-6">
-            <h2 className="text-lg font-light text-foreground mb-2">Your Practice</h2>
-            <p className="text-sm text-muted-foreground">Mindful progress through presence</p>
-          </div>
-          
-          <div className="flex justify-center space-x-6">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-2">
-                <span className="text-lg font-light text-blue-600">{completedSessions}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Sessions</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-2">
-                <span className="text-lg font-light text-green-600">{Math.round(progressPercentage)}%</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Progress</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-2">
-                <span className="text-lg font-light text-purple-600">{currentWeek}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Week</p>
-            </div>
-          </div>
-          
-          <div className="text-center mt-6 px-6">
-            <p className="text-sm text-muted-foreground italic font-light">
-              "The present moment is the only moment available to us"
-            </p>
-          </div>
+        {/* Zen Progress */}
+        <section>
+          <MinimalZenProgress />
         </section>
 
         {/* Today's Practice */}
@@ -215,10 +183,7 @@ export default function Home() {
 
 
 
-      <NotificationBanner 
-        show={showNotifications}
-        onClose={() => setShowNotifications(false)}
-      />
+
 
       <BottomNavigation />
     </>
