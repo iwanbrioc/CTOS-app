@@ -12,14 +12,13 @@ import { Bell, User as UserIcon, Play } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import type { Session, UserProgress, User } from "@shared/schema";
-import { useNotifications } from "@/hooks/use-notifications";
+
 
 // Mock user ID for demo - in production this would come from auth
 const DEMO_USER_ID = 1;
 
 export default function Home() {
   const [showNotifications, setShowNotifications] = useState(false);
-  const { scheduleNotification } = useNotifications();
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
     queryKey: ["/api/sessions"],
