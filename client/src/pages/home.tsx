@@ -60,12 +60,6 @@ export default function Home() {
               <p className="text-xs text-muted-foreground">Week</p>
             </div>
           </div>
-          
-          <div className="text-center mt-6 px-6">
-            <p className="text-sm text-muted-foreground italic font-light">
-              "The present moment is the only moment available to us"
-            </p>
-          </div>
         </div>
 
         {/* Today's Practice */}
