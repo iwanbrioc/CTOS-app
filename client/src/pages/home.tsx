@@ -3,7 +3,7 @@ import { StatusBar } from "@/components/status-bar";
 
 import { SessionCard } from "@/components/session-card";
 import { HandyHacks } from "@/components/handy-hacks";
-import { AudioPlayer } from "@/components/audio-player";
+
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { NotificationBanner } from "@/components/notification-banner";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,6 @@ const DEMO_USER_ID = 1;
 
 export default function Home() {
   const [showNotifications, setShowNotifications] = useState(false);
-  const [currentAudioSession, setCurrentAudioSession] = useState<Session | null>(null);
   const { scheduleNotification } = useNotifications();
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
@@ -42,7 +41,8 @@ export default function Home() {
   const currentSession = sessions.find(s => s.week === currentWeek);
 
   const handleStartPractice = (session: Session) => {
-    setCurrentAudioSession(session);
+    // Temporarily disabled audio player to debug useRef issue
+    console.log("Starting practice:", session.title);
   };
 
   if (sessionsLoading) {
@@ -214,12 +214,7 @@ export default function Home() {
 
       </main>
 
-      {currentAudioSession && (
-        <AudioPlayer
-          session={currentAudioSession}
-          onClose={() => setCurrentAudioSession(null)}
-        />
-      )}
+
 
       <NotificationBanner 
         show={showNotifications}
