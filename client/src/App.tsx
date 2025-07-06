@@ -1,5 +1,5 @@
 import { Switch, Route } from "wouter";
-import Home from "@/pages/home";
+import Home from "@/pages/home-zen";
 import Sessions from "@/pages/sessions";
 import Journal from "@/pages/journal";
 import Profile from "@/pages/profile";
