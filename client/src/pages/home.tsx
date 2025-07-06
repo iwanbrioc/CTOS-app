@@ -1,13 +1,63 @@
+import { useQuery } from "@tanstack/react-query";
+import { StatusBar } from "@/components/status-bar";
+import { ProgressIndicator } from "@/components/progress-indicator";
+import { SessionCard } from "@/components/session-card";
+import { HandyHacks } from "@/components/handy-hacks";
+import { AudioPlayer } from "@/components/audio-player";
+import { BottomNavigation } from "@/components/bottom-navigation";
+import { NotificationBanner } from "@/components/notification-banner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Bell, User as UserIcon, Play } from "lucide-react";
+import { useState, useEffect } from "react";
+import type { Session, UserProgress, User } from "@shared/schema";
+import { useNotifications } from "@/hooks/use-notifications";
+import ctosEmblemImg from "@assets/CTOS-Emblem_1750088130527.jpg";
+
+// Mock user ID for demo - in production this would come from auth
+const DEMO_USER_ID = 1;
+
 export default function Home() {
-  return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen">
-      {/* Simple Status Bar */}
-      <div className="bg-black text-white text-xs p-2 flex justify-between">
-        <span>9:41</span>
-        <span>100%</span>
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [currentAudioSession, setCurrentAudioSession] = useState<Session | null>(null);
+  const notifications = useNotifications();
+
+  const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
+    queryKey: ["/api/sessions"],
+  });
+
+  const { data: userProgress = [] } = useQuery<UserProgress[]>({
+    queryKey: ["/api/users", DEMO_USER_ID, "progress"],
+  });
+
+  const { data: user } = useQuery<User>({
+    queryKey: ["/api/users", DEMO_USER_ID],
+  });
+
+  const completedSessions = userProgress.filter(p => p.completed).length;
+  const totalSessions = sessions.length;
+  const progressPercentage = totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0;
+
+  const currentWeek = user?.currentWeek || 1;
+  const currentSession = sessions.find(s => s.week === currentWeek);
+
+  const handleStartPractice = (session: Session) => {
+    setCurrentAudioSession(session);
+  };
+
+  if (sessionsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
+    );
+  }
+
+  return (
+    <>
+      <StatusBar />
       
-      {/* Header */}
+      {/* App Header */}
       <header className="px-6 py-4 bg-background border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -15,12 +65,40 @@ export default function Home() {
               <div>Coming to</div>
               <div>Our Senses</div>
             </h1>
+            <img 
+              src="/attached_assets/CTOS Emblem_1751662222205.png" 
+              alt="Coming to Our Senses Emblem"
+              className="w-16 h-16 object-contain"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="relative rounded-full hover:bg-muted p-2"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
+              <Bell className="h-5 w-5 text-muted-foreground" />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></span>
+            </Button>
+            <Button variant="ghost" size="sm" className="rounded-full p-2 hover:bg-muted">
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                <UserIcon className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </Button>
           </div>
         </div>
       </header>
 
+      <ProgressIndicator 
+        completedSessions={completedSessions}
+        totalSessions={totalSessions}
+        progressPercentage={progressPercentage}
+      />
+
       {/* Main Content */}
-      <main className="px-6 py-6 pb-20">
+      <main className="px-6 py-6 pb-24 space-y-6">
+        
         {/* Welcome Message */}
         <div className="text-center py-4">
           <h2 className="text-lg font-medium text-muted-foreground mb-2">
@@ -31,82 +109,74 @@ export default function Home() {
           </p>
         </div>
         
-        {/* Zen Progress Achievement Tracking */}
-        <div className="py-8 bg-gradient-to-b from-background to-muted/20 rounded-xl mb-6">
-          <div className="text-center mb-6">
-            <h2 className="text-lg font-light text-foreground mb-2">Your Practice</h2>
-            <p className="text-sm text-muted-foreground">Mindful progress through presence</p>
-          </div>
-          
-          <div className="flex justify-center space-x-6">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-2">
-                <span className="text-lg font-light text-blue-600">0</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Sessions</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-2">
-                <span className="text-lg font-light text-green-600">0%</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Progress</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-2">
-                <span className="text-lg font-light text-purple-600">1</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Week</p>
-            </div>
-          </div>
-        </div>
-
         {/* Today's Practice */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 mb-6">
-          <h3 className="text-lg font-semibold text-primary mb-2">Today's Practice</h3>
-          <div className="bg-white rounded-lg p-4">
-            <h4 className="font-medium text-primary">Dropping the Balloon</h4>
-            <p className="text-sm text-muted-foreground mt-1">10 minutes</p>
-            <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
-              Start Practice
-            </button>
-          </div>
-        </div>
+        {currentSession && (
+          <section>
+            <SessionCard
+              session={currentSession}
+              isCurrentSession={true}
+              onStartPractice={handleStartPractice}
+              userProgress={userProgress.find(p => p.sessionId === currentSession.id)}
+            />
+          </section>
+        )}
 
-        {/* Quick Access */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-primary">Quick Access</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-green-50 rounded-lg p-4 text-center">
-              <div className="text-green-600 font-medium">Sessions</div>
-              <div className="text-xs text-muted-foreground">View all</div>
-            </div>
-            <div className="bg-purple-50 rounded-lg p-4 text-center">
-              <div className="text-purple-600 font-medium">Journal</div>
-              <div className="text-xs text-muted-foreground">Daily reflection</div>
-            </div>
+        {/* 8-Week Journey */}
+        <section>
+          <div className="grid grid-cols-1 gap-4">
+            {sessions.map((session) => {
+              const progress = userProgress.find(p => p.sessionId === session.id);
+              return (
+                <SessionCard
+                  key={session.id}
+                  session={session}
+                  isCurrentSession={session.week === currentWeek}
+                  onStartPractice={handleStartPractice}
+                  userProgress={progress}
+                />
+              );
+            })}
           </div>
-        </div>
+        </section>
+
+        <HandyHacks userId={DEMO_USER_ID} />
+
+        {/* Flow Journal Preview */}
+        <section>
+          <h2 className="text-lg font-semibold text-primary mb-4">Flow Journal</h2>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-medium text-primary">Today's Reflection</h3>
+                <span className="text-xs text-muted-foreground">
+                  {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Capture your mindful moments and insights from today's practice.
+              </p>
+              <Button variant="outline" className="w-full">
+                Open Journal
+              </Button>
+            </CardContent>
+          </Card>
+        </section>
+
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white border-t border-border">
-        <div className="flex justify-around py-2">
-          <div className="flex flex-col items-center py-2 text-primary">
-            <span className="text-xs">Home</span>
-          </div>
-          <div className="flex flex-col items-center py-2 text-muted-foreground">
-            <span className="text-xs">Sessions</span>
-          </div>
-          <div className="flex flex-col items-center py-2 text-muted-foreground">
-            <span className="text-xs">Journal</span>
-          </div>
-          <div className="flex flex-col items-center py-2 text-muted-foreground">
-            <span className="text-xs">Profile</span>
-          </div>
-        </div>
-      </nav>
-    </div>
+      {currentAudioSession && (
+        <AudioPlayer
+          session={currentAudioSession}
+          onClose={() => setCurrentAudioSession(null)}
+        />
+      )}
+
+      <NotificationBanner 
+        show={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
+
+      <BottomNavigation />
+    </>
   );
 }

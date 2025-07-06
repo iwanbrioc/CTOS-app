@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Play, ChevronDown, ChevronRight, Clock, Quote } from "lucide-react";
 import { Link } from "wouter";
 import { sessionData } from "@/lib/session-data";
-
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Sessions() {
   const [expandedSession, setExpandedSession] = useState<number | null>(null);
@@ -80,15 +80,26 @@ export default function Sessions() {
                     </CardTitle>
                   </div>
                 </div>
+                
+                <div className="flex items-center">
+                  {expandedSession === session.id ? (
+                    <ChevronDown className="h-5 w-5 text-white" />
+                  ) : (
+                    <ChevronRight className="h-5 w-5 text-white" />
+                  )}
+                </div>
               </div>
             </CardHeader>
 
-            {expandedSession === session.id && (
-              <div className="overflow-hidden transition-all duration-300"
-                   style={{ 
-                     height: expandedSession === session.id ? 'auto' : '0',
-                     opacity: expandedSession === session.id ? '1' : '0'
-                   }}>
+            <AnimatePresence>
+              {expandedSession === session.id && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
                   <CardContent className="p-6 bg-gray-50">
                     {/* Quote Section */}
                     <div className="mb-6 p-4 bg-white rounded-lg border-l-4 border-gray-300">
@@ -144,8 +155,9 @@ export default function Sessions() {
                       </audio>
                     </div>
                   </CardContent>
-                </div>
+                </motion.div>
               )}
+            </AnimatePresence>
           </Card>
         ))}
 
