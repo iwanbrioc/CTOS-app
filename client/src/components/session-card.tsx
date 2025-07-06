@@ -118,7 +118,7 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
           
           {/* Content Section */}
           <div className="flex-1 p-4">
-            <div className="flex items-start justify-between mb-3">
+            <div className="mb-3">
               <div className="flex-1">
                 <h3 className={cn(
                   "font-bold text-base mb-1 tracking-tight",
@@ -129,9 +129,6 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
                 <p className="text-sm text-white/80 mb-2 line-clamp-2">
                   {session.description}
                 </p>
-              </div>
-              <div className="ml-3 flex-shrink-0">
-                {getSessionIcon(session.week, isCompleted)}
               </div>
             </div>
             
@@ -144,6 +141,12 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
                 <span className="text-xs font-medium">
                   Week {session.week}
                 </span>
+                {isCompleted && (
+                  <span className="text-xs text-white/90 font-medium flex items-center">
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                    Completed
+                  </span>
+                )}
               </div>
               
               {canPlay && (
@@ -158,12 +161,6 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
                 </Button>
               )}
             </div>
-            
-            {isCompleted && (
-              <div className="mt-3 text-center">
-                <span className="text-xs text-white/90 font-medium">✓ Completed</span>
-              </div>
-            )}
           </div>
         </div>
       </CardContent>
