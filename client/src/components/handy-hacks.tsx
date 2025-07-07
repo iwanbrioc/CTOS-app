@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { HandyHack, User } from "@shared/schema";
 
 interface HandyHacksProps {
-  userId: number;
+  userId: string;
 }
 
 export function HandyHacks({ userId }: HandyHacksProps) {

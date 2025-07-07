@@ -84,8 +84,8 @@ export const sessionAnalytics = pgTable("session_analytics", {
   startTime: timestamp("start_time").defaultNow(),
   endTime: timestamp("end_time"),
   totalDuration: integer("total_duration").default(0), // total seconds listened in this session
-  pauseDurations: integer("pause_durations").array().default([]), // array of pause durations
-  seekEvents: integer("seek_events").array().default([]), // array of seek positions
+  pauseDurations: integer("pause_durations").array().default([]).notNull(), // array of pause durations in milliseconds
+  seekEvents: integer("seek_events").array().default([]).notNull(), // array of seek positions in seconds
   completionRate: integer("completion_rate").default(0), // percentage completed in this play
   deviceType: text("device_type"), // mobile, desktop, etc.
   connectionQuality: text("connection_quality"), // for future network optimization

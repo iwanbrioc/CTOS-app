@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import type { Milestone, UserMilestone, UserProgress } from "@shared/schema";
 
 interface MilestoneTrackerProps {
-  userId: number;
+  userId: string;
 }
 
 export function MilestoneTracker({ userId }: MilestoneTrackerProps) {

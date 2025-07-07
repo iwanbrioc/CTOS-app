@@ -43,7 +43,7 @@ interface UserProgress {
 
 export default function Home() {
   // Temporarily using demo user for preview
-  const user = { id: "demo-user", firstName: "Demo", currentWeek: 1 } as User;
+  const user = { id: "1", firstName: "Demo", currentWeek: 1 } as User;
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [audioPlayerType, setAudioPlayerType] = useState<'html5' | null>(null);
   const [showNotificationBanner, setShowNotificationBanner] = useState(false);

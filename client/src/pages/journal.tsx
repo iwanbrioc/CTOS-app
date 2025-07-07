@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 
-const DEMO_USER_ID = 1;
+const DEMO_USER_ID = "1";
 
 export default function Journal() {
   return (

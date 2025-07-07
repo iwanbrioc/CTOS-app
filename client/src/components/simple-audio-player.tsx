@@ -12,7 +12,7 @@ interface SimpleAudioPlayerProps {
   onClose: () => void;
 }
 
-const DEMO_USER_ID = 1;
+const DEMO_USER_ID = "1";
 
 export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -52,6 +52,10 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
         (window as any).checkMilestones();
       }
     },
+    onError: (error) => {
+      console.error("Failed to update progress:", error);
+      // Continue playback even if progress update fails
+    },
   });
 
   const createAnalyticsMutation = useMutation({
@@ -60,7 +64,13 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
       return response;
     },
     onSuccess: (data) => {
-      currentAnalyticsId.current = data.id;
+      if (data && data.id) {
+        currentAnalyticsId.current = data.id;
+      }
+    },
+    onError: (error) => {
+      console.error("Failed to create analytics:", error);
+      // Continue playback even if analytics fails
     },
   });
 
@@ -81,6 +91,8 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
     };
 
     const handleTimeUpdate = () => {
+      if (!audio || isNaN(audio.currentTime)) return;
+      
       const currentSeconds = Math.floor(audio.currentTime);
       const duration = Math.floor(audio.duration || 0);
       
@@ -90,34 +102,43 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
         const isCompleted = duration > 0 && currentSeconds >= duration * 0.9;
         const completionRate = duration > 0 ? Math.round((currentSeconds / duration) * 100) : 0;
         
-        updateProgressMutation.mutate({
-          audioProgress: currentSeconds,
-          totalListenTime: currentSeconds,
-          completed: isCompleted,
-          analyticsData: {
-            totalDuration: currentSeconds,
-            completionRate,
-            pauseDurations: pauseDurations.current,
-            seekEvents: seekEvents.current,
-          },
-        });
+        // Only update if we have valid data
+        if (!updateProgressMutation.isPending) {
+          updateProgressMutation.mutate({
+            audioProgress: currentSeconds,
+            totalListenTime: currentSeconds,
+            completed: isCompleted,
+            analyticsData: {
+              totalDuration: currentSeconds,
+              completionRate,
+              pauseDurations: [...pauseDurations.current], // Create copy to avoid reference issues
+              seekEvents: [...seekEvents.current], // Create copy to avoid reference issues
+            },
+          });
+        }
       }
     };
 
     const handleEnded = () => {
+      if (!audio || isNaN(audio.duration)) return;
+      
       const duration = Math.floor(audio.duration || 0);
-      updateProgressMutation.mutate({
-        audioProgress: duration,
-        totalListenTime: duration,
-        completed: true,
-        analyticsData: {
-          endTime: new Date().toISOString(),
-          totalDuration: duration,
-          completionRate: 100,
-          pauseDurations: pauseDurations.current,
-          seekEvents: seekEvents.current,
-        },
-      });
+      
+      // Only update if we have valid data and no pending mutation
+      if (!updateProgressMutation.isPending && duration > 0) {
+        updateProgressMutation.mutate({
+          audioProgress: duration,
+          totalListenTime: duration,
+          completed: true,
+          analyticsData: {
+            endTime: new Date().toISOString(),
+            totalDuration: duration,
+            completionRate: 100,
+            pauseDurations: [...pauseDurations.current], // Create copy to avoid reference issues
+            seekEvents: [...seekEvents.current], // Create copy to avoid reference issues
+          },
+        });
+      }
     };
 
     const handlePlay = () => {
@@ -139,7 +160,10 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
     };
 
     const handleSeeking = () => {
-      seekEvents.current.push(Math.floor(audio.currentTime));
+      if (!audio || isNaN(audio.currentTime)) return;
+      
+      const currentTime = Math.floor(audio.currentTime);
+      seekEvents.current.push(currentTime);
       skipCount.current += 1;
     };
 

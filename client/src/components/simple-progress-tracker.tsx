@@ -6,10 +6,10 @@ import { Progress } from "@/components/ui/progress";
 import { Clock, Trophy, Target, Zap } from "lucide-react";
 
 interface SimpleProgressTrackerProps {
-  userId: number;
+  userId: string;
 }
 
-const DEMO_USER_ID = 1;
+const DEMO_USER_ID = "1";
 
 export function SimpleProgressTracker({ userId }: SimpleProgressTrackerProps) {
   // Fetch basic progress data

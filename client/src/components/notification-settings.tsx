@@ -13,7 +13,7 @@ import { Bell, Clock, Calendar } from "lucide-react";
 import type { User } from "@shared/schema";
 
 interface NotificationSettingsProps {
-  userId: number;
+  userId: string;
 }
 
 const DAYS_OF_WEEK = [

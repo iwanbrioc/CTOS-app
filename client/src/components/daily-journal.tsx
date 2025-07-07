@@ -25,7 +25,7 @@ import {
 import type { JournalEntry, InsertJournalEntry } from "@shared/schema";
 
 interface DailyJournalProps {
-  userId: number;
+  userId: string;
 }
 
 export function DailyJournal({ userId }: DailyJournalProps) {

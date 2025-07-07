@@ -14,7 +14,7 @@ import { ArrowLeft, User, Calendar, Award, Bell, Settings } from "lucide-react";
 import { Link } from "wouter";
 import type { User as UserType, UserProgress, UserHackCompletion } from "@shared/schema";
 
-const DEMO_USER_ID = 1;
+const DEMO_USER_ID = "1";
 
 export default function Profile() {
   const { data: user } = useQuery<UserType>({

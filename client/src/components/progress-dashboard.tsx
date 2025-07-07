@@ -7,10 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, Trophy, Target, Zap, TrendingUp, Play, Pause, SkipForward } from "lucide-react";
 
 interface ProgressDashboardProps {
-  userId: number;
+  userId: string;
 }
 
-const DEMO_USER_ID = 1;
+const DEMO_USER_ID = "1";
 
 export function ProgressDashboard({ userId }: ProgressDashboardProps) {
   // Fetch advanced progress data

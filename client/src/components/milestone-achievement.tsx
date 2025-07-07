@@ -87,7 +87,7 @@ export function MilestoneAchievement({ milestone, onClose }: MilestoneAchievemen
 }
 
 interface MilestoneManagerProps {
-  userId: number;
+  userId: string;
   children: React.ReactNode;
 }
 

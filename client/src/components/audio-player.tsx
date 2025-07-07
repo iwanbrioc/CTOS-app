@@ -11,7 +11,7 @@ interface AudioPlayerProps {
   onClose: () => void;
 }
 
-const DEMO_USER_ID = 1;
+const DEMO_USER_ID = "1";
 
 export function AudioPlayer({ session, onClose }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
