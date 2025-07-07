@@ -1,4 +1,4 @@
-import React from "react";
+import { } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Trophy, Target, Clock, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

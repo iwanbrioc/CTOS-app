@@ -1,4 +1,4 @@
-import React from "react";
+import { } from "react";
 import { StatusBar } from "@/components/status-bar";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { DailyJournal } from "@/components/daily-journal";

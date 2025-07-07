@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { StatusBar } from "@/components/status-bar";
@@ -8,7 +8,7 @@ import { SessionCard } from "@/components/session-card";
 import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
 import { useQuery } from "@tanstack/react-query";
-import { SimpleAudioPlayer } from "@/components/simple-audio-player";
+import { TestSimplePlayer } from "@/components/test-simple-player";
 
 interface User {
   id: string;
@@ -151,7 +151,7 @@ export default function Home() {
 
         {/* Audio Player */}
         {selectedSession && audioPlayerType === 'html5' && (
-          <SimpleAudioPlayer session={selectedSession} onClose={handleClosePlayer} />
+          <TestSimplePlayer session={selectedSession} onClose={handleClosePlayer} />
         )}
 
         {/* Notification Banner */}

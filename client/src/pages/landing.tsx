@@ -1,4 +1,4 @@
-import React from "react";
+import { } from "react";
 import { Button } from "@/components/ui/button";
 
 export function Landing() {
