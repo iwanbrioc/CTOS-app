@@ -5,6 +5,7 @@ import { BottomNavigation } from "@/components/bottom-navigation";
 import { MilestoneTracker } from "@/components/milestone-tracker";
 import { NotificationSettings } from "@/components/notification-settings";
 import { NotificationTest } from "@/components/notification-test";
+import { ProgressDashboard } from "@/components/progress-dashboard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -86,10 +87,14 @@ export default function Profile() {
 
         {/* Tabbed Content */}
         <Tabs defaultValue="progress" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="progress" className="flex items-center gap-2">
               <Award className="h-4 w-4" />
               Progress
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <Award className="h-4 w-4" />
+              Analytics
             </TabsTrigger>
             <TabsTrigger value="achievements" className="flex items-center gap-2">
               <Award className="h-4 w-4" />
@@ -100,6 +105,10 @@ export default function Profile() {
               Settings
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="analytics" className="space-y-6 mt-6">
+            <ProgressDashboard userId={DEMO_USER_ID} />
+          </TabsContent>
 
           <TabsContent value="progress" className="space-y-6 mt-6">
             {/* Progress Stats */}

@@ -122,6 +122,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         completed, 
         totalListenTime 
       });
+      
+      // Create session analytics if detailed tracking data is provided
+      if (req.body.analyticsData) {
+        const { analyticsData } = req.body;
+        await storage.createSessionAnalytics(userId, {
+          sessionId,
+          ...analyticsData
+        });
+      }
+      
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to update progress" });
@@ -137,6 +147,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to complete session" });
+    }
+  });
+
+  // Session Analytics routes
+  app.post("/api/users/:userId/analytics", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const analyticsData = req.body;
+      
+      const analytics = await storage.createSessionAnalytics(userId, analyticsData);
+      res.json(analytics);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create analytics" });
+    }
+  });
+
+  app.get("/api/users/:userId/analytics", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const sessionId = req.query.sessionId ? parseInt(req.query.sessionId as string) : undefined;
+      
+      const analytics = await storage.getSessionAnalytics(userId, sessionId);
+      res.json(analytics);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch analytics" });
+    }
+  });
+
+  app.get("/api/users/:userId/progress/advanced", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const advancedData = await storage.getAdvancedProgressData(userId);
+      res.json(advancedData);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch advanced progress data" });
     }
   });
 

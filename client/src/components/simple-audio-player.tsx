@@ -17,9 +17,30 @@ const DEMO_USER_ID = 1;
 export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const queryClient = useQueryClient();
+  const sessionStartTime = useRef<number>(Date.now());
+  const currentAnalyticsId = useRef<number | null>(null);
+  const pauseStartTime = useRef<number | null>(null);
+  const pauseDurations = useRef<number[]>([]);
+  const seekEvents = useRef<number[]>([]);
+  const playCount = useRef(0);
+  const pauseCount = useRef(0);
+  const skipCount = useRef(0);
 
   const updateProgressMutation = useMutation({
-    mutationFn: async (progress: { audioProgress: number; totalListenTime: number; completed: boolean }) => {
+    mutationFn: async (progress: { 
+      audioProgress: number; 
+      totalListenTime: number; 
+      completed: boolean;
+      analyticsData?: {
+        startTime?: string;
+        endTime?: string;
+        totalDuration?: number;
+        pauseDurations?: number[];
+        seekEvents?: number[];
+        completionRate?: number;
+        deviceType?: string;
+      };
+    }) => {
       await apiRequest("POST", `/api/users/${DEMO_USER_ID}/progress/${session.id}`, progress);
       return progress.completed;
     },
@@ -33,11 +54,31 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
     },
   });
 
+  const createAnalyticsMutation = useMutation({
+    mutationFn: async (analyticsData: any) => {
+      const response = await apiRequest("POST", `/api/users/${DEMO_USER_ID}/analytics`, analyticsData);
+      return response;
+    },
+    onSuccess: (data) => {
+      currentAnalyticsId.current = data.id;
+    },
+  });
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     let lastUpdateTime = 0;
+
+    // Initialize session analytics
+    const startAnalytics = () => {
+      playCount.current += 1;
+      createAnalyticsMutation.mutate({
+        sessionId: session.id,
+        startTime: new Date().toISOString(),
+        deviceType: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'mobile' : 'desktop',
+      });
+    };
 
     const handleTimeUpdate = () => {
       const currentSeconds = Math.floor(audio.currentTime);
@@ -47,11 +88,18 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
       if (currentSeconds > lastUpdateTime && currentSeconds % 10 === 0) {
         lastUpdateTime = currentSeconds;
         const isCompleted = duration > 0 && currentSeconds >= duration * 0.9;
+        const completionRate = duration > 0 ? Math.round((currentSeconds / duration) * 100) : 0;
         
         updateProgressMutation.mutate({
           audioProgress: currentSeconds,
           totalListenTime: currentSeconds,
           completed: isCompleted,
+          analyticsData: {
+            totalDuration: currentSeconds,
+            completionRate,
+            pauseDurations: pauseDurations.current,
+            seekEvents: seekEvents.current,
+          },
         });
       }
     };
@@ -62,17 +110,53 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
         audioProgress: duration,
         totalListenTime: duration,
         completed: true,
+        analyticsData: {
+          endTime: new Date().toISOString(),
+          totalDuration: duration,
+          completionRate: 100,
+          pauseDurations: pauseDurations.current,
+          seekEvents: seekEvents.current,
+        },
       });
+    };
+
+    const handlePlay = () => {
+      if (playCount.current === 0) {
+        startAnalytics();
+      }
+      
+      // End pause tracking
+      if (pauseStartTime.current) {
+        const pauseDuration = Date.now() - pauseStartTime.current;
+        pauseDurations.current.push(pauseDuration);
+        pauseStartTime.current = null;
+      }
+    };
+
+    const handlePause = () => {
+      pauseCount.current += 1;
+      pauseStartTime.current = Date.now();
+    };
+
+    const handleSeeking = () => {
+      seekEvents.current.push(Math.floor(audio.currentTime));
+      skipCount.current += 1;
     };
 
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('seeking', handleSeeking);
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('seeking', handleSeeking);
     };
-  }, [session.id, updateProgressMutation]);
+  }, [session.id, updateProgressMutation, createAnalyticsMutation]);
   return (
     <div className="fixed bottom-20 left-4 right-4 z-50">
       <Card className="shadow-lg border-gray-200">

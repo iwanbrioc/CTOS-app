@@ -8,6 +8,7 @@ import {
   notifications,
   milestones,
   userMilestones,
+  sessionAnalytics,
   type User,
   type UpsertUser,
   type Session,
@@ -20,6 +21,8 @@ import {
   type InsertNotification,
   type Milestone,
   type UserMilestone,
+  type SessionAnalytics,
+  type InsertSessionAnalytics,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -68,6 +71,19 @@ export interface IStorage {
     reminderDays: number[];
   }): Promise<void>;
   scheduleUserReminders(userId: string): Promise<void>;
+
+  // Session Analytics
+  createSessionAnalytics(userId: string, analytics: Omit<InsertSessionAnalytics, 'userId'>): Promise<SessionAnalytics>;
+  updateSessionAnalytics(analyticsId: number, analytics: Partial<InsertSessionAnalytics>): Promise<void>;
+  getSessionAnalytics(userId: string, sessionId?: number): Promise<SessionAnalytics[]>;
+  getAdvancedProgressData(userId: string): Promise<{
+    totalListenTime: number;
+    averageSessionCompletion: number;
+    mostPlayedSession: Session | null;
+    streakDays: number;
+    weeklyProgress: Array<{ week: number; completedSessions: number; totalSessions: number }>;
+    practicePattern: Array<{ hour: number; sessionCount: number }>;
+  }>;
 }
 
 // Database storage implementation for Replit Auth
@@ -309,6 +325,130 @@ export class DatabaseStorage implements IStorage {
 
   async scheduleUserReminders(userId: string): Promise<void> {
     // Reminder scheduling logic would go here
+  }
+
+  async createSessionAnalytics(userId: string, analytics: Omit<InsertSessionAnalytics, 'userId'>): Promise<SessionAnalytics> {
+    const [result] = await db.insert(sessionAnalytics).values({
+      userId,
+      ...analytics,
+    }).returning();
+    return result;
+  }
+
+  async updateSessionAnalytics(analyticsId: number, analytics: Partial<InsertSessionAnalytics>): Promise<void> {
+    await db.update(sessionAnalytics)
+      .set(analytics)
+      .where(eq(sessionAnalytics.id, analyticsId));
+  }
+
+  async getSessionAnalytics(userId: string, sessionId?: number): Promise<SessionAnalytics[]> {
+    const query = db.select().from(sessionAnalytics).where(eq(sessionAnalytics.userId, userId));
+    
+    if (sessionId) {
+      return await query.where(eq(sessionAnalytics.sessionId, sessionId));
+    }
+    
+    return await query;
+  }
+
+  async getAdvancedProgressData(userId: string): Promise<{
+    totalListenTime: number;
+    averageSessionCompletion: number;
+    mostPlayedSession: Session | null;
+    streakDays: number;
+    weeklyProgress: Array<{ week: number; completedSessions: number; totalSessions: number }>;
+    practicePattern: Array<{ hour: number; sessionCount: number }>;
+  }> {
+    const { sql, sum, avg, count, max } = await import("drizzle-orm");
+    
+    // Get total listen time
+    const totalListenTimeResult = await db
+      .select({ total: sum(userProgress.totalListenTime) })
+      .from(userProgress)
+      .where(eq(userProgress.userId, userId));
+    
+    const totalListenTime = totalListenTimeResult[0]?.total || 0;
+
+    // Get average session completion
+    const avgCompletionResult = await db
+      .select({ avg: avg(userProgress.completionPercentage) })
+      .from(userProgress)
+      .where(eq(userProgress.userId, userId));
+    
+    const averageSessionCompletion = avgCompletionResult[0]?.avg || 0;
+
+    // Get most played session
+    const mostPlayedResult = await db
+      .select({ 
+        sessionId: userProgress.sessionId,
+        playCount: max(userProgress.playCount)
+      })
+      .from(userProgress)
+      .where(eq(userProgress.userId, userId))
+      .groupBy(userProgress.sessionId)
+      .orderBy(sql`${max(userProgress.playCount)} DESC`)
+      .limit(1);
+    
+    let mostPlayedSession = null;
+    if (mostPlayedResult[0]?.sessionId) {
+      const sessionResult = await db
+        .select()
+        .from(meditationSessions)
+        .where(eq(meditationSessions.id, mostPlayedResult[0].sessionId));
+      mostPlayedSession = sessionResult[0] || null;
+    }
+
+    // Get current streak
+    const streakResult = await db
+      .select({ streak: max(userProgress.streakDays) })
+      .from(userProgress)
+      .where(eq(userProgress.userId, userId));
+    
+    const streakDays = streakResult[0]?.streak || 0;
+
+    // Get weekly progress
+    const weeklyProgressResult = await db
+      .select({
+        week: meditationSessions.week,
+        completedSessions: count(sql`CASE WHEN ${userProgress.completed} = true THEN 1 END`),
+        totalSessions: count(meditationSessions.id)
+      })
+      .from(meditationSessions)
+      .leftJoin(userProgress, 
+        sql`${meditationSessions.id} = ${userProgress.sessionId} AND ${userProgress.userId} = ${userId}`)
+      .groupBy(meditationSessions.week)
+      .orderBy(meditationSessions.week);
+
+    const weeklyProgress = weeklyProgressResult.map(row => ({
+      week: row.week,
+      completedSessions: row.completedSessions || 0,
+      totalSessions: row.totalSessions || 0
+    }));
+
+    // Get practice pattern by hour
+    const practicePatternResult = await db
+      .select({
+        hour: sql`EXTRACT(HOUR FROM ${sessionAnalytics.startTime})`.as('hour'),
+        sessionCount: count(sessionAnalytics.id)
+      })
+      .from(sessionAnalytics)
+      .where(eq(sessionAnalytics.userId, userId))
+      .groupBy(sql`EXTRACT(HOUR FROM ${sessionAnalytics.startTime})`)
+      .orderBy(sql`EXTRACT(HOUR FROM ${sessionAnalytics.startTime})`);
+
+    const practicePattern = practicePatternResult.map(row => ({
+      hour: Number(row.hour),
+      sessionCount: row.sessionCount || 0
+    }));
+
+    return {
+      totalListenTime,
+      averageSessionCompletion,
+      mostPlayedSession,
+      streakDays,
+      weeklyProgress,
+      practicePattern
+    };
   }
 }
 

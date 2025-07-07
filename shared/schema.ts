@@ -49,6 +49,13 @@ export const userProgress = pgTable("user_progress", {
   audioProgress: integer("audio_progress").default(0), // seconds
   totalListenTime: integer("total_listen_time").default(0), // total seconds listened
   streakDays: integer("streak_days").default(0), // consecutive days practiced
+  // Enhanced tracking fields
+  playCount: integer("play_count").default(0), // times session was started
+  lastPlayedAt: timestamp("last_played_at"),
+  completionPercentage: integer("completion_percentage").default(0), // 0-100
+  skipCount: integer("skip_count").default(0), // times user skipped forward
+  pauseCount: integer("pause_count").default(0), // times user paused
+  averageSessionRating: integer("average_session_rating").default(0), // 1-5 rating
 });
 
 export const milestones = pgTable("milestones", {
@@ -67,6 +74,21 @@ export const userMilestones = pgTable("user_milestones", {
   milestoneId: integer("milestone_id").references(() => milestones.id).notNull(),
   achievedAt: timestamp("achieved_at").defaultNow(),
   progress: integer("progress").default(0), // current progress toward milestone
+});
+
+// New table for detailed session analytics
+export const sessionAnalytics = pgTable("session_analytics", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  sessionId: integer("session_id").references(() => meditationSessions.id).notNull(),
+  startTime: timestamp("start_time").defaultNow(),
+  endTime: timestamp("end_time"),
+  totalDuration: integer("total_duration").default(0), // total seconds listened in this session
+  pauseDurations: integer("pause_durations").array().default([]), // array of pause durations
+  seekEvents: integer("seek_events").array().default([]), // array of seek positions
+  completionRate: integer("completion_rate").default(0), // percentage completed in this play
+  deviceType: text("device_type"), // mobile, desktop, etc.
+  connectionQuality: text("connection_quality"), // for future network optimization
 });
 
 export const journalEntries = pgTable("journal_entries", {
@@ -169,5 +191,7 @@ export type UserHackCompletion = typeof userHackCompletions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type Milestone = typeof milestones.$inferSelect;
 export type UserMilestone = typeof userMilestones.$inferSelect;
+export type SessionAnalytics = typeof sessionAnalytics.$inferSelect;
 export type InsertJournalEntry = z.infer<typeof insertJournalEntrySchema>;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type InsertSessionAnalytics = typeof sessionAnalytics.$inferInsert;
