@@ -5,7 +5,7 @@ import { BottomNavigation } from "@/components/bottom-navigation";
 import { MilestoneTracker } from "@/components/milestone-tracker";
 import { NotificationSettings } from "@/components/notification-settings";
 import { NotificationTest } from "@/components/notification-test";
-import { ProgressDashboard } from "@/components/progress-dashboard";
+import { SimpleProgressTracker } from "@/components/simple-progress-tracker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -107,7 +107,7 @@ export default function Profile() {
           </TabsList>
 
           <TabsContent value="analytics" className="space-y-6 mt-6">
-            <ProgressDashboard userId={DEMO_USER_ID} />
+            <SimpleProgressTracker userId={DEMO_USER_ID} />
           </TabsContent>
 
           <TabsContent value="progress" className="space-y-6 mt-6">

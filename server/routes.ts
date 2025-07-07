@@ -101,9 +101,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Progress routes
-  app.get("/api/users/:userId/progress", isAuthenticated, async (req: any, res) => {
+  app.get("/api/users/:userId/progress", async (req, res) => {
     try {
-      const userId = req.user.claims.sub; // Use authenticated user's ID
+      const userId = "1"; // Demo user for now
       const progress = await storage.getUserProgress(userId);
       res.json(progress);
     } catch (error) {
@@ -111,9 +111,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/users/:userId/progress/:sessionId", isAuthenticated, async (req: any, res) => {
+  app.post("/api/users/:userId/progress/:sessionId", async (req, res) => {
     try {
-      const userId = req.user.claims.sub; // Use authenticated user's ID
+      const userId = "1"; // Demo user for now
       const sessionId = parseInt(req.params.sessionId);
       const { audioProgress, completed, totalListenTime } = req.body;
       
@@ -151,9 +151,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Session Analytics routes
-  app.post("/api/users/:userId/analytics", isAuthenticated, async (req: any, res) => {
+  app.post("/api/users/:userId/analytics", async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "1"; // Demo user for now
       const analyticsData = req.body;
       
       const analytics = await storage.createSessionAnalytics(userId, analyticsData);
@@ -163,9 +163,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/users/:userId/analytics", isAuthenticated, async (req: any, res) => {
+  app.get("/api/users/:userId/analytics", async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "1"; // Demo user for now
       const sessionId = req.query.sessionId ? parseInt(req.query.sessionId as string) : undefined;
       
       const analytics = await storage.getSessionAnalytics(userId, sessionId);
@@ -175,9 +175,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/users/:userId/progress/advanced", isAuthenticated, async (req: any, res) => {
+  app.get("/api/users/:userId/progress/advanced", async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = "1"; // Demo user for now
       const advancedData = await storage.getAdvancedProgressData(userId);
       res.json(advancedData);
     } catch (error) {

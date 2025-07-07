@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Clock, Trophy, Target, Zap, TrendingUp, Play, Pause, SkipForward } from "lucide-react";
 
 interface ProgressDashboardProps {
@@ -189,16 +188,20 @@ export function ProgressDashboard({ userId }: ProgressDashboardProps) {
               <CardTitle>Weekly Progress Overview</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={weeklyData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="week" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="completed" fill="#8884d8" name="Completed" />
-                  <Bar dataKey="total" fill="#82ca9d" name="Total" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {weeklyData.map((week: any) => (
+                  <Card key={week.week} className="p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="font-medium">{week.week}</h4>
+                      <Badge variant="outline">{week.percentage}%</Badge>
+                    </div>
+                    <Progress value={week.percentage} className="h-2" />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {week.completed} of {week.total} sessions
+                    </p>
+                  </Card>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -209,15 +212,14 @@ export function ProgressDashboard({ userId }: ProgressDashboardProps) {
               <CardTitle>Practice Time Patterns</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={practiceTimeData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="label" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="sessions" stroke="#8884d8" />
-                </LineChart>
-              </ResponsiveContainer>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {practiceTimeData.map((pattern: any) => (
+                  <div key={pattern.hour} className="text-center p-3 border rounded">
+                    <div className="text-lg font-bold">{pattern.sessions}</div>
+                    <div className="text-xs text-muted-foreground">{pattern.label}</div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
