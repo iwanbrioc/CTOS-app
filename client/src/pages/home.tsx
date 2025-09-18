@@ -9,15 +9,18 @@ import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
 import { useQuery } from "@tanstack/react-query";
 import { TestSimplePlayer } from "@/components/test-simple-player";
+import { useToast } from "@/hooks/use-toast";
 import type { User, Session, UserProgress } from "@shared/schema";
 
 
 export default function Home() {
-  // Temporarily using demo user for preview
-  const user = { id: "1", firstName: "Demo", currentWeek: 1 } as User;
+  const { user: authUser, isLoading: userLoading } = useAuth();
+  // Fallback to demo user if auth is not working (for development)
+  const user: User = (authUser as User) || { id: "1", firstName: "Demo", currentWeek: 1, email: "demo@example.com", lastName: "User", profileImageUrl: null, joinedAt: new Date(), updatedAt: new Date(), notificationsEnabled: true, reminderTime: "09:00", reminderDays: [1,2,3,4,5], timezone: "UTC" };
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [audioPlayerType, setAudioPlayerType] = useState<'html5' | null>(null);
   const [showNotificationBanner, setShowNotificationBanner] = useState(false);
+  const { toast } = useToast();
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
     queryKey: ["/api/sessions"],
@@ -46,6 +49,25 @@ export default function Home() {
 
   const getUserProgressForSession = (sessionId: number) => {
     return userProgress.find(p => p.sessionId === sessionId);
+  };
+  
+  const getSessionState = (session: Session): 'past' | 'active' | 'future' => {
+    const currentWeek = user?.currentWeek || 1;
+    if (session.week < currentWeek) {
+      return 'past';
+    } else if (session.week === currentWeek) {
+      return 'active';
+    } else {
+      return 'future';
+    }
+  };
+  
+  const handleFutureSessionClick = () => {
+    toast({
+      title: "Not yet",
+      description: "This session will be available in a future week.",
+      duration: 2000,
+    });
   };
 
   if (sessionsLoading) {
@@ -113,8 +135,9 @@ export default function Home() {
             <SessionCard
               key={session.id}
               session={session}
-              isCurrentSession={session.week === (user?.currentWeek || 1)}
+              sessionState={getSessionState(session)}
               onStartPractice={handleStartPractice}
+              onFutureSessionClick={handleFutureSessionClick}
               userProgress={getUserProgressForSession(session.id)}
             />
           ))}

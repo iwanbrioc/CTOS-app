@@ -18,8 +18,9 @@ import fourPillarsImg from "@assets/the four pillars_1750084108018.png";
 
 interface SessionCardProps {
   session: Session;
-  isCurrentSession: boolean;
+  sessionState: 'past' | 'active' | 'future'; // Visual state for styling
   onStartPractice: (session: Session) => void;
+  onFutureSessionClick?: () => void; // Handler for future session clicks
   userProgress?: UserProgress;
 }
 
@@ -90,20 +91,29 @@ const getDuotoneFilter = (week: number) => {
   return filters[(week - 1) % filters.length];
 };
 
-export function SessionCard({ session, isCurrentSession, onStartPractice, userProgress }: SessionCardProps) {
+export function SessionCard({ session, sessionState, onStartPractice, onFutureSessionClick, userProgress }: SessionCardProps) {
   const isCompleted = userProgress?.completed || false;
   const isLocked = session.isLocked && session.week > 3;
-  const canPlay = !isLocked;
+  const canPlay = !isLocked && sessionState !== 'future';
+  
+  const handleSessionClick = () => {
+    if (sessionState === 'future' && onFutureSessionClick) {
+      onFutureSessionClick();
+    } else if (canPlay) {
+      onStartPractice(session);
+    }
+  };
 
   return (
     <Card className={cn(
       "overflow-hidden transition-all duration-200 hover:shadow-lg border-0 rounded-2xl",
       getSessionColor(session.week),
-      isCurrentSession && "ring-2 ring-white ring-opacity-50",
+      sessionState === 'active' && "ring-2 ring-white ring-opacity-50",
+      (sessionState === 'past' || sessionState === 'future') && "opacity-50",
       isLocked && "opacity-60"
     )}>
       <CardContent className="p-0 text-white">
-        <div className="flex">
+        <div className="flex" onClick={sessionState === 'future' ? handleSessionClick : undefined} style={sessionState === 'future' ? { cursor: 'pointer' } : undefined}>
           {/* Image Section */}
           <div className="w-20 h-20 flex-shrink-0 relative overflow-hidden">
             <img 
@@ -159,6 +169,12 @@ export function SessionCard({ session, isCurrentSession, onStartPractice, userPr
                   <Play className="h-4 w-4 mr-1" />
                   {isCompleted ? "Replay" : "Start"}
                 </Button>
+              )}
+              
+              {sessionState === 'future' && (
+                <div className="text-xs text-white/70 font-medium">
+                  Not yet available
+                </div>
               )}
             </div>
           </div>
