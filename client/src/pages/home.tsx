@@ -9,37 +9,8 @@ import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
 import { useQuery } from "@tanstack/react-query";
 import { TestSimplePlayer } from "@/components/test-simple-player";
+import type { User, Session, UserProgress } from "@shared/schema";
 
-interface User {
-  id: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  profileImageUrl?: string;
-  currentWeek: number;
-}
-
-interface Session {
-  id: number;
-  week: number;
-  title: string;
-  description: string;
-  audioUrl: string;
-  duration: number;
-  illustration: string;
-  isLocked: boolean;
-}
-
-interface UserProgress {
-  id: number;
-  userId: string;
-  sessionId: number;
-  completed: boolean;
-  completedAt?: string;
-  audioProgress: number;
-  totalListenTime: number;
-  streakDays: number;
-}
 
 export default function Home() {
   // Temporarily using demo user for preview
@@ -57,9 +28,9 @@ export default function Home() {
     enabled: !!user?.id,
   });
 
-  const currentWeekSessions = sessions.filter(session => session.week <= (user?.currentWeek || 1));
+  const allSessions = sessions; // Show all sessions instead of filtering by week
   const completedSessions = userProgress.filter(p => p.completed).length;
-  const totalSessions = Math.min(sessions.length, (user?.currentWeek || 1) * 1); // Approximate sessions per week
+  const totalSessions = sessions.length; // Total number of sessions
   const progressPercentage = totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0;
 
   const handleStartPractice = (session: Session) => {
@@ -130,15 +101,15 @@ export default function Home() {
           />
         </div>
 
-        {/* Current Week Sessions */}
+        {/* All Sessions */}
         <div className="px-4 space-y-4 pb-20">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-gray-900">
-              Week {user?.currentWeek || 1} Sessions
+              All Sessions
             </h2>
           </div>
           
-          {currentWeekSessions.map((session) => (
+          {allSessions.map((session) => (
             <SessionCard
               key={session.id}
               session={session}
