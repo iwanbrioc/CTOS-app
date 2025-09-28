@@ -21,6 +21,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   currentWeek: integer("current_week").default(1),
+  sessionsPace: integer("sessions_pace").default(1), // 1 or 2 sessions per week
   joinedAt: timestamp("joined_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   notificationsEnabled: boolean("notifications_enabled").default(true),
