@@ -31,6 +31,7 @@ export interface IStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserWeek(userId: string, week: number): Promise<void>;
   updateUserSessionsPace(userId: string, sessionsPace: number): Promise<void>;
+  updateUserCourseFormat(userId: string, courseFormat: string): Promise<void>;
 
   // Sessions
   getAllSessions(): Promise<Session[]>;
@@ -122,6 +123,12 @@ export class DatabaseStorage implements IStorage {
     const { db } = await import("./db");
     const { eq } = await import("drizzle-orm");
     await db.update(users).set({ sessionsPace }).where(eq(users.id, userId));
+  }
+
+  async updateUserCourseFormat(userId: string, courseFormat: string): Promise<void> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    await db.update(users).set({ courseFormat }).where(eq(users.id, userId));
   }
 
   async getAllSessions(): Promise<Session[]> {
@@ -518,6 +525,26 @@ export class MemStorage implements IStorage {
     if (user) {
       user.currentWeek = week;
       this.users.set(userId, user);
+    }
+  }
+
+  async updateUserSessionsPace(userId: string, sessionsPace: number): Promise<void> {
+    // Convert string userId to number for MemStorage compatibility
+    const numericUserId = parseInt(userId);
+    const user = this.users.get(numericUserId);
+    if (user) {
+      user.sessionsPace = sessionsPace;
+      this.users.set(numericUserId, user);
+    }
+  }
+
+  async updateUserCourseFormat(userId: string, courseFormat: string): Promise<void> {
+    // Convert string userId to number for MemStorage compatibility
+    const numericUserId = parseInt(userId);
+    const user = this.users.get(numericUserId);
+    if (user) {
+      user.courseFormat = courseFormat;
+      this.users.set(numericUserId, user);
     }
   }
 
