@@ -66,6 +66,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   try {
     await storage.initializeSessions();
     await storage.initializeHandyHacks();
+    await storage.initializeSessionHandyHacks();
     await storage.initializeMilestones();
     
     // Ensure demo user exists

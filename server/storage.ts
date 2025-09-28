@@ -4,6 +4,7 @@ import {
   userProgress,
   journalEntries,
   handyHacks,
+  sessionHandyHacks,
   userHackCompletions,
   notifications,
   milestones,
@@ -16,6 +17,7 @@ import {
   type JournalEntry,
   type InsertJournalEntry,
   type HandyHack,
+  type SessionHandyHack,
   type UserHackCompletion,
   type Notification,
   type InsertNotification,
@@ -51,9 +53,19 @@ export interface IStorage {
   // Handy Hacks
   getAllHandyHacks(): Promise<HandyHack[]>;
   getRandomHandyHack(): Promise<HandyHack | undefined>;
-  markHackComplete(userId: string, hackId: number): Promise<void>;
+  markHackComplete(userId: string, hackId: number, sessionId?: number): Promise<void>;
   getUserHackCompletions(userId: string): Promise<UserHackCompletion[]>;
   initializeHandyHacks(): Promise<void>;
+  
+  // Session Handy Hacks
+  getHandyHacksForSession(sessionId: number): Promise<HandyHack[]>;
+  addHackToSession(sessionId: number, hackId: number, sortOrder?: number): Promise<void>;
+  removeHackFromSession(sessionId: number, hackId: number): Promise<void>;
+  initializeSessionHandyHacks(): Promise<void>;
+  
+  // Hack Reminders
+  scheduleHackReminder(userId: string, hackId: number, sessionId: number, scheduledFor: Date, pattern?: string, count?: number): Promise<Notification[]>;
+  getHackReminders(userId: string, sessionId?: number): Promise<Notification[]>;
 
   // Notifications
   createNotification(userId: string, notification: InsertNotification): Promise<Notification>;
@@ -227,10 +239,10 @@ export class DatabaseStorage implements IStorage {
     return hack;
   }
 
-  async markHackComplete(userId: string, hackId: number): Promise<void> {
+  async markHackComplete(userId: string, hackId: number, sessionId?: number): Promise<void> {
     const { db } = await import("./db");
     await db.insert(userHackCompletions)
-      .values({ userId, hackId })
+      .values({ userId, hackId, sessionId })
       .onConflictDoNothing();
   }
 
@@ -256,9 +268,135 @@ export class DatabaseStorage implements IStorage {
         title: hack.title,
         description: hack.description,
         category: hack.category,
-        illustration: hack.illustration,
       });
     }
+  }
+
+  async getHandyHacksForSession(sessionId: number): Promise<HandyHack[]> {
+    const { db } = await import("./db");
+    const { eq, asc } = await import("drizzle-orm");
+    
+    const result = await db
+      .select({
+        id: handyHacks.id,
+        title: handyHacks.title,
+        description: handyHacks.description,
+        category: handyHacks.category,
+        illustration: handyHacks.illustration,
+      })
+      .from(sessionHandyHacks)
+      .innerJoin(handyHacks, eq(sessionHandyHacks.hackId, handyHacks.id))
+      .where(eq(sessionHandyHacks.sessionId, sessionId))
+      .orderBy(asc(sessionHandyHacks.sortOrder), asc(handyHacks.id));
+    
+    return result;
+  }
+
+  async addHackToSession(sessionId: number, hackId: number, sortOrder: number = 0): Promise<void> {
+    const { db } = await import("./db");
+    await db.insert(sessionHandyHacks)
+      .values({ sessionId, hackId, sortOrder })
+      .onConflictDoNothing();
+  }
+
+  async removeHackFromSession(sessionId: number, hackId: number): Promise<void> {
+    const { db } = await import("./db");
+    const { eq, and } = await import("drizzle-orm");
+    await db.delete(sessionHandyHacks)
+      .where(and(eq(sessionHandyHacks.sessionId, sessionId), eq(sessionHandyHacks.hackId, hackId)));
+  }
+
+  async initializeSessionHandyHacks(): Promise<void> {
+    const { db } = await import("./db");
+    const { sessionHacksMapping } = await import("../client/src/lib/session-data");
+    const { eq } = await import("drizzle-orm");
+    
+    // Check if session handy hacks already exist
+    const existingSessionHacks = await db.select().from(sessionHandyHacks).limit(1);
+    if (existingSessionHacks.length > 0) {
+      return; // Session handy hacks already initialized
+    }
+
+    // Get all handy hacks to resolve titles to IDs
+    const allHacks = await db.select().from(handyHacks);
+    
+    // Map hack titles to IDs
+    const hackTitleToId = new Map(allHacks.map(hack => [hack.title, hack.id]));
+    
+    // Insert session-hack mappings
+    for (const [sessionIdStr, hackTitles] of Object.entries(sessionHacksMapping)) {
+      const sessionId = parseInt(sessionIdStr);
+      for (let i = 0; i < hackTitles.length; i++) {
+        const hackTitle = hackTitles[i];
+        const hackId = hackTitleToId.get(hackTitle);
+        if (hackId) {
+          await this.addHackToSession(sessionId, hackId, i);
+        }
+      }
+    }
+  }
+
+  async scheduleHackReminder(userId: string, hackId: number, sessionId: number, scheduledFor: Date, pattern?: string, count: number = 1): Promise<Notification[]> {
+    const { db } = await import("./db");
+    
+    // Get hack details for notification
+    const { eq } = await import("drizzle-orm");
+    const [hack] = await db.select().from(handyHacks).where(eq(handyHacks.id, hackId));
+    
+    if (!hack) {
+      throw new Error(`Handy hack with ID ${hackId} not found`);
+    }
+
+    const createdNotifications: Notification[] = [];
+    const reminderData = {
+      userId,
+      type: 'hack',
+      title: `Handy Hack: ${hack.title}`,
+      message: hack.description,
+      scheduledFor,
+      sessionId,
+      hackId,
+      isRecurring: pattern ? true : false,
+      recurringPattern: pattern || null,
+    };
+
+    // Create initial notification
+    const [notification] = await db.insert(notifications).values(reminderData).returning();
+    createdNotifications.push(notification);
+
+    // If count > 1, create additional notifications
+    for (let i = 1; i < count; i++) {
+      const nextScheduled = new Date(scheduledFor);
+      nextScheduled.setDate(nextScheduled.getDate() + i); // Simple daily increment
+      
+      const [nextNotification] = await db.insert(notifications).values({
+        ...reminderData,
+        scheduledFor: nextScheduled,
+      }).returning();
+      createdNotifications.push(nextNotification);
+    }
+
+    return createdNotifications;
+  }
+
+  async getHackReminders(userId: string, sessionId?: number): Promise<Notification[]> {
+    const { db } = await import("./db");
+    const { eq, and } = await import("drizzle-orm");
+    
+    if (sessionId !== undefined) {
+      return await db.select().from(notifications)
+        .where(and(
+          eq(notifications.userId, userId),
+          eq(notifications.type, 'hack'),
+          eq(notifications.sessionId, sessionId)
+        ));
+    }
+    
+    return await db.select().from(notifications)
+      .where(and(
+        eq(notifications.userId, userId),
+        eq(notifications.type, 'hack')
+      ));
   }
 
   async createNotification(userId: string, notification: InsertNotification): Promise<Notification> {
