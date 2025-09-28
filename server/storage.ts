@@ -168,10 +168,11 @@ export class DatabaseStorage implements IStorage {
     // Insert session data
     for (const session of sessionData) {
       await db.insert(meditationSessions).values({
+        id: session.id, // Preserve the explicit ID from sessionData
         week: session.week,
         title: session.title,
         description: session.description || session.desc || `Week ${session.week} meditation session`,
-        audioUrl: session.audioUrl || '/attached_assets/placeholder.mp3',
+        audioUrl: session.audioSrc || session.audioUrl || '/attached_assets/placeholder.mp3',
         duration: session.duration || 10,
         illustration: session.illustration || 'default',
         isLocked: false,

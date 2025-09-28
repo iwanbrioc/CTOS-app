@@ -142,15 +142,16 @@ export const sessionData = [
 ];
 
 // Mapping of session IDs to their specific handy hacks (by title)
+// Note: Using actual database session IDs (2-9) not sequential 1-8
 export const sessionHacksMapping = {
-  1: ["Drop the Balloon", "Radical Stop", "Hand Check", "Three Conscious Breaths"],
-  2: ["Spine Stations", "Journey Mapping", "Body Curiosity", "Mindful Listening"],
-  3: ["Sense Door Opening", "Thoughts as Senses", "Timeless Awareness", "Gratitude Moment"],
-  4: ["Opening & Closing", "Body Joy", "Movement Meditation", "Three Conscious Breaths"],
-  5: ["What Do I Really Want?", "Flow Check", "Goldilocks Zone", "Gratitude Moment"],
-  6: ["Welcome Discomfort", "Emotion Check-in", "Find the Gold", "Three Conscious Breaths"],
-  7: ["Attention Check", "Script Your Experience", "Creative Challenge", "Mindful Listening"],
-  8: ["Great Smile Practice", "Falling Awake", "Love What Is", "Gratitude Moment"],
+  2: ["Drop the Balloon", "Radical Stop", "Hand Check", "Three Conscious Breaths"], // Dropping the Balloon
+  3: ["Spine Stations", "Journey Mapping", "Body Curiosity", "Mindful Listening"], // Journey to Now
+  4: ["Sense Door Opening", "Thoughts as Senses", "Timeless Awareness", "Gratitude Moment"], // Coming to Our Senses
+  5: ["Opening & Closing", "Body Joy", "Movement Meditation", "Three Conscious Breaths"], // Body, Movement, Mind
+  6: ["What Do I Really Want?", "Flow Check", "Goldilocks Zone", "Gratitude Moment"], // What You Really Want
+  7: ["Welcome Discomfort", "Emotion Check-in", "Find the Gold", "Three Conscious Breaths"], // Leaning in to Difficulty
+  8: ["Attention Check", "Script Your Experience", "Creative Challenge", "Mindful Listening"], // Finding Your Flow
+  9: ["Great Smile Practice", "Falling Awake", "Love What Is", "Gratitude Moment"], // Falling Awake
 };
 
 export const handyHacksData = [
