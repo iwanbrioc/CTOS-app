@@ -27,9 +27,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
   
   // API route to update user session pace
-  app.put("/api/users/:userId/sessions-pace", async (req, res) => {
+  app.put("/api/users/:userId/sessions-pace", mockAuthMiddleware, async (req: any, res) => {
     try {
-      const userId = req.params.userId;
+      const userId = req.user.claims.sub; // Use authenticated user's ID
       const { sessionsPace } = req.body;
       
       if (sessionsPace !== 1 && sessionsPace !== 2) {
@@ -39,6 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.updateUserSessionsPace(userId, sessionsPace);
       res.json({ success: true });
     } catch (error) {
+      console.error("Error updating sessions pace:", error);
       res.status(500).json({ error: "Failed to update sessions pace" });
     }
   });
@@ -48,6 +49,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await storage.initializeSessions();
     await storage.initializeHandyHacks();
     await storage.initializeMilestones();
+    
+    // Ensure demo user exists
+    await storage.upsertUser({
+      id: "1",
+      email: "demo@example.com",
+      firstName: "Demo",
+      lastName: "User"
+    });
   } catch (error) {
     console.error("Failed to initialize storage:", error);
   }

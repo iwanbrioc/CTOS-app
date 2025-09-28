@@ -19,8 +19,30 @@ import type { User, Session, UserProgress } from "@shared/schema";
 
 export default function Home() {
   const { user: authUser, isLoading: userLoading } = useAuth();
-  // Fallback to demo user if auth is not working (for development)
-  const user: User = (authUser as User) || { id: "1", firstName: "Demo", currentWeek: 1, sessionsPace: 1, email: "demo@example.com", lastName: "User", profileImageUrl: null, joinedAt: new Date(), updatedAt: new Date(), notificationsEnabled: true, reminderTime: "09:00", reminderDays: [1,2,3,4,5], timezone: "UTC" };
+  
+  // Debug logging
+  console.log("authUser from useAuth:", authUser);
+  console.log("userLoading:", userLoading);
+  
+  // Fallback to demo user only if auth user is not available
+  const user: User = authUser as User || { 
+    id: "1", 
+    firstName: "Demo", 
+    currentWeek: 1, 
+    sessionsPace: 1, 
+    email: "demo@example.com", 
+    lastName: "User", 
+    profileImageUrl: null, 
+    joinedAt: new Date(), 
+    updatedAt: new Date(), 
+    notificationsEnabled: true, 
+    reminderTime: "09:00", 
+    reminderDays: [1,2,3,4,5], 
+    timezone: "UTC" 
+  };
+  
+  console.log("Final user object:", user);
+  console.log("User sessions pace:", user.sessionsPace);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [audioPlayerType, setAudioPlayerType] = useState<'html5' | null>(null);
   const [showNotificationBanner, setShowNotificationBanner] = useState(false);
@@ -84,17 +106,26 @@ export default function Home() {
   // Session pace mutation
   const updateSessionsPaceMutation = useMutation({
     mutationFn: async (newPace: number) => {
-      return apiRequest("PUT", `/api/users/${user.id}/sessions-pace`, { sessionsPace: newPace });
+      console.log("Updating session pace to:", newPace);
+      const response = await apiRequest("PUT", `/api/users/${user.id}/sessions-pace`, { sessionsPace: newPace });
+      console.log("Session pace update response:", response);
+      return response;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    onSuccess: async (data, newPace) => {
+      console.log("Session pace update successful, invalidating cache");
+      // Invalidate and refetch the user data
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
+      console.log("Cache invalidated and refetched");
+      
       toast({
         title: "Settings updated",
-        description: `Session pace set to ${user.sessionsPace === 1 ? '1 session' : '2 sessions'} per week.`,
+        description: `Session pace set to ${newPace === 1 ? '1 session' : '2 sessions'} per week.`,
         duration: 2000,
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Session pace update failed:", error);
       toast({
         title: "Error",
         description: "Failed to update session pace.",
