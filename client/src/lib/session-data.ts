@@ -141,12 +141,156 @@ export const sessionData = [
   }
 ];
 
+// Mapping of session IDs to their specific handy hacks (by title)
+export const sessionHacksMapping = {
+  1: ["Drop the Balloon", "Radical Stop", "Hand Check", "Three Conscious Breaths"],
+  2: ["Spine Stations", "Journey Mapping", "Body Curiosity", "Mindful Listening"],
+  3: ["Sense Door Opening", "Thoughts as Senses", "Timeless Awareness", "Gratitude Moment"],
+  4: ["Opening & Closing", "Body Joy", "Movement Meditation", "Three Conscious Breaths"],
+  5: ["What Do I Really Want?", "Flow Check", "Goldilocks Zone", "Gratitude Moment"],
+  6: ["Welcome Discomfort", "Emotion Check-in", "Find the Gold", "Three Conscious Breaths"],
+  7: ["Attention Check", "Script Your Experience", "Creative Challenge", "Mindful Listening"],
+  8: ["Great Smile Practice", "Falling Awake", "Love What Is", "Gratitude Moment"],
+};
+
 export const handyHacksData = [
+  // Session 1: Dropping the Balloon - Letting go, stopping, mindfulness basics
+  {
+    title: "Drop the Balloon",
+    description: "When you notice yourself in 'keepy-uppy' mode, imagine dropping an invisible balloon. Let your hand relax.",
+    category: "letting-go",
+  },
+  {
+    title: "Radical Stop",
+    description: "Stop whatever you're doing for 30 seconds. Just be. Notice this is a radical act of sanity and love.",
+    category: "stopping",
+  },
+  {
+    title: "Hand Check",
+    description: "Notice if your hands are tense or reaching for something. Consciously relax them and breathe.",
+    category: "body-awareness",
+  },
+  
+  // Session 2: Journey to Now - Body awareness, presence, spine awareness
+  {
+    title: "Spine Stations",
+    description: "Feel each section of your spine from base to crown. Notice how your body anchors you to the present.",
+    category: "body-awareness",
+  },
+  {
+    title: "Journey Mapping",
+    description: "Briefly acknowledge how you got to this moment, then return your attention to now.",
+    category: "presence",
+  },
+  {
+    title: "Body Curiosity",
+    description: "Approach your body with curiosity rather than judgment. What is it telling you right now?",
+    category: "body-awareness",
+  },
+  
+  // Session 3: Coming to Our Senses - Senses, awareness, thoughts as senses
+  {
+    title: "Sense Door Opening",
+    description: "Cycle through your five senses. What do you see, hear, smell, taste, and feel right now?",
+    category: "awareness",
+  },
+  {
+    title: "Thoughts as Senses",
+    description: "Notice thoughts arising like sounds. They don't belong to you—you're just aware of them.",
+    category: "awareness",
+  },
+  {
+    title: "Timeless Awareness",
+    description: "Rest in the awareness that notices all experiences. This awareness is your true nature.",
+    category: "awareness",
+  },
+  
+  // Session 4: Body, Movement, Mind - Movement meditation, opening/closing
+  {
+    title: "Opening & Closing",
+    description: "Make gentle opening and closing gestures with your hands. The first movement you ever made.",
+    category: "movement",
+  },
+  {
+    title: "Body Joy",
+    description: "Celebrate having a body! Stretch, move, or wiggle—notice how fun it can be to be embodied.",
+    category: "movement",
+  },
+  {
+    title: "Movement Meditation",
+    description: "Turn any movement into meditation. Walk, stretch, or gesture with complete presence.",
+    category: "movement",
+  },
+  
+  // Session 5: What You Really Want - Investigating craving, acceptance, flow
+  {
+    title: "What Do I Really Want?",
+    description: "Ask yourself what you really want right now. Notice the craving, then see if you can want nothing.",
+    category: "wanting",
+  },
+  {
+    title: "Flow Check",
+    description: "Notice if you're wanting something to be different. Can you find contentment with what is?",
+    category: "acceptance",
+  },
+  {
+    title: "Goldilocks Zone",
+    description: "Notice when you're seeking the 'just right' feeling. Can you be okay with 'just this'?",
+    category: "acceptance",
+  },
+  
+  // Session 6: Leaning in to Difficulty - Emotions, discomfort, finding gold
+  {
+    title: "Welcome Discomfort",
+    description: "If you notice discomfort, breathe into it. What is this feeling trying to tell you?",
+    category: "difficulty",
+  },
+  {
+    title: "Emotion Check-in",
+    description: "Name what you're feeling: anger, sadness, joy, disgust, or fear. Let it be here.",
+    category: "emotions",
+  },
+  {
+    title: "Find the Gold",
+    description: "In any difficult moment, look for the hidden gift or lesson. What gold can you find in this wound?",
+    category: "difficulty",
+  },
+  
+  // Session 7: Finding Your Flow - Integration, attention, scripting
+  {
+    title: "Attention Check",
+    description: "Notice where your attention is right now. Are you choosing its direction, or is something else?",
+    category: "attention",
+  },
+  {
+    title: "Script Your Experience",
+    description: "Briefly set an intention for how you want to experience the next hour. What do you want to notice?",
+    category: "intention",
+  },
+  {
+    title: "Creative Challenge",
+    description: "See this moment as a creative challenge. How can you approach it with fresh awareness?",
+    category: "creativity",
+  },
+  
+  // Session 8: Falling Awake - Culmination, paradox, love with what is
   {
     title: "Great Smile Practice",
     description: "Take a moment to smile genuinely. Notice how it changes your internal state and the energy around you.",
     category: "joy",
   },
+  {
+    title: "Falling Awake",
+    description: "Notice you're falling through life with no solid ground. Feel how this is actually liberating.",
+    category: "awakening",
+  },
+  {
+    title: "Love What Is",
+    description: "Look at this moment with unconditional positive regard. Can you fall in love with what is?",
+    category: "acceptance",
+  },
+  
+  // General practice hacks (can be used across sessions)
   {
     title: "Three Conscious Breaths",
     description: "Pause and take three deep, mindful breaths. Feel your body settling with each exhale.",
@@ -156,11 +300,6 @@ export const handyHacksData = [
     title: "Gratitude Moment",
     description: "Notice one thing you're grateful for right now. Really feel the appreciation in your body.",
     category: "gratitude",
-  },
-  {
-    title: "Body Scan Check-in",
-    description: "Quickly scan your body from head to toe. Notice any tension and breathe into those areas.",
-    category: "body-awareness",
   },
   {
     title: "Mindful Listening",
