@@ -266,6 +266,7 @@ export default function Home() {
           sessions={allSessions}
           userProgress={userProgress}
           sessionsPace={user.sessionsPace || 1}
+          courseFormat={user.courseFormat || "8-week"}
         />
 
         {/* All Sessions */}

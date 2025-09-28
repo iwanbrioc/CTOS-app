@@ -5,9 +5,10 @@ interface ProgressLineProps {
   sessions: Session[];
   userProgress: UserProgress[];
   sessionsPace: number; // 1 or 2 sessions per week
+  courseFormat?: string; // "8-week" or "4-week"
 }
 
-export function ProgressLine({ sessions, userProgress, sessionsPace }: ProgressLineProps) {
+export function ProgressLine({ sessions, userProgress, sessionsPace, courseFormat = "8-week" }: ProgressLineProps) {
   const completedSessions = userProgress.filter(p => p.completed);
   const totalCompletedCount = completedSessions.length;
   
@@ -62,7 +63,7 @@ export function ProgressLine({ sessions, userProgress, sessionsPace }: ProgressL
         </div>
         
         <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-          <span>Pace: {sessionsPace === 1 ? '1 session/week' : '2 sessions/week'}</span>
+          <span>Pace: {sessionsPace === 1 ? '1 session/week' : '2 sessions/week'} • {courseFormat}</span>
           <span>{Math.round(progressPercentage)}% complete</span>
         </div>
       </div>
