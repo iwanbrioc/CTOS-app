@@ -342,20 +342,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Session-specific handy hacks
+  app.get("/api/sessions/:sessionId/hacks", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      
+      if (isNaN(sessionId)) {
+        return res.status(400).json({ error: "Invalid session ID" });
+      }
+      
+      const hacks = await storage.getSessionHandyHacks(sessionId);
+      res.json(hacks);
+    } catch (error) {
+      console.error("Error fetching session hacks:", error);
+      res.status(500).json({ error: "Failed to fetch session handy hacks" });
+    }
+  });
+
   app.post("/api/users/:userId/hacks/:hackId/complete", async (req, res) => {
     try {
       const userId = req.params.userId; // Keep as string for consistency
       const hackId = parseInt(req.params.hackId);
+      const { sessionId } = req.body; // Optional sessionId from request body
       
       if (isNaN(hackId)) {
         return res.status(400).json({ error: "Invalid hack ID" });
       }
       
-      await storage.markHackComplete(userId, hackId);
+      await storage.markHackComplete(userId, hackId, sessionId);
       res.json({ success: true });
     } catch (error) {
       console.error("Error marking hack as complete:", error);
       res.status(500).json({ error: "Failed to mark hack as complete" });
+    }
+  });
+
+  app.post("/api/hacks/:hackId/reminders", async (req, res) => {
+    try {
+      const hackId = parseInt(req.params.hackId);
+      const { userId, scheduledFor, count = 1, pattern, sessionId } = req.body;
+      
+      if (isNaN(hackId)) {
+        return res.status(400).json({ error: "Invalid hack ID" });
+      }
+      
+      if (!userId || !scheduledFor) {
+        return res.status(400).json({ error: "userId and scheduledFor are required" });
+      }
+      
+      const reminders = await storage.scheduleHackReminder(
+        userId, 
+        hackId, 
+        new Date(scheduledFor), 
+        count, 
+        pattern, 
+        sessionId
+      );
+      res.json(reminders);
+    } catch (error) {
+      console.error("Error scheduling hack reminders:", error);
+      res.status(500).json({ error: "Failed to schedule hack reminders" });
+    }
+  });
+
+  app.get("/api/users/:userId/hack-reminders", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const sessionId = req.query.sessionId ? parseInt(req.query.sessionId as string) : undefined;
+      
+      const reminders = await storage.getHackReminders(userId, sessionId);
+      res.json(reminders);
+    } catch (error) {
+      console.error("Error fetching hack reminders:", error);
+      res.status(500).json({ error: "Failed to fetch hack reminders" });
     }
   });
 
