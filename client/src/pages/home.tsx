@@ -75,12 +75,17 @@ export default function Home() {
   const getSessionState = (session: Session): 'past' | 'active' | 'future' => {
     const currentWeek = user?.currentWeek || 1;
     const sessionsPace = user?.sessionsPace || 1;
+    const courseFormat = user?.courseFormat || "8-week";
     
-    // Calculate how many sessions should be unlocked based on current week and pace
-    const availableSessions = currentWeek * sessionsPace;
+    // Adjust pace based on course format
+    // For 4-week condensed course, double the effective pace
+    const effectivePace = courseFormat === "4-week" ? sessionsPace * 2 : sessionsPace;
+    
+    // Calculate how many sessions should be unlocked based on current week and effective pace
+    const availableSessions = currentWeek * effectivePace;
     const sessionIndex = sessions.findIndex(s => s.id === session.id);
     
-    if (sessionIndex < availableSessions - sessionsPace) {
+    if (sessionIndex < availableSessions - effectivePace) {
       return 'past';
     } else if (sessionIndex < availableSessions) {
       return 'active';
