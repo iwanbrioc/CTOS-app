@@ -26,6 +26,7 @@ export default function Home() {
     firstName: "Demo", 
     currentWeek: 1, 
     sessionsPace: 1, 
+    courseFormat: "8-week",
     email: "demo@example.com", 
     lastName: "User", 
     profileImageUrl: null, 
@@ -122,6 +123,32 @@ export default function Home() {
     }
   });
 
+  // Course format mutation
+  const updateCourseFormatMutation = useMutation({
+    mutationFn: async (newFormat: string) => {
+      return apiRequest("PUT", `/api/users/${user.id}/course-format`, { courseFormat: newFormat });
+    },
+    onSuccess: async (data, newFormat) => {
+      // Invalidate and refetch the user data
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
+      
+      toast({
+        title: "Settings updated",
+        description: `Course format set to ${newFormat} course.`,
+        duration: 2000,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update course format.",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  });
+
   if (sessionsLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -177,7 +204,28 @@ export default function Home() {
 
         {/* Settings Panel */}
         {showSettings && (
-          <div className="bg-blue-50 border-b px-4 py-4">
+          <div className="bg-blue-50 border-b px-4 py-4 space-y-4">
+            {/* Course Format Setting */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-900">Course Format</h3>
+                <p className="text-xs text-gray-500">Choose course delivery schedule</p>
+              </div>
+              <Select 
+                value={user.courseFormat || "8-week"} 
+                onValueChange={(value) => updateCourseFormatMutation.mutate(value)}
+              >
+                <SelectTrigger className="w-36">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="8-week">8-week course</SelectItem>
+                  <SelectItem value="4-week">4-week condensed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Session Pace Setting */}
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-gray-900">Session Pace</h3>

@@ -44,6 +44,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // API route to update user course format
+  app.put("/api/users/:userId/course-format", mockAuthMiddleware, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub; // Use authenticated user's ID
+      const { courseFormat } = req.body;
+      
+      if (courseFormat !== "8-week" && courseFormat !== "4-week") {
+        return res.status(400).json({ error: "Course format must be '8-week' or '4-week'" });
+      }
+      
+      await storage.updateUserCourseFormat(userId, courseFormat);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating course format:", error);
+      res.status(500).json({ error: "Failed to update course format" });
+    }
+  });
+
   // Initialize storage data
   try {
     await storage.initializeSessions();
