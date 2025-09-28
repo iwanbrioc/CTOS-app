@@ -11,6 +11,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication middleware (temporarily disabled for demo)
   // await setupAuth(app);
 
+  // For development: Mock authentication middleware to bypass auth
+  const mockAuthMiddleware = (req: any, res: any, next: any) => {
+    // Mock authenticated user for development
+    req.user = {
+      claims: {
+        sub: "1", // Demo user ID
+        email: "demo@example.com",
+        first_name: "Demo",
+        last_name: "User"
+      }
+    };
+    req.isAuthenticated = () => true;
+    next();
+  };
+
   // Initialize storage data
   try {
     await storage.initializeSessions();
@@ -34,7 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/user', mockAuthMiddleware, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
@@ -56,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/users/:id", isAuthenticated, async (req: any, res) => {
+  app.get("/api/users/:id", mockAuthMiddleware, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub; // Use authenticated user's ID
       const user = await storage.getUser(userId);
@@ -69,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/users/:id/week", isAuthenticated, async (req: any, res) => {
+  app.put("/api/users/:id/week", mockAuthMiddleware, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub; // Use authenticated user's ID
       const { week } = req.body;
