@@ -114,6 +114,14 @@ This is a mobile-first mindfulness application built as a progressive web app (P
 - **NODE_ENV**: Environment mode (development/production)
 
 ## Recent Changes
+- September 28, 2025: Implemented course format preference system
+  - Added courseFormat field to user database schema with default "8-week" value
+  - Created comprehensive settings panel with course format and session pace options
+  - Implemented session availability logic with "effective pace" calculation for 4-week condensed courses
+  - Enhanced progress indicators to display course format alongside session pace
+  - Added API endpoint (PUT /api/users/:userId/course-format) for updating course format preferences
+  - Fixed session ordering in database queries to ensure deterministic session availability
+  - All functionality verified through end-to-end testing with successful persistence and UI updates
 - July 7, 2025: Implemented comprehensive audio session tracking and progression system
   - Enhanced database schema with detailed session analytics tracking (play count, pause count, skip count, completion percentage)
   - Added sessionAnalytics table for granular tracking of user behavior (start/end times, pause durations, seek events, device type)

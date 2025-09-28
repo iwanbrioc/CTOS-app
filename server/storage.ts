@@ -133,7 +133,8 @@ export class DatabaseStorage implements IStorage {
 
   async getAllSessions(): Promise<Session[]> {
     const { db } = await import("./db");
-    return await db.select().from(meditationSessions);
+    const { asc } = await import("drizzle-orm");
+    return await db.select().from(meditationSessions).orderBy(asc(meditationSessions.week), asc(meditationSessions.id));
   }
 
   async getSessionsByWeek(week: number): Promise<Session[]> {
