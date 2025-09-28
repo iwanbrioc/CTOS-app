@@ -3,23 +3,28 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { StatusBar } from "@/components/status-bar";
 import { ProgressIndicator } from "@/components/progress-indicator";
+import { ProgressLine } from "@/components/progress-line";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { SessionCard } from "@/components/session-card";
 import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { TestSimplePlayer } from "@/components/test-simple-player";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Settings } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { User, Session, UserProgress } from "@shared/schema";
 
 
 export default function Home() {
   const { user: authUser, isLoading: userLoading } = useAuth();
   // Fallback to demo user if auth is not working (for development)
-  const user: User = (authUser as User) || { id: "1", firstName: "Demo", currentWeek: 1, email: "demo@example.com", lastName: "User", profileImageUrl: null, joinedAt: new Date(), updatedAt: new Date(), notificationsEnabled: true, reminderTime: "09:00", reminderDays: [1,2,3,4,5], timezone: "UTC" };
+  const user: User = (authUser as User) || { id: "1", firstName: "Demo", currentWeek: 1, sessionsPace: 1, email: "demo@example.com", lastName: "User", profileImageUrl: null, joinedAt: new Date(), updatedAt: new Date(), notificationsEnabled: true, reminderTime: "09:00", reminderDays: [1,2,3,4,5], timezone: "UTC" };
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [audioPlayerType, setAudioPlayerType] = useState<'html5' | null>(null);
   const [showNotificationBanner, setShowNotificationBanner] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const { toast } = useToast();
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
@@ -53,9 +58,15 @@ export default function Home() {
   
   const getSessionState = (session: Session): 'past' | 'active' | 'future' => {
     const currentWeek = user?.currentWeek || 1;
-    if (session.week < currentWeek) {
+    const sessionsPace = user?.sessionsPace || 1;
+    
+    // Calculate how many sessions should be unlocked based on current week and pace
+    const availableSessions = currentWeek * sessionsPace;
+    const sessionIndex = sessions.findIndex(s => s.id === session.id);
+    
+    if (sessionIndex < availableSessions - sessionsPace) {
       return 'past';
-    } else if (session.week === currentWeek) {
+    } else if (sessionIndex < availableSessions) {
       return 'active';
     } else {
       return 'future';
@@ -69,6 +80,29 @@ export default function Home() {
       duration: 2000,
     });
   };
+  
+  // Session pace mutation
+  const updateSessionsPaceMutation = useMutation({
+    mutationFn: async (newPace: number) => {
+      return apiRequest("PUT", `/api/users/${user.id}/sessions-pace`, { sessionsPace: newPace });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      toast({
+        title: "Settings updated",
+        description: `Session pace set to ${user.sessionsPace === 1 ? '1 session' : '2 sessions'} per week.`,
+        duration: 2000,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update session pace.",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  });
 
   if (sessionsLoading) {
     return (
@@ -104,15 +138,48 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => window.location.href = '/api/logout'}
-            >
-              Sign Out
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowSettings(!showSettings)}
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.location.href = '/api/logout'}
+              >
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
+
+        {/* Settings Panel */}
+        {showSettings && (
+          <div className="bg-blue-50 border-b px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-900">Session Pace</h3>
+                <p className="text-xs text-gray-500">Choose how many sessions per week</p>
+              </div>
+              <Select 
+                value={user.sessionsPace?.toString() || "1"} 
+                onValueChange={(value) => updateSessionsPaceMutation.mutate(parseInt(value))}
+              >
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 per week</SelectItem>
+                  <SelectItem value="2">2 per week</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
 
         {/* Progress Indicator */}
         <div className="px-4 py-4">
@@ -122,6 +189,13 @@ export default function Home() {
             progressPercentage={progressPercentage}
           />
         </div>
+
+        {/* Progress Line */}
+        <ProgressLine 
+          sessions={allSessions}
+          userProgress={userProgress}
+          sessionsPace={user.sessionsPace || 1}
+        />
 
         {/* All Sessions */}
         <div className="px-4 space-y-4 pb-20">

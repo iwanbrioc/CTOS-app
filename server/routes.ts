@@ -25,6 +25,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     req.isAuthenticated = () => true;
     next();
   };
+  
+  // API route to update user session pace
+  app.put("/api/users/:userId/sessions-pace", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const { sessionsPace } = req.body;
+      
+      if (sessionsPace !== 1 && sessionsPace !== 2) {
+        return res.status(400).json({ error: "Sessions pace must be 1 or 2" });
+      }
+      
+      await storage.updateUserSessionsPace(userId, sessionsPace);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update sessions pace" });
+    }
+  });
 
   // Initialize storage data
   try {

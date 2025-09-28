@@ -30,6 +30,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserWeek(userId: string, week: number): Promise<void>;
+  updateUserSessionsPace(userId: string, sessionsPace: number): Promise<void>;
 
   // Sessions
   getAllSessions(): Promise<Session[]>;
@@ -115,6 +116,12 @@ export class DatabaseStorage implements IStorage {
     const { db } = await import("./db");
     const { eq } = await import("drizzle-orm");
     await db.update(users).set({ currentWeek: week }).where(eq(users.id, userId));
+  }
+
+  async updateUserSessionsPace(userId: string, sessionsPace: number): Promise<void> {
+    const { db } = await import("./db");
+    const { eq } = await import("drizzle-orm");
+    await db.update(users).set({ sessionsPace }).where(eq(users.id, userId));
   }
 
   async getAllSessions(): Promise<Session[]> {
