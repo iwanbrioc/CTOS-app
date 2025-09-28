@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, index } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, index, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -129,10 +129,20 @@ export const handyHacks = pgTable("handy_hacks", {
   illustration: text("illustration"),
 });
 
+export const sessionHandyHacks = pgTable("session_handy_hacks", {
+  id: serial("id").primaryKey(),
+  sessionId: integer("session_id").references(() => meditationSessions.id).notNull(),
+  hackId: integer("hack_id").references(() => handyHacks.id).notNull(),
+  sortOrder: integer("sort_order").default(0),
+}, (table) => ({
+  uniqueSessionHack: unique().on(table.sessionId, table.hackId),
+}));
+
 export const userHackCompletions = pgTable("user_hack_completions", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").references(() => users.id).notNull(),
   hackId: integer("hack_id").references(() => handyHacks.id).notNull(),
+  sessionId: integer("session_id").references(() => meditationSessions.id), // nullable for session-specific context
   completedAt: timestamp("completed_at").defaultNow(),
 });
 
@@ -148,6 +158,8 @@ export const notifications = pgTable("notifications", {
   isRecurring: boolean("is_recurring").default(false),
   recurringPattern: text("recurring_pattern"), // 'daily', 'weekly', 'custom'
   nextScheduled: timestamp("next_scheduled"),
+  sessionId: integer("session_id").references(() => meditationSessions.id), // nullable for session-specific reminders
+  hackId: integer("hack_id").references(() => handyHacks.id), // nullable for hack-specific reminders
 });
 
 export const upsertUserSchema = createInsertSchema(users).pick({
@@ -189,6 +201,7 @@ export type Session = typeof meditationSessions.$inferSelect;
 export type UserProgress = typeof userProgress.$inferSelect;
 export type JournalEntry = typeof journalEntries.$inferSelect;
 export type HandyHack = typeof handyHacks.$inferSelect;
+export type SessionHandyHack = typeof sessionHandyHacks.$inferSelect;
 export type UserHackCompletion = typeof userHackCompletions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type Milestone = typeof milestones.$inferSelect;
