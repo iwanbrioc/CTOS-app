@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { X, Clock, ChevronDown, ChevronUp, Lightbulb, Check, Bell } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { X, Clock, ChevronDown, ChevronUp, Lightbulb, Check, Bell, Calendar } from "lucide-react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import type { Session, HandyHack, UserHackCompletion } from "@shared/schema";
 
 interface SimpleAudioPlayerProps {
@@ -26,6 +28,7 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
   const playCount = useRef(0);
   const pauseCount = useRef(0);
   const skipCount = useRef(0);
+  const { toast } = useToast();
   
   // State for handy hacks
   const [hacksExpanded, setHacksExpanded] = useState(false);
@@ -101,16 +104,30 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
   });
 
   const scheduleReminderMutation = useMutation({
-    mutationFn: async ({ hackId, scheduledFor }: { hackId: number; scheduledFor: Date }) => {
+    mutationFn: async ({ hackId, scheduledFor, hackTitle }: { hackId: number; scheduledFor: Date; hackTitle: string }) => {
       await apiRequest("POST", `/api/hacks/${hackId}/reminders`, {
         userId: DEMO_USER_ID,
         scheduledFor: scheduledFor.toISOString(),
         sessionId: session.id,
         count: 1,
       });
+      return { hackTitle, scheduledFor };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/users", DEMO_USER_ID, "hack-reminders"] });
+      const time = data.scheduledFor.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const date = data.scheduledFor.toLocaleDateString();
+      toast({
+        title: "Reminder Set!",
+        description: `"${data.hackTitle}" reminder scheduled for ${date} at ${time}`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to schedule reminder. Please try again.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -232,15 +249,50 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
 
   const handleCompleteHack = (hackId: number) => {
     completeHackMutation.mutate({ hackId });
+    
+    const hack = sessionHacks.find(h => h.id === hackId);
+    if (hack) {
+      toast({
+        title: "Great Work!",
+        description: `"${hack.title}" marked as complete`,
+      });
+    }
   };
 
-  const handleScheduleReminder = (hackId: number) => {
-    // Schedule reminder for tomorrow at 10 AM
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(10, 0, 0, 0);
-    
-    scheduleReminderMutation.mutate({ hackId, scheduledFor: tomorrow });
+  // Helper functions for scheduling reminders at different times
+  const getScheduleOptions = () => {
+    const now = new Date();
+    const options = [];
+
+    // Tomorrow morning (9 AM)
+    const tomorrowMorning = new Date(now);
+    tomorrowMorning.setDate(tomorrowMorning.getDate() + 1);
+    tomorrowMorning.setHours(9, 0, 0, 0);
+    options.push({ label: "Tomorrow Morning (9 AM)", date: tomorrowMorning });
+
+    // Tomorrow afternoon (2 PM)
+    const tomorrowAfternoon = new Date(now);
+    tomorrowAfternoon.setDate(tomorrowAfternoon.getDate() + 1);
+    tomorrowAfternoon.setHours(14, 0, 0, 0);
+    options.push({ label: "Tomorrow Afternoon (2 PM)", date: tomorrowAfternoon });
+
+    // Tomorrow evening (7 PM)
+    const tomorrowEvening = new Date(now);
+    tomorrowEvening.setDate(tomorrowEvening.getDate() + 1);
+    tomorrowEvening.setHours(19, 0, 0, 0);
+    options.push({ label: "Tomorrow Evening (7 PM)", date: tomorrowEvening });
+
+    // Next week same time
+    const nextWeek = new Date(now);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    nextWeek.setHours(10, 0, 0, 0);
+    options.push({ label: "Next Week (same time)", date: nextWeek });
+
+    return options;
+  };
+
+  const handleScheduleReminder = (hackId: number, hackTitle: string, scheduledFor: Date) => {
+    scheduleReminderMutation.mutate({ hackId, hackTitle, scheduledFor });
   };
 
   return (
@@ -344,16 +396,44 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
                               <Check className="h-3 w-3" />
                             </Button>
                             
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleScheduleReminder(hack.id)}
-                              disabled={scheduleReminderMutation.isPending}
-                              data-testid={`hack-reminder-btn-${hack.id}`}
-                            >
-                              <Bell className="h-3 w-3" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                  disabled={scheduleReminderMutation.isPending}
+                                  data-testid={`hack-reminder-btn-${hack.id}`}
+                                >
+                                  <Bell className="h-3 w-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                {getScheduleOptions().map((option, index) => (
+                                  <DropdownMenuItem
+                                    key={index}
+                                    onClick={() => handleScheduleReminder(hack.id, hack.title, option.date)}
+                                    className="cursor-pointer"
+                                  >
+                                    <Calendar className="h-4 w-4 mr-2" />
+                                    {option.label}
+                                  </DropdownMenuItem>
+                                ))}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    // Quick option: 1 hour from now
+                                    const oneHour = new Date();
+                                    oneHour.setHours(oneHour.getHours() + 1);
+                                    handleScheduleReminder(hack.id, hack.title, oneHour);
+                                  }}
+                                  className="cursor-pointer"
+                                >
+                                  <Bell className="h-4 w-4 mr-2" />
+                                  In 1 Hour
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       </div>
