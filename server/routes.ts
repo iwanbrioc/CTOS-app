@@ -371,7 +371,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/users/:userId/milestones", async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.params.userId; // Keep as string for consistency
       const userMilestones = await storage.getUserMilestones(userId);
       res.json(userMilestones);
     } catch (error) {
@@ -381,7 +381,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/users/:userId/milestones/check", async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.params.userId; // Keep as string for consistency
       const newMilestones = await storage.checkAndUpdateMilestones(userId);
       res.json(newMilestones);
     } catch (error) {
@@ -392,7 +392,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Notification settings routes
   app.put("/api/users/:userId/notification-settings", async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.params.userId; // Keep as string for consistency
       const { notificationsEnabled, reminderTime, reminderDays } = req.body;
       
       await storage.updateUserNotificationSettings(userId, {
@@ -408,7 +408,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/users/:userId/schedule-reminders", async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.params.userId; // Keep as string for consistency
       await storage.scheduleUserReminders(userId);
       res.json({ success: true });
     } catch (error) {
