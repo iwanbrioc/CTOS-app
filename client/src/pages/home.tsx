@@ -8,7 +8,6 @@ import { SessionCard } from "@/components/session-card";
 import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { TestSimplePlayer } from "@/components/test-simple-player";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Settings } from "lucide-react";
@@ -36,8 +35,6 @@ export default function Home() {
     reminderDays: [1,2,3,4,5], 
     timezone: "UTC" 
   };
-  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [audioPlayerType, setAudioPlayerType] = useState<'html5' | null>(null);
   const [showNotificationBanner, setShowNotificationBanner] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const { toast } = useToast();
@@ -56,16 +53,6 @@ export default function Home() {
   const totalSessions = sessions.length; // Total number of sessions
   const progressPercentage = totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0;
 
-  const handleStartPractice = (session: Session) => {
-    setSelectedSession(session);
-    // Always use the simple HTML5 audio player for all sessions
-    setAudioPlayerType('html5');
-  };
-
-  const handleClosePlayer = () => {
-    setSelectedSession(null);
-    setAudioPlayerType(null);
-  };
 
   const getUserProgressForSession = (sessionId: number) => {
     return userProgress.find(p => p.sessionId === sessionId);
@@ -253,17 +240,11 @@ export default function Home() {
               key={session.id}
               session={session}
               sessionState={getSessionState(session)}
-              onStartPractice={handleStartPractice}
               onFutureSessionClick={handleFutureSessionClick}
               userProgress={getUserProgressForSession(session.id)}
             />
           ))}
         </div>
-
-        {/* Audio Player */}
-        {selectedSession && audioPlayerType === 'html5' && (
-          <TestSimplePlayer session={selectedSession} onClose={handleClosePlayer} />
-        )}
 
         {/* Notification Banner */}
         <NotificationBanner 

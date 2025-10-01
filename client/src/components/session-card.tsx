@@ -1,8 +1,8 @@
-import { } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Clock, CheckCircle, Lock } from "lucide-react";
+import { Play, Pause, Clock, CheckCircle, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Session, UserProgress } from "@shared/schema";
 import sevenStationsSpineImg from "@assets/seven stations of the spine_1750084108018.png";
@@ -19,7 +19,7 @@ import fourPillarsImg from "@assets/the four pillars_1750084108018.png";
 interface SessionCardProps {
   session: Session;
   sessionState: 'past' | 'active' | 'future'; // Visual state for styling
-  onStartPractice: (session: Session) => void;
+  onStartPractice?: (session: Session) => void;
   onFutureSessionClick?: () => void; // Handler for future session clicks
   userProgress?: UserProgress;
 }
@@ -92,16 +92,97 @@ const getDuotoneFilter = (week: number) => {
 };
 
 export function SessionCard({ session, sessionState, onStartPractice, onFutureSessionClick, userProgress }: SessionCardProps) {
+  const [showPlayer, setShowPlayer] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  
   const isCompleted = userProgress?.completed || false;
   const isLocked = session.isLocked && session.week > 3;
   const canPlay = !isLocked && sessionState !== 'future';
   
+  useEffect(() => {
+    if (!showPlayer) return;
+    
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+    };
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [showPlayer]);
+  
   const handleSessionClick = () => {
     if (sessionState === 'future' && onFutureSessionClick) {
       onFutureSessionClick();
-    } else if (canPlay) {
-      onStartPractice(session);
     }
+  };
+  
+  const handleStartPractice = () => {
+    if (canPlay) {
+      setShowPlayer(true);
+      if (onStartPractice) {
+        onStartPractice(session);
+      }
+      // Load the audio when player opens
+      setTimeout(() => {
+        const audio = audioRef.current;
+        if (audio) {
+          audio.load();
+        }
+      }, 100);
+    }
+  };
+  
+  const handlePlayPause = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    try {
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        // Ensure audio is loaded before playing
+        if (audio.readyState < 2) {
+          await new Promise((resolve) => {
+            audio.addEventListener('loadeddata', resolve, { once: true });
+            audio.load();
+          });
+        }
+        await audio.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error("Audio playback error:", error);
+      setIsPlaying(false);
+    }
+  };
+  
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -160,12 +241,13 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
                 )}
               </div>
               
-              {canPlay && (
+              {canPlay && !showPlayer && (
                 <Button
                   size="sm"
                   variant="ghost"
                   className="text-white hover:bg-white/20 border border-white/30 font-medium"
-                  onClick={() => onStartPractice(session)}
+                  onClick={handleStartPractice}
+                  data-testid="start-session-btn"
                 >
                   <Play className="h-4 w-4 mr-1" />
                   {isCompleted ? "Replay" : "Start"}
@@ -180,6 +262,50 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
             </div>
           </div>
         </div>
+        
+        {/* Inline Audio Player */}
+        {showPlayer && (
+          <div className="border-t border-white/20 bg-black/10 p-4">
+            <audio
+              ref={audioRef}
+              src={session.audioUrl}
+              preload="metadata"
+              crossOrigin="anonymous"
+            />
+            
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={handlePlayPause}
+                size="lg"
+                className={cn(
+                  "flex-shrink-0",
+                  isPlaying 
+                    ? "bg-green-600 hover:bg-green-700 text-white shadow-lg" 
+                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                )}
+                data-testid="audio-play-pause-btn"
+              >
+                {isPlaying ? (
+                  <Pause className="h-6 w-6" />
+                ) : (
+                  <Play className="h-6 w-6 ml-0.5" />
+                )}
+              </Button>
+              
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-white/90 mb-1 font-medium">
+                  {formatTime(currentTime)} / {formatTime(duration)}
+                </div>
+                <div className="w-full bg-black/20 rounded-full h-2">
+                  <div 
+                    className="bg-white h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
