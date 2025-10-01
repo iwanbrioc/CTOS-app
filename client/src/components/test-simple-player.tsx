@@ -43,16 +43,21 @@ export function TestSimplePlayer({ session, onClose }: TestSimplePlayerProps) {
     };
   }, []);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (isPlaying) {
-      audio.pause();
+    try {
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        await audio.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error("Audio playback error:", error);
       setIsPlaying(false);
-    } else {
-      audio.play();
-      setIsPlaying(true);
     }
   };
 
@@ -63,11 +68,11 @@ export function TestSimplePlayer({ session, onClose }: TestSimplePlayerProps) {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-white shadow-lg">
+    <Card className="fixed bottom-20 left-0 right-0 z-50 mx-4 bg-white shadow-2xl border-2 border-gray-200">
       <CardContent className="p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold truncate">{session.title}</h3>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={onClose} data-testid="close-player-btn">
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -76,6 +81,7 @@ export function TestSimplePlayer({ session, onClose }: TestSimplePlayerProps) {
           ref={audioRef}
           src={session.audioUrl}
           preload="metadata"
+          crossOrigin="anonymous"
         />
         
         <div className="space-y-4">
@@ -83,12 +89,17 @@ export function TestSimplePlayer({ session, onClose }: TestSimplePlayerProps) {
             <Button
               onClick={handlePlayPause}
               size="lg"
-              className="bg-blue-500 hover:bg-blue-600"
+              className={
+                isPlaying 
+                  ? "bg-green-600 hover:bg-green-700 text-white shadow-lg" 
+                  : "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+              }
+              data-testid="audio-play-pause-btn"
             >
               {isPlaying ? (
                 <Pause className="h-6 w-6" />
               ) : (
-                <Play className="h-6 w-6" />
+                <Play className="h-6 w-6 ml-0.5" />
               )}
             </Button>
             
