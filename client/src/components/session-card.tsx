@@ -194,22 +194,24 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
       isLocked && "opacity-60"
     )}>
       <CardContent className="p-0 text-white relative">
-        {/* Full Background Image */}
+        {/* Background Image Layer */}
         <div 
           className="absolute inset-0 z-0"
           style={{
             backgroundImage: `url(${getSessionImage(session.illustration)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            opacity: 0.3,
           }}
-        >
-          {/* Color Overlay with Duotone Effect */}
-          <div className={cn(
-            "absolute inset-0",
-            getSessionColor(session.week),
-            "mix-blend-multiply opacity-90"
-          )} />
-        </div>
+        />
+        {/* Color Overlay Layer */}
+        <div 
+          className={cn(
+            "absolute inset-0 z-[1]",
+            getSessionColor(session.week)
+          )}
+          style={{ opacity: 0.85 }}
+        />
         
         <div className="relative z-10" onClick={sessionState === 'future' ? handleSessionClick : undefined} style={sessionState === 'future' ? { cursor: 'pointer' } : undefined}>
           {/* Content Section */}
