@@ -16,7 +16,9 @@ export const sessionData = [
     duration: 10,
     audioSrc: "/attached_assets/Grounding 10min_1751647354223.mp3",
     color: "bg-gradient-to-br from-yellow-400 to-orange-500",
-    illustration: "dropping-balloon"
+    illustration: "dropping-balloon",
+    handyHack: "Drop the Balloon (whenever you notice the twitch)",
+    journaling: "Write 3 things you are grateful for first thing after waking up"
   },
   {
     id: 2,
@@ -33,7 +35,9 @@ export const sessionData = [
     duration: 20,
     audioSrc: "/attached_assets/The Seven Stations of the Spine_1751648246548.mp3",
     color: "bg-gradient-to-br from-blue-400 to-indigo-600",
-    illustration: "seven-stations-spine"
+    illustration: "seven-stations-spine",
+    handyHack: "Unclench and Breathe",
+    journaling: "3 Gratitudes + 3 High Flow Priorities (HFP)"
   },
   {
     id: 3,
@@ -50,7 +54,9 @@ export const sessionData = [
     duration: 20,
     audioSrc: "/attached_assets/The Sense of Being Alive (20 minutes)_1751649276591.mp3",
     color: "bg-gradient-to-br from-purple-400 to-pink-500",
-    illustration: "the-sense-being-alive"
+    illustration: "the-sense-being-alive",
+    handyHack: "The Three Precious Pills (stillness, silence, spaciousness)",
+    journaling: "3 Gratitudes + 3 HFP + 3 High Value Priorities (HVP)"
   },
   {
     id: 4,
@@ -67,7 +73,9 @@ export const sessionData = [
     duration: 10,
     audioSrc: "/attached_assets/Mind in Body, Body in Movement, Movement n Mind (10min)_1751649693383.mp3",
     color: "bg-gradient-to-br from-red-400 to-rose-600",
-    illustration: "mind-body-movement"
+    illustration: "mind-body-movement",
+    handyHack: "Exploring Opening and Closing",
+    journaling: "3 Gratitudes + 3 HFP + 3 HVP"
   },
   {
     id: 5,
@@ -85,7 +93,9 @@ export const sessionData = [
     duration: 10,
     audioSrc: "/attached_assets/What if all there is is this 10 minute version_1751649984256.mp3",
     color: "bg-gradient-to-br from-green-400 to-emerald-600",
-    illustration: "what-if-all-there-is"
+    illustration: "what-if-all-there-is",
+    handyHack: "Watch the Want",
+    journaling: "3 Gratitudes + 3 HFP + 3 HVP"
   },
   {
     id: 6,
@@ -102,7 +112,9 @@ export const sessionData = [
     duration: 15,
     audioSrc: "/attached_assets/turning towards the difficult 15 Minutes_1751650302023.mp3",
     color: "bg-gradient-to-br from-orange-400 to-red-500",
-    illustration: "turning-towards-discomfort"
+    illustration: "turning-towards-discomfort",
+    handyHack: "The 5 Elements (anger, sadness, joy, disgust, fear)",
+    journaling: "3 Gratitudes + 3 HFP + 3 HVP"
   },
   {
     id: 7,
@@ -120,7 +132,9 @@ export const sessionData = [
     duration: 22,
     audioSrc: "/attached_assets/fourpillarspractice_1751651309349.mp3",
     color: "bg-gradient-to-br from-cyan-400 to-blue-600",
-    illustration: "four-pillars"
+    illustration: "four-pillars",
+    handyHack: "Scripting & Reflecting",
+    journaling: "Full Flow Journal System (Gratitude, High Flow & High Value Priorities, Script Your Day, Review Your Day)"
   },
   {
     id: 8,
@@ -137,7 +151,9 @@ export const sessionData = [
     duration: 10,
     audioSrc: "/attached_assets/What if all there is is this 10 minute version_1751649984256.mp3",
     color: "bg-gradient-to-br from-violet-400 to-purple-600",
-    illustration: "great-smile"
+    illustration: "great-smile",
+    handyHack: "Great Smile",
+    journaling: "Full Flow Journal System"
   }
 ];
 

@@ -221,6 +221,22 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
                 <p className="text-sm text-white/80 mb-2 line-clamp-2">
                   {session.description}
                 </p>
+                
+                {/* Handy Hack & Journaling Dashboard Info */}
+                {session.handyHack && (
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-start space-x-2">
+                      <span className="text-xs font-semibold text-white/90 whitespace-nowrap">Handy Hack:</span>
+                      <span className="text-xs text-white/80">{session.handyHack}</span>
+                    </div>
+                    {session.journaling && (
+                      <div className="flex items-start space-x-2">
+                        <span className="text-xs font-semibold text-white/90 whitespace-nowrap">Journaling:</span>
+                        <span className="text-xs text-white/80">{session.journaling}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             

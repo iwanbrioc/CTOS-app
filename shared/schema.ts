@@ -40,6 +40,8 @@ export const meditationSessions = pgTable("meditation_sessions", {
   duration: integer("duration").notNull(), // in minutes
   illustration: text("illustration").notNull(),
   isLocked: boolean("is_locked").default(true),
+  handyHack: text("handy_hack"), // Main handy hack for the session
+  journaling: text("journaling"), // Journaling tasks for the session
 });
 
 export const userProgress = pgTable("user_progress", {
