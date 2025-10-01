@@ -77,10 +77,10 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
 
   const createAnalyticsMutation = useMutation({
     mutationFn: async (analyticsData: any) => {
-      const response = await apiRequest("POST", `/api/users/${DEMO_USER_ID}/analytics`, analyticsData);
+      const response = await apiRequest("POST", `/api/users/${DEMO_USER_ID}/analytics`, analyticsData) as any;
       return response;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       if (data && data.id) {
         currentAnalyticsId.current = data.id;
       }
