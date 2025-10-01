@@ -3,7 +3,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { StatusBar } from "@/components/status-bar";
 import { ProgressIndicator } from "@/components/progress-indicator";
-import { ProgressLine } from "@/components/progress-line";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { SessionCard } from "@/components/session-card";
 import { MilestoneManager } from "@/components/milestone-achievement";
@@ -260,14 +259,6 @@ export default function Home() {
             progressPercentage={progressPercentage}
           />
         </div>
-
-        {/* Progress Line */}
-        <ProgressLine 
-          sessions={allSessions}
-          userProgress={userProgress}
-          sessionsPace={user.sessionsPace || 1}
-          courseFormat={user.courseFormat || "8-week"}
-        />
 
         {/* All Sessions */}
         <div className="px-4 space-y-4 pb-20">
