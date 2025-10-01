@@ -109,7 +109,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
       "overflow-hidden transition-all duration-200 hover:shadow-lg rounded-2xl",
       getSessionColor(session.week),
       sessionState === 'active' && "ring-4 ring-gray-900 ring-offset-4 ring-offset-gray-50 border-2 border-gray-900 shadow-2xl scale-[1.02]",
-      sessionState === 'active' ? "border-0" : "border-0",
+      sessionState !== 'active' && "border-0",
       (sessionState === 'past' || sessionState === 'future') && "opacity-50",
       isLocked && "opacity-60"
     )}>
