@@ -187,38 +187,42 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
 
   return (
     <Card className={cn(
-      "overflow-hidden transition-all duration-200 hover:shadow-lg rounded-2xl",
-      getSessionColor(session.week),
+      "overflow-hidden transition-all duration-200 hover:shadow-lg rounded-2xl relative",
       sessionState === 'active' && "ring-4 ring-gray-900 ring-offset-4 ring-offset-gray-50 border-2 border-gray-900 shadow-2xl scale-[1.02]",
       sessionState !== 'active' && "border-0",
       (sessionState === 'past' || sessionState === 'future') && "opacity-50",
       isLocked && "opacity-60"
     )}>
-      <CardContent className="p-0 text-white">
-        <div className="flex" onClick={sessionState === 'future' ? handleSessionClick : undefined} style={sessionState === 'future' ? { cursor: 'pointer' } : undefined}>
-          {/* Image Section */}
-          <div className="w-20 h-20 flex-shrink-0 relative overflow-hidden">
-            <img 
-              src={getSessionImage(session.illustration)}
-              alt={`${session.title} illustration`}
-              className={cn(
-                "w-full h-full object-cover",
-                getDuotoneFilter(session.week)
-              )}
-            />
-          </div>
-          
+      <CardContent className="p-0 text-white relative">
+        {/* Full Background Image */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url(${getSessionImage(session.illustration)})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          {/* Color Overlay with Duotone Effect */}
+          <div className={cn(
+            "absolute inset-0",
+            getSessionColor(session.week),
+            "mix-blend-multiply opacity-90"
+          )} />
+        </div>
+        
+        <div className="relative z-10" onClick={sessionState === 'future' ? handleSessionClick : undefined} style={sessionState === 'future' ? { cursor: 'pointer' } : undefined}>
           {/* Content Section */}
-          <div className="flex-1 p-4">
+          <div className="p-4">
             <div className="mb-3">
               <div className="flex-1">
                 <h3 className={cn(
-                  "font-bold text-base mb-1 tracking-tight",
-                  isLocked ? "text-white/70" : "text-white"
+                  "font-bold text-base mb-1 tracking-tight drop-shadow-lg",
+                  isLocked ? "text-white/90" : "text-white"
                 )}>
                   {session.title}
                 </h3>
-                <p className="text-sm text-white/80 mb-2 line-clamp-2">
+                <p className="text-sm text-white drop-shadow-md mb-2">
                   {session.description}
                 </p>
                 
@@ -226,13 +230,13 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
                 {session.handyHack && (
                   <div className="mt-3 space-y-2">
                     <div className="flex items-start space-x-2">
-                      <span className="text-xs font-semibold text-white/90 whitespace-nowrap">Handy Hack:</span>
-                      <span className="text-xs text-white/80">{session.handyHack}</span>
+                      <span className="text-xs font-semibold text-white drop-shadow-md whitespace-nowrap">Handy Hack:</span>
+                      <span className="text-xs text-white drop-shadow-md">{session.handyHack}</span>
                     </div>
                     {session.journaling && (
                       <div className="flex items-start space-x-2">
-                        <span className="text-xs font-semibold text-white/90 whitespace-nowrap">Journaling:</span>
-                        <span className="text-xs text-white/80">{session.journaling}</span>
+                        <span className="text-xs font-semibold text-white drop-shadow-md whitespace-nowrap">Journaling:</span>
+                        <span className="text-xs text-white drop-shadow-md">{session.journaling}</span>
                       </div>
                     )}
                   </div>
@@ -241,7 +245,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
             </div>
             
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4 text-sm text-white/80">
+              <div className="flex items-center space-x-4 text-sm text-white drop-shadow-md">
                 <span className="flex items-center space-x-1">
                   <Clock className="h-4 w-4" />
                   <span>{session.duration} min</span>
@@ -250,7 +254,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
                   Week {session.week}
                 </span>
                 {isCompleted && (
-                  <span className="text-xs text-white/90 font-medium flex items-center">
+                  <span className="text-xs text-white font-medium flex items-center">
                     <CheckCircle className="h-4 w-4 mr-1" />
                     Completed
                   </span>
@@ -261,7 +265,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-white hover:bg-white/20 border border-white/30 font-medium"
+                  className="text-white hover:bg-white/20 border border-white/40 font-medium drop-shadow-lg"
                   onClick={handleStartPractice}
                   data-testid="start-session-btn"
                 >
@@ -271,7 +275,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
               )}
               
               {sessionState === 'future' && (
-                <div className="text-xs text-white/70 font-medium">
+                <div className="text-xs text-white drop-shadow-md font-medium">
                   Not yet available
                 </div>
               )}
@@ -281,7 +285,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
         
         {/* Inline Audio Player */}
         {showPlayer && (
-          <div className="border-t border-white/20 bg-black/10 p-4">
+          <div className="relative z-10 border-t border-white/20 bg-black/20 backdrop-blur-sm p-4">
             <audio
               ref={audioRef}
               src={session.audioUrl}
@@ -309,7 +313,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
               </Button>
               
               <div className="flex-1 min-w-0">
-                <div className="text-xs text-white/90 mb-1 font-medium">
+                <div className="text-xs text-white mb-1 font-medium drop-shadow-md">
                   {formatTime(currentTime)} / {formatTime(duration)}
                 </div>
                 <div className="w-full bg-black/20 rounded-full h-2">
