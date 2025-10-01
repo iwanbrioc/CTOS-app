@@ -228,26 +228,6 @@ export default function Home() {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Session Pace Setting */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">Session Pace</h3>
-                <p className="text-xs text-gray-500">Choose how many sessions per week</p>
-              </div>
-              <Select 
-                value={user.sessionsPace?.toString() || "1"} 
-                onValueChange={(value) => updateSessionsPaceMutation.mutate(parseInt(value))}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 per week</SelectItem>
-                  <SelectItem value="2">2 per week</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         )}
 
