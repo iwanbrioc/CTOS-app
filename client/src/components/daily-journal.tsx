@@ -189,17 +189,29 @@ export function DailyJournal({ userId }: DailyJournalProps) {
 
       recorder.ondataavailable = (e) => chunks.push(e.data);
       recorder.onstop = async () => {
-        const blob = new Blob(chunks, { type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(blob);
+        const blob = new Blob(chunks, { type: 'audio/webm' });
         
-        // Store the blob for transcription
-        setRecordedBlobs(prev => ({ ...prev, [type]: blob }));
-        
-        if (type === 'morning') {
-          updateField('scriptingVoiceNote', audioUrl);
-        } else {
-          updateField('reflectionVoiceNote', audioUrl);
-        }
+        // Convert blob to base64 data URL for persistent storage
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64AudioUrl = reader.result as string;
+          
+          // Store the blob for transcription
+          setRecordedBlobs(prev => ({ ...prev, [type]: blob }));
+          
+          if (type === 'morning') {
+            updateField('scriptingVoiceNote', base64AudioUrl);
+          } else {
+            updateField('reflectionVoiceNote', base64AudioUrl);
+          }
+          
+          // Auto-save the recording
+          saveMutation.mutate({
+            ...todayEntry,
+            [type === 'morning' ? 'scriptingVoiceNote' : 'reflectionVoiceNote']: base64AudioUrl
+          });
+        };
+        reader.readAsDataURL(blob);
         
         setIsRecording(prev => ({ ...prev, [type]: false }));
         setCurrentRecordingType(null);
