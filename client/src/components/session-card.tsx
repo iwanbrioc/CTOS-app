@@ -193,7 +193,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
       (sessionState === 'past' || sessionState === 'future') && "opacity-50",
       isLocked && "opacity-60"
     )}>
-      <CardContent className="p-0 text-white relative">
+      <CardContent className="p-0 text-black relative">
         {/* Background Image Layer */}
         <div 
           className="absolute inset-0 z-0"
@@ -201,7 +201,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
             backgroundImage: `url(${getSessionImage(session.illustration)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            opacity: 0.3,
+            opacity: 0.6,
           }}
         />
         {/* Color Overlay Layer */}
@@ -210,7 +210,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
             "absolute inset-0 z-[1]",
             getSessionColor(session.week)
           )}
-          style={{ opacity: 0.85 }}
+          style={{ opacity: 0.75 }}
         />
         
         <div className="relative z-10" onClick={sessionState === 'future' ? handleSessionClick : undefined} style={sessionState === 'future' ? { cursor: 'pointer' } : undefined}>
@@ -219,12 +219,12 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
             <div className="mb-3">
               <div className="flex-1">
                 <h3 className={cn(
-                  "font-bold text-base mb-1 tracking-tight drop-shadow-lg",
-                  isLocked ? "text-white/90" : "text-white"
+                  "font-bold text-base mb-1 tracking-tight",
+                  isLocked ? "text-black/70" : "text-black"
                 )}>
                   {session.title}
                 </h3>
-                <p className="text-sm text-white drop-shadow-md mb-2">
+                <p className="text-sm text-black/90 mb-2">
                   {session.description}
                 </p>
                 
@@ -232,13 +232,13 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
                 {session.handyHack && (
                   <div className="mt-3 space-y-2">
                     <div className="flex items-start space-x-2">
-                      <span className="text-xs font-semibold text-white drop-shadow-md whitespace-nowrap">Handy Hack:</span>
-                      <span className="text-xs text-white drop-shadow-md">{session.handyHack}</span>
+                      <span className="text-xs font-semibold text-black/90 whitespace-nowrap">Handy Hack:</span>
+                      <span className="text-xs text-black/80">{session.handyHack}</span>
                     </div>
                     {session.journaling && (
                       <div className="flex items-start space-x-2">
-                        <span className="text-xs font-semibold text-white drop-shadow-md whitespace-nowrap">Journaling:</span>
-                        <span className="text-xs text-white drop-shadow-md">{session.journaling}</span>
+                        <span className="text-xs font-semibold text-black/90 whitespace-nowrap">Journaling:</span>
+                        <span className="text-xs text-black/80">{session.journaling}</span>
                       </div>
                     )}
                   </div>
@@ -247,7 +247,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
             </div>
             
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4 text-sm text-white drop-shadow-md">
+              <div className="flex items-center space-x-4 text-sm text-black/80">
                 <span className="flex items-center space-x-1">
                   <Clock className="h-4 w-4" />
                   <span>{session.duration} min</span>
@@ -256,7 +256,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
                   Week {session.week}
                 </span>
                 {isCompleted && (
-                  <span className="text-xs text-white font-medium flex items-center">
+                  <span className="text-xs text-black/90 font-medium flex items-center">
                     <CheckCircle className="h-4 w-4 mr-1" />
                     Completed
                   </span>
@@ -267,7 +267,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-white hover:bg-white/20 border border-white/40 font-medium drop-shadow-lg"
+                  className="text-black hover:bg-black/10 border border-black/20 font-medium"
                   onClick={handleStartPractice}
                   data-testid="start-session-btn"
                 >
@@ -277,7 +277,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
               )}
               
               {sessionState === 'future' && (
-                <div className="text-xs text-white drop-shadow-md font-medium">
+                <div className="text-xs text-black/70 font-medium">
                   Not yet available
                 </div>
               )}
@@ -287,7 +287,7 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
         
         {/* Inline Audio Player */}
         {showPlayer && (
-          <div className="relative z-10 border-t border-white/20 bg-black/20 backdrop-blur-sm p-4">
+          <div className="relative z-10 border-t border-black/10 bg-white/20 backdrop-blur-sm p-4">
             <audio
               ref={audioRef}
               src={session.audioUrl}
@@ -315,12 +315,12 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
               </Button>
               
               <div className="flex-1 min-w-0">
-                <div className="text-xs text-white mb-1 font-medium drop-shadow-md">
+                <div className="text-xs text-black/90 mb-1 font-medium">
                   {formatTime(currentTime)} / {formatTime(duration)}
                 </div>
                 <div className="w-full bg-black/20 rounded-full h-2">
                   <div 
-                    className="bg-white h-2 rounded-full transition-all duration-300"
+                    className="bg-black h-2 rounded-full transition-all duration-300"
                     style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
                   />
                 </div>
