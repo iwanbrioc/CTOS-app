@@ -351,7 +351,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid session ID" });
       }
       
-      const hacks = await storage.getSessionHandyHacks(sessionId);
+      const hacks = await storage.getHandyHacksForSession(sessionId);
       res.json(hacks);
     } catch (error) {
       console.error("Error fetching session hacks:", error);
@@ -393,10 +393,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const reminders = await storage.scheduleHackReminder(
         userId, 
         hackId, 
+        sessionId,
         new Date(scheduledFor), 
-        count, 
         pattern, 
-        sessionId
+        count
       );
       res.json(reminders);
     } catch (error) {
