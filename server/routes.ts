@@ -429,6 +429,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/users/:userId/hacks/:hackId/practice-counts", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const hackId = parseInt(req.params.hackId);
+      
+      if (isNaN(hackId)) {
+        return res.status(400).json({ error: "Invalid hack ID" });
+      }
+      
+      const counts = await storage.getHackPracticeCounts(userId, hackId);
+      res.json(counts);
+    } catch (error) {
+      console.error("Error fetching hack practice counts:", error);
+      res.status(500).json({ error: "Failed to fetch practice counts" });
+    }
+  });
+
   // Notification routes
   app.get("/api/users/:userId/notifications", async (req, res) => {
     try {

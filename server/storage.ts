@@ -55,6 +55,7 @@ export interface IStorage {
   getRandomHandyHack(): Promise<HandyHack | undefined>;
   markHackComplete(userId: string, hackId: number, sessionId?: number): Promise<void>;
   getUserHackCompletions(userId: string): Promise<UserHackCompletion[]>;
+  getHackPracticeCounts(userId: string, hackId: number): Promise<{ today: number; thisWeek: number }>;
   initializeHandyHacks(): Promise<void>;
   
   // Session Handy Hacks
@@ -251,6 +252,36 @@ export class DatabaseStorage implements IStorage {
     const { db } = await import("./db");
     const { eq } = await import("drizzle-orm");
     return await db.select().from(userHackCompletions).where(eq(userHackCompletions.userId, userId));
+  }
+
+  async getHackPracticeCounts(userId: string, hackId: number): Promise<{ today: number; thisWeek: number }> {
+    const { db } = await import("./db");
+    const { eq, and, gte } = await import("drizzle-orm");
+    
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    
+    const [todayCompletions, weekCompletions] = await Promise.all([
+      db.select().from(userHackCompletions)
+        .where(and(
+          eq(userHackCompletions.userId, userId),
+          eq(userHackCompletions.hackId, hackId),
+          gte(userHackCompletions.completedAt, startOfToday)
+        )),
+      db.select().from(userHackCompletions)
+        .where(and(
+          eq(userHackCompletions.userId, userId),
+          eq(userHackCompletions.hackId, hackId),
+          gte(userHackCompletions.completedAt, startOfWeek)
+        ))
+    ]);
+    
+    return {
+      today: todayCompletions.length,
+      thisWeek: weekCompletions.length
+    };
   }
 
   async initializeHandyHacks(): Promise<void> {
@@ -929,6 +960,27 @@ export class MemStorage implements IStorage {
     return Array.from(this.userHackCompletions.values()).filter(
       completion => completion.userId === userId
     );
+  }
+
+  async getHackPracticeCounts(userId: string, hackId: number): Promise<{ today: number; thisWeek: number }> {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    
+    const completions = Array.from(this.userHackCompletions.values()).filter(
+      completion => completion.userId === userId && completion.hackId === hackId
+    );
+    
+    const todayCount = completions.filter(
+      c => c.completedAt && new Date(c.completedAt) >= startOfToday
+    ).length;
+    
+    const weekCount = completions.filter(
+      c => c.completedAt && new Date(c.completedAt) >= startOfWeek
+    ).length;
+    
+    return { today: todayCount, thisWeek: weekCount };
   }
 
   async initializeHandyHacks(): Promise<void> {
