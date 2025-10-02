@@ -114,6 +114,16 @@ This is a mobile-first mindfulness application built as a progressive web app (P
 - **NODE_ENV**: Environment mode (development/production)
 
 ## Recent Changes
+- October 2, 2025: Redesigned dashboard with NYT-style vibrant colorful layout
+  - Implemented full-screen colorful card-based design inspired by NYT quizzing app
+  - Created session title and picture card with yellow/orange gradient (full width)
+  - Added daily practice card with large play button and green/teal gradient (full width)
+  - Implemented half-screen cards: handy hack (pink gradient) and journal (purple gradient) side by side
+  - Moved progress bar to fixed bottom position with gradient fill
+  - Created dedicated session page (/session/:id) for audio playback
+  - Fixed React hooks error in AudioPlayer component (removed conditional hook calls)
+  - Added proper routing for session playback page
+  - Screen now filled with vibrant colors creating an engaging, modern UI experience
 - September 28, 2025: Implemented course format preference system
   - Added courseFormat field to user database schema with default "8-week" value
   - Created comprehensive settings panel with course format and session pace options
