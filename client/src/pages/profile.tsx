@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { StatusBar } from "@/components/status-bar";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { MilestoneTracker } from "@/components/milestone-tracker";
@@ -7,11 +7,15 @@ import { NotificationSettings } from "@/components/notification-settings";
 import { NotificationTest } from "@/components/notification-test";
 import { SimpleProgressTracker } from "@/components/simple-progress-tracker";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, User, Calendar, Award, Bell, Settings } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, User, Calendar, Award, Bell, Settings, Calendar as CalendarIcon } from "lucide-react";
 import { Link } from "wouter";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import type { User as UserType, UserProgress, UserHackCompletion } from "@shared/schema";
 
 const DEMO_USER_ID = "1";
@@ -38,6 +42,34 @@ export default function Profile() {
   const joinedDaysAgo = user?.joinedAt 
     ? Math.floor((Date.now() - new Date(user.joinedAt).getTime()) / (1000 * 60 * 60 * 24))
     : 0;
+
+  const { toast } = useToast();
+  const [courseFormat, setCourseFormat] = useState<string>(user?.courseFormat || "8-week");
+
+  const updateCourseFormatMutation = useMutation({
+    mutationFn: async (format: string) => {
+      await apiRequest("PUT", `/api/users/${DEMO_USER_ID}/course-format`, { courseFormat: format });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users", DEMO_USER_ID] });
+      toast({
+        title: "Course Format Updated",
+        description: "Your course format has been changed successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update course format.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCourseFormatChange = (value: string) => {
+    setCourseFormat(value);
+    updateCourseFormatMutation.mutate(value);
+  };
 
   return (
     <>
@@ -69,7 +101,7 @@ export default function Profile() {
               </div>
               <div className="flex-1">
                 <h2 className="text-xl font-semibold text-primary">
-                  {user?.username || "Mindful Practitioner"}
+                  {user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : "Mindful Practitioner"}
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   {user?.email || "user@example.com"}
@@ -151,6 +183,50 @@ export default function Profile() {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6 mt-6">
+            {/* Course Format Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CalendarIcon className="h-5 w-5" />
+                  Course Format
+                </CardTitle>
+                <CardDescription>
+                  Choose between an 8-week or 4-week course format
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <RadioGroup value={courseFormat} onValueChange={handleCourseFormatChange}>
+                  <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 cursor-pointer">
+                    <RadioGroupItem value="8-week" id="8-week" />
+                    <div className="flex-1">
+                      <Label htmlFor="8-week" className="font-semibold cursor-pointer">
+                        8-Week Course (Recommended)
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Complete one session per week for a gentle, thorough exploration
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 cursor-pointer">
+                    <RadioGroupItem value="4-week" id="4-week" />
+                    <div className="flex-1">
+                      <Label htmlFor="4-week" className="font-semibold cursor-pointer">
+                        4-Week Intensive Course
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Complete two sessions per week for a more focused experience
+                      </p>
+                    </div>
+                  </div>
+                </RadioGroup>
+                {user?.courseFormat && (
+                  <div className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg">
+                    Current format: <span className="font-semibold">{user.courseFormat}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Notification Settings */}
             <NotificationSettings userId={DEMO_USER_ID} />
             

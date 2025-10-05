@@ -328,13 +328,13 @@ export default function Home() {
                       xmlns="http://www.w3.org/2000/svg"
                       className="text-white flex-shrink-0"
                     >
-                      <path d="M8 16 C 8 10, 11 6, 16 6 C 21 6, 24 10, 24 16 C 24 22, 21 26, 16 26 C 11 26, 8 22, 8 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <circle cx="7" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
-                      <circle cx="25" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M11 14 Q 12 13, 13 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M21 14 Q 20 13, 19 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <line x1="16" y1="16" x2="16" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <line x1="14" y1="22" x2="18" y2="22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <circle cx="16" cy="16" r="11" stroke="currentColor" strokeWidth="1.5" opacity="0.3"/>
+                      <circle cx="16" cy="16" r="7" stroke="currentColor" strokeWidth="1.5" opacity="0.5"/>
+                      <circle cx="16" cy="16" r="3" fill="currentColor" opacity="0.8"/>
+                      <path d="M16 5 L16 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+                      <path d="M16 24 L16 27" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+                      <path d="M5 16 L8 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+                      <path d="M24 16 L27 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
                     </svg>
                     <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
                   </div>
@@ -366,13 +366,13 @@ export default function Home() {
                           xmlns="http://www.w3.org/2000/svg"
                           className="text-green-500"
                         >
-                          <path d="M8 16 C 8 10, 11 6, 16 6 C 21 6, 24 10, 24 16 C 24 22, 21 26, 16 26 C 11 26, 8 22, 8 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <circle cx="7" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
-                          <circle cx="25" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
-                          <path d="M11 14 Q 12 13, 13 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <path d="M21 14 Q 20 13, 19 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <line x1="16" y1="16" x2="16" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <line x1="14" y1="22" x2="18" y2="22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <circle cx="16" cy="16" r="13" stroke="currentColor" strokeWidth="1.5" opacity="0.2"/>
+                          <circle cx="16" cy="16" r="9" stroke="currentColor" strokeWidth="2" opacity="0.4"/>
+                          <circle cx="16" cy="16" r="4" fill="currentColor" opacity="0.8"/>
+                          <path d="M16 3 L16 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+                          <path d="M16 25 L16 29" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+                          <path d="M3 16 L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+                          <path d="M25 16 L29 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
                         </svg>
                       </button>
                     )}
