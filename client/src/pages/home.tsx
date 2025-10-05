@@ -13,7 +13,7 @@ import { Link } from "wouter";
 import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
 import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_1759681457952.png";
 import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759686357223.png";
-import smallPracticeIcon from "@assets/7246199B-3468-4C84-BDE8-9FDFF49F5C5B_1759690644212.png";
+import smallPracticeIcon from "@assets/image_1759695759238.png";
 
 const getSessionIcon = (week: number) => {
   const iconProps = {
@@ -369,7 +369,6 @@ export default function Home() {
                           src={smallPracticeIcon} 
                           alt="Practice" 
                           className="w-7 h-7 flex-shrink-0"
-                          style={{ filter: 'invert(1) brightness(2)' }}
                         />
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
