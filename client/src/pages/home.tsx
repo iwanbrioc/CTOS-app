@@ -265,15 +265,16 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => window.location.href = '/api/logout'}
-              className="text-white hover:bg-white hover:bg-opacity-20"
-              data-testid="button-logout"
-            >
-              <Settings className="h-5 w-5" />
-            </Button>
+            <Link href="/profile">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="text-white hover:bg-white hover:bg-opacity-20"
+                data-testid="button-settings"
+              >
+                <Settings className="h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
 
