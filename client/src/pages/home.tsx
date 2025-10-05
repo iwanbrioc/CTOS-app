@@ -361,18 +361,18 @@ export default function Home() {
                     <svg 
                       width="20" 
                       height="20" 
-                      viewBox="0 0 32 32" 
+                      viewBox="0 0 32 40" 
                       fill="none" 
                       xmlns="http://www.w3.org/2000/svg"
                       className="text-white flex-shrink-0"
                     >
-                      <ellipse cx="16" cy="18" rx="9" ry="11" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M11 14 Q 12 13, 13 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M19 14 Q 20 13, 21 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M16 18 L16 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M13 23 Q 16 25, 19 23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M8 10 Q 10 8, 12 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M24 10 Q 22 8, 20 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <ellipse cx="16" cy="20" rx="7" ry="9" stroke="currentColor" strokeWidth="1.3"/>
+                      <path d="M12 17 Q 13 16, 14 17" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                      <path d="M18 17 Q 19 16, 20 17" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                      <path d="M13 25 Q 16 26.5, 19 25" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                      <path d="M7 12 Q 9 8, 11 10 Q 13 6, 16 5 Q 19 6, 21 10 Q 23 8, 25 12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" fill="none"/>
+                      <path d="M8 14 Q 7 20, 8 28 Q 10 32, 12 34" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" opacity="0.7"/>
+                      <path d="M24 14 Q 25 20, 24 28 Q 22 32, 20 34" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" opacity="0.7"/>
                     </svg>
                     <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
                   </div>
@@ -398,19 +398,19 @@ export default function Home() {
                       >
                         <svg 
                           width="32" 
-                          height="32" 
-                          viewBox="0 0 32 32" 
+                          height="40" 
+                          viewBox="0 0 32 44" 
                           fill="none" 
                           xmlns="http://www.w3.org/2000/svg"
                           className="text-green-500"
                         >
-                          <ellipse cx="16" cy="18" rx="10" ry="12" stroke="currentColor" strokeWidth="2"/>
-                          <path d="M10 14 Q 11.5 12.5, 13 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <path d="M19 14 Q 20.5 12.5, 22 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <path d="M16 18 L16 22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <path d="M12 24 Q 16 26.5, 20 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <path d="M7 10 Q 9 7, 12 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <path d="M25 10 Q 23 7, 20 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <ellipse cx="16" cy="22" rx="8" ry="10" stroke="currentColor" strokeWidth="1.8"/>
+                          <path d="M11 19 Q 12.5 17.5, 14 19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                          <path d="M18 19 Q 19.5 17.5, 21 19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                          <path d="M12 28 Q 16 30, 20 28" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                          <path d="M6 13 Q 8 8, 11 11 Q 13 6, 16 5 Q 19 6, 21 11 Q 24 8, 26 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+                          <path d="M7 15 Q 6 22, 7 32 Q 9 37, 11 40" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.8"/>
+                          <path d="M25 15 Q 26 22, 25 32 Q 23 37, 21 40" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.8"/>
                         </svg>
                       </button>
                     )}
