@@ -522,17 +522,34 @@ export default function Home() {
                   <h3 className="text-base font-bold text-white mb-3 leading-tight">
                     {practiceSession?.journaling || 'Daily Journal'}
                   </h3>
-                  <div className="flex gap-2 flex-wrap">
-                    {todaysJournal?.morningCompleted && (
-                      <span className="text-xs bg-white bg-opacity-30 text-white px-2 py-1 rounded-full">
-                        Morning ✓
-                      </span>
-                    )}
-                    {todaysJournal?.eveningCompleted && (
-                      <span className="text-xs bg-white bg-opacity-30 text-white px-2 py-1 rounded-full">
-                        Evening ✓
-                      </span>
-                    )}
+                  <div className="min-h-[32px] flex gap-2 flex-wrap items-center bg-white/10 rounded-lg px-3 py-2" data-testid="journal-completion-ticks">
+                    {(() => {
+                      const count = journalEntries.length;
+                      const completeGates = Math.floor(count / 5);
+                      const remaining = count % 5;
+                      
+                      if (count === 0) {
+                        return <span className="text-white/50 text-xs italic">Start your journal</span>;
+                      }
+                      
+                      return (
+                        <>
+                          {Array.from({ length: completeGates }).map((_, i) => (
+                            <svg key={`gate-${i}`} width="24" height="28" viewBox="0 0 24 28" className="flex-shrink-0">
+                              <path d="M4 14 L8 18 L18 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                              <path d="M4 14 L8 18 L18 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" transform="translate(0, -8)"/>
+                              <path d="M4 14 L8 18 L18 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" transform="translate(0, 8)"/>
+                              <line x1="2" y1="22" x2="21" y2="6" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                            </svg>
+                          ))}
+                          {Array.from({ length: remaining }).map((_, i) => (
+                            <svg key={`tick-${i}`} width="18" height="18" viewBox="0 0 18 18" className="flex-shrink-0">
+                              <path d="M3 9 L7 13 L15 5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                            </svg>
+                          ))}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </Link>
