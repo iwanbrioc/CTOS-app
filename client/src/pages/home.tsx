@@ -250,6 +250,23 @@ export default function Home() {
                 data-testid="card-daily-practice"
               >
                 <div className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 32 32" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="text-white flex-shrink-0"
+                    >
+                      <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M16 8C16 8 12 10 12 12C12 14 12 18 12 20C12 22 16 24 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M16 8C16 8 20 10 20 12C20 14 20 18 20 20C20 22 16 24 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <line x1="10" y1="14" x2="12" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <line x1="20" y1="14" x2="22" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
+                  </div>
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-white mb-2">
