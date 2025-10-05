@@ -13,6 +13,7 @@ import { Link } from "wouter";
 import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
 import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_1759681457952.png";
 import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759686357223.png";
+import smallPracticeIcon from "@assets/BA1CFC9F-2037-4135-8133-765D8E0E6043_1759687143613.png";
 
 const getSessionIcon = (week: number) => {
   const iconProps = {
@@ -363,10 +364,9 @@ export default function Home() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-4">
                         <img 
-                          src={eyesClosedIcon} 
+                          src={smallPracticeIcon} 
                           alt="Practice" 
                           className="w-5 h-5 flex-shrink-0"
-                          style={{ mixBlendMode: 'multiply' }}
                         />
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
