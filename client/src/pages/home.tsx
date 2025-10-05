@@ -139,17 +139,17 @@ export default function Home() {
   });
 
   const { data: userProgress = [] } = useQuery<UserProgress[]>({
-    queryKey: ["/api/users", user?.id, "progress"],
+    queryKey: [`/api/users/${user?.id}/progress`],
     enabled: !!user?.id,
   });
 
   const { data: journalEntries = [] } = useQuery<JournalEntry[]>({
-    queryKey: ["/api/users", user?.id, "journal"],
+    queryKey: [`/api/users/${user?.id}/journal`],
     enabled: !!user?.id,
   });
 
   const { data: hackCompletions = [] } = useQuery<UserHackCompletion[]>({
-    queryKey: ["/api/users", user?.id, "hack-completions"],
+    queryKey: [`/api/users/${user?.id}/hack-completions`],
     enabled: !!user?.id,
   });
 
@@ -473,7 +473,7 @@ export default function Home() {
                   </h3>
                   <div className="min-h-[32px] flex gap-2 flex-wrap items-center bg-white/10 rounded-lg px-3 py-2" data-testid="hack-completion-sticks">
                     {(() => {
-                      const currentHack = allHacks.find(hack => hack.title === practiceSession.handyHack);
+                      const currentHack = allHacks.find(hack => practiceSession.handyHack?.includes(hack.title));
                       const currentHackCompletions = currentHack 
                         ? hackCompletions.filter(hc => hc.hackId === currentHack.id)
                         : [];
