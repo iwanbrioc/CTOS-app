@@ -100,7 +100,7 @@ export const sessionData = [
   {
     id: 6,
     week: 6,
-    title: "Leaning in to Difficulty",
+    title: "Leaning into Difficulty",
     description: "Understanding emotions as signals and finding the gold in our wounds.",
     longDescription: [
       "Emotions are probably one of the most misunderstood elements of our human experience. Animals have five basic emotions that are triggered in reaction to 'in the moment' environmental or physiological stimuli: Anger (Get out of my way), Sadness (I need comforting), Joy (This feels good), Disgust (Get that away from me), Fear (I need help).",
