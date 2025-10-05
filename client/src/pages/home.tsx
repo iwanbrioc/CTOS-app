@@ -248,7 +248,7 @@ export default function Home() {
       await apiRequest("POST", `/api/users/${user?.id}/hacks/${hackId}/complete`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "hack-completions"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/hack-completions`] });
       toast({
         title: "Practice logged!",
         description: "Keep up the great work!",
@@ -265,7 +265,7 @@ export default function Home() {
 
   const handleHackClick = () => {
     if (practiceSession && practiceSession.handyHack) {
-      const currentHack = allHacks.find(hack => hack.title === practiceSession.handyHack);
+      const currentHack = allHacks.find(hack => practiceSession.handyHack?.includes(hack.title));
       if (currentHack) {
         completeHackMutation.mutate(currentHack.id);
       }

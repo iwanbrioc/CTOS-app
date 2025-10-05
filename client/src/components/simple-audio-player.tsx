@@ -99,7 +99,7 @@ export function SimpleAudioPlayer({ session, onClose }: SimpleAudioPlayerProps) 
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/users", DEMO_USER_ID, "hack-completions"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${DEMO_USER_ID}/hack-completions`] });
     },
   });
 
