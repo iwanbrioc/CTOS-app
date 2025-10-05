@@ -259,11 +259,11 @@ export default function Home() {
                       xmlns="http://www.w3.org/2000/svg"
                       className="text-white flex-shrink-0"
                     >
-                      <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M16 8C16 8 12 10 12 12C12 14 12 18 12 20C12 22 16 24 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M16 8C16 8 20 10 20 12C20 14 20 18 20 20C20 22 16 24 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <line x1="10" y1="14" x2="12" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <line x1="20" y1="14" x2="22" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <ellipse cx="16" cy="18" rx="10" ry="12" stroke="currentColor" strokeWidth="2"/>
+                      <circle cx="16" cy="8" r="3" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M12 15 C 12 15, 13 14, 14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <path d="M20 15 C 20 15, 19 14, 18 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <path d="M14 21 Q 16 22, 18 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                     </svg>
                     <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
                   </div>
