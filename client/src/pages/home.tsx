@@ -366,7 +366,7 @@ export default function Home() {
                         <img 
                           src={smallPracticeIcon} 
                           alt="Practice" 
-                          className="w-5 h-5 flex-shrink-0"
+                          className="w-5 h-5 flex-shrink-0 brightness-0 invert opacity-90"
                         />
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
