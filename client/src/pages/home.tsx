@@ -13,7 +13,7 @@ import { Link } from "wouter";
 import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
 import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_1759681457952.png";
 import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759686357223.png";
-import smallPracticeIcon from "@assets/7246199B-3468-4C84-BDE8-9FDFF49F5C5B_1759689584190.png";
+import smallPracticeIcon from "@assets/7246199B-3468-4C84-BDE8-9FDFF49F5C5B_1759690644212.png";
 
 const getSessionIcon = (week: number) => {
   const iconProps = {
@@ -365,15 +365,11 @@ export default function Home() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-4">
-                        <svg className="w-7 h-7 flex-shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <ellipse cx="50" cy="50" rx="45" ry="48" fill="white" fillOpacity="0.9"/>
-                          <path d="M 25 35 Q 30 30, 40 35" stroke="#333" strokeWidth="4" strokeLinecap="round" fill="none"/>
-                          <path d="M 60 35 Q 70 30, 75 35" stroke="#333" strokeWidth="4" strokeLinecap="round" fill="none"/>
-                          <ellipse cx="32" cy="42" rx="8" ry="3" fill="#333"/>
-                          <ellipse cx="68" cy="42" rx="8" ry="3" fill="#333"/>
-                          <path d="M 42 60 Q 45 58, 48 58 Q 52 58, 55 58 Q 58 58, 58 60" stroke="#333" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                          <path d="M 45 70 Q 50 72, 55 70" stroke="#333" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                        </svg>
+                        <img 
+                          src={smallPracticeIcon} 
+                          alt="Practice" 
+                          className="w-7 h-7 flex-shrink-0"
+                        />
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">
