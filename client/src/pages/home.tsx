@@ -366,13 +366,13 @@ export default function Home() {
                       xmlns="http://www.w3.org/2000/svg"
                       className="text-white flex-shrink-0"
                     >
-                      <circle cx="16" cy="16" r="11" stroke="currentColor" strokeWidth="1.5" opacity="0.3"/>
-                      <circle cx="16" cy="16" r="7" stroke="currentColor" strokeWidth="1.5" opacity="0.5"/>
-                      <circle cx="16" cy="16" r="3" fill="currentColor" opacity="0.8"/>
-                      <path d="M16 5 L16 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-                      <path d="M16 24 L16 27" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-                      <path d="M5 16 L8 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-                      <path d="M24 16 L27 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+                      <ellipse cx="16" cy="18" rx="9" ry="11" stroke="currentColor" strokeWidth="1.5"/>
+                      <path d="M11 14 Q 12 13, 13 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <path d="M19 14 Q 20 13, 21 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <path d="M16 18 L16 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <path d="M13 23 Q 16 25, 19 23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <path d="M8 10 Q 10 8, 12 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      <path d="M24 10 Q 22 8, 20 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                     </svg>
                     <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
                   </div>
@@ -404,13 +404,13 @@ export default function Home() {
                           xmlns="http://www.w3.org/2000/svg"
                           className="text-green-500"
                         >
-                          <circle cx="16" cy="16" r="13" stroke="currentColor" strokeWidth="1.5" opacity="0.2"/>
-                          <circle cx="16" cy="16" r="9" stroke="currentColor" strokeWidth="2" opacity="0.4"/>
-                          <circle cx="16" cy="16" r="4" fill="currentColor" opacity="0.8"/>
-                          <path d="M16 3 L16 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
-                          <path d="M16 25 L16 29" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
-                          <path d="M3 16 L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
-                          <path d="M25 16 L29 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+                          <ellipse cx="16" cy="18" rx="10" ry="12" stroke="currentColor" strokeWidth="2"/>
+                          <path d="M10 14 Q 11.5 12.5, 13 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M19 14 Q 20.5 12.5, 22 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M16 18 L16 22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M12 24 Q 16 26.5, 20 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M7 10 Q 9 7, 12 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M25 10 Q 23 7, 20 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                         </svg>
                       </button>
                     )}
