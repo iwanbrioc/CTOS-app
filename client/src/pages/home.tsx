@@ -359,35 +359,22 @@ export default function Home() {
                 data-testid="card-daily-practice"
               >
                 <div className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        {!showPracticePlayer && (
-                          <img 
-                            src={eyesClosedIcon} 
-                            alt="Practice" 
-                            className="w-10 h-10 flex-shrink-0 brightness-0 invert"
-                          />
-                        )}
-                        {showPracticePlayer && (
-                          <img 
-                            src={eyesClosedIcon} 
-                            alt="Practicing" 
-                            className="w-10 h-10 flex-shrink-0 brightness-0 invert"
-                          />
-                        )}
-                        <div>
-                          <h3 className="text-xl font-bold text-white">
-                            Start Today's Practice
-                          </h3>
-                          <p className="text-white text-opacity-90 text-sm">
-                            {practiceSession.duration} minute meditation
-                          </p>
-                        </div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <img 
+                          src={eyesClosedIcon} 
+                          alt="Practice" 
+                          className="w-5 h-5 flex-shrink-0 brightness-0 invert"
+                        />
+                        <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
+                      <h3 className="text-xl font-bold text-white mb-2">
+                        Start Today's Practice
+                      </h3>
+                      <p className="text-white text-opacity-90 text-sm mb-3">
+                        {practiceSession.duration} minute meditation
+                      </p>
                       {getUserProgressForSession(practiceSession.id)?.completed && (
                         <span className="inline-block bg-white bg-opacity-30 text-white text-xs font-medium px-3 py-1 rounded-full">
                           Completed ✓
@@ -397,7 +384,7 @@ export default function Home() {
                     {!showPracticePlayer && (
                       <button
                         onClick={handleStartPractice}
-                        className="bg-white rounded-full p-4 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex-shrink-0"
+                        className="bg-white/20 rounded-full p-4 hover:bg-white/30 hover:scale-105 active:scale-95 transition-all flex-shrink-0"
                         data-testid="button-start-practice"
                       >
                         <img 
@@ -408,7 +395,7 @@ export default function Home() {
                       </button>
                     )}
                     {showPracticePlayer && (
-                      <div className="rounded-full p-4 flex-shrink-0">
+                      <div className="bg-white/20 rounded-full p-4 flex-shrink-0">
                         <img 
                           src={eyesClosedIcon} 
                           alt="Practicing" 
