@@ -11,8 +11,8 @@ import { Settings, Play, BookOpen, Sparkles, Pause } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
 import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
-import eyesClosedIcon from "@assets/477A4035-3D5F-4E31-ACBC-2441B4E466F1_1759680619234.png";
-import eyesOpenIcon from "@assets/488275F9-C2F8-4686-9680-05EBA7B874E4_1759680641570.png";
+import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_1759681457952.png";
+import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759681457952.png";
 
 const getSessionIcon = (week: number) => {
   const iconProps = {
