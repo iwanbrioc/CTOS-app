@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Settings, Play, BookOpen, Sparkles, Pause } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
-import type { User, Session, UserProgress, JournalEntry, UserHackCompletion } from "@shared/schema";
+import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
 
 const getSessionIcon = (week: number) => {
   const iconProps = {
@@ -150,6 +150,10 @@ export default function Home() {
     enabled: !!user?.id,
   });
 
+  const { data: allHacks = [] } = useQuery<HandyHack[]>({
+    queryKey: ["/api/handy-hacks"],
+  });
+
   const completedSessions = userProgress.filter(p => p.completed).length;
   const totalSessions = sessions.length;
   const progressPercentage = totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0;
@@ -257,8 +261,11 @@ export default function Home() {
   });
 
   const handleHackClick = () => {
-    if (practiceSession) {
-      completeHackMutation.mutate(currentWeek);
+    if (practiceSession && practiceSession.handyHack) {
+      const currentHack = allHacks.find(hack => hack.title === practiceSession.handyHack);
+      if (currentHack) {
+        completeHackMutation.mutate(currentHack.id);
+      }
     }
   };
 
