@@ -363,7 +363,7 @@ export default function Home() {
                     <img 
                       src={eyesClosedIcon} 
                       alt="Practice" 
-                      className="w-5 h-5 flex-shrink-0 brightness-0 invert"
+                      className="w-5 h-5 flex-shrink-0"
                     />
                     <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
                   </div>
@@ -384,22 +384,22 @@ export default function Home() {
                     {!showPracticePlayer && (
                       <button
                         onClick={handleStartPractice}
-                        className="rounded-full p-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 hover:scale-105 transition-all"
+                        className="hover:scale-105 transition-transform"
                         data-testid="button-start-practice"
                       >
                         <img 
                           src={eyesOpenIcon} 
                           alt="Start Practice" 
-                          className="w-14 h-14 brightness-0 invert opacity-90"
+                          className="w-16 h-16"
                         />
                       </button>
                     )}
                     {showPracticePlayer && (
-                      <div className="rounded-full p-3 bg-white/10 backdrop-blur-sm">
+                      <div>
                         <img 
                           src={eyesClosedIcon} 
                           alt="Practicing" 
-                          className="w-14 h-14 brightness-0 invert opacity-90"
+                          className="w-16 h-16"
                         />
                       </div>
                     )}
