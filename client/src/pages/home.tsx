@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Settings, Play, BookOpen, Sparkles, Pause } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
-import type { User, Session, UserProgress, JournalEntry } from "@shared/schema";
+import type { User, Session, UserProgress, JournalEntry, UserHackCompletion } from "@shared/schema";
 
 const getSessionIcon = (week: number) => {
   const iconProps = {
@@ -142,6 +142,11 @@ export default function Home() {
 
   const { data: journalEntries = [] } = useQuery<JournalEntry[]>({
     queryKey: ["/api/users", user?.id, "journal"],
+    enabled: !!user?.id,
+  });
+
+  const { data: hackCompletions = [] } = useQuery<UserHackCompletion[]>({
+    queryKey: ["/api/users", user?.id, "hack-completions"],
     enabled: !!user?.id,
   });
 
@@ -439,9 +444,14 @@ export default function Home() {
                   <h3 className="text-base font-bold text-white mb-3 leading-tight">
                     {practiceSession.handyHack}
                   </h3>
-                  <p className="text-white text-opacity-90 text-xs mb-2">
-                    This week's practice
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-white text-opacity-90 text-xs">
+                      This week's practice
+                    </p>
+                    <span className="text-xs bg-white bg-opacity-30 text-white px-2 py-1 rounded-full font-semibold" data-testid="hack-completion-count">
+                      {hackCompletions.length}x
+                    </span>
+                  </div>
                 </div>
               )}
 
