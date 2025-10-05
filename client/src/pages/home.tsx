@@ -480,7 +480,11 @@ export default function Home() {
                   </h3>
                   <div className="min-h-[32px] flex gap-2 flex-wrap items-center bg-white/10 rounded-lg px-3 py-2" data-testid="hack-completion-sticks">
                     {(() => {
-                      const count = hackCompletions.length;
+                      const currentHack = allHacks.find(hack => hack.title === practiceSession.handyHack);
+                      const currentHackCompletions = currentHack 
+                        ? hackCompletions.filter(hc => hc.hackId === currentHack.id)
+                        : [];
+                      const count = currentHackCompletions.length;
                       const completeGates = Math.floor(count / 5);
                       const remaining = count % 5;
                       
