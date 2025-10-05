@@ -369,6 +369,7 @@ export default function Home() {
                           src={smallPracticeIcon} 
                           alt="Practice" 
                           className="w-7 h-7 flex-shrink-0"
+                          style={{ background: 'transparent' }}
                         />
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
