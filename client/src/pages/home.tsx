@@ -369,6 +369,7 @@ export default function Home() {
                           src={smallPracticeIcon} 
                           alt="Practice" 
                           className="w-5 h-5 flex-shrink-0"
+                          style={{ mixBlendMode: 'screen' }}
                         />
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
