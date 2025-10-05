@@ -359,63 +359,60 @@ export default function Home() {
                 data-testid="card-daily-practice"
               >
                 <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <img 
-                      src={eyesClosedIcon} 
-                      alt="Practice" 
-                      className="w-5 h-5 flex-shrink-0"
-                    />
-                    <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 flex items-center gap-3">
-                      {!showPracticePlayer && (
-                        <img 
-                          src={eyesClosedIcon} 
-                          alt="Practice" 
-                          className="w-8 h-8 flex-shrink-0 brightness-0 invert"
-                        />
-                      )}
-                      {showPracticePlayer && (
-                        <img 
-                          src={eyesClosedIcon} 
-                          alt="Practicing" 
-                          className="w-8 h-8 flex-shrink-0 brightness-0 invert"
-                        />
-                      )}
-                      <div>
-                        <h3 className="text-xl font-bold text-white mb-2">
-                          Start Today's Practice
-                        </h3>
-                        <p className="text-white text-opacity-90 text-sm mb-2">
-                          {practiceSession.duration} minute meditation
-                        </p>
-                        {getUserProgressForSession(practiceSession.id)?.completed && (
-                          <span className="inline-block bg-white bg-opacity-30 text-white text-xs font-medium px-3 py-1 rounded-full">
-                            Completed ✓
-                          </span>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        {!showPracticePlayer && (
+                          <img 
+                            src={eyesClosedIcon} 
+                            alt="Practice" 
+                            className="w-10 h-10 flex-shrink-0 brightness-0 invert"
+                          />
                         )}
+                        {showPracticePlayer && (
+                          <img 
+                            src={eyesClosedIcon} 
+                            alt="Practicing" 
+                            className="w-10 h-10 flex-shrink-0 brightness-0 invert"
+                          />
+                        )}
+                        <div>
+                          <h3 className="text-xl font-bold text-white">
+                            Start Today's Practice
+                          </h3>
+                          <p className="text-white text-opacity-90 text-sm">
+                            {practiceSession.duration} minute meditation
+                          </p>
+                        </div>
                       </div>
+                      {getUserProgressForSession(practiceSession.id)?.completed && (
+                        <span className="inline-block bg-white bg-opacity-30 text-white text-xs font-medium px-3 py-1 rounded-full">
+                          Completed ✓
+                        </span>
+                      )}
                     </div>
                     {!showPracticePlayer && (
                       <button
                         onClick={handleStartPractice}
-                        className="bg-white rounded-full p-4 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+                        className="bg-white rounded-full p-4 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex-shrink-0"
                         data-testid="button-start-practice"
                       >
                         <img 
                           src={eyesOpenIcon} 
                           alt="Start Practice" 
-                          className="w-14 h-14"
+                          className="w-16 h-16"
                         />
                       </button>
                     )}
                     {showPracticePlayer && (
-                      <div className="rounded-full p-4">
+                      <div className="rounded-full p-4 flex-shrink-0">
                         <img 
                           src={eyesClosedIcon} 
                           alt="Practicing" 
-                          className="w-14 h-14"
+                          className="w-16 h-16"
                         />
                       </div>
                     )}
