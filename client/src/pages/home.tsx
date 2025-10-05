@@ -11,6 +11,8 @@ import { Settings, Play, BookOpen, Sparkles, Pause } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
 import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
+import eyesClosedIcon from "@assets/477A4035-3D5F-4E31-ACBC-2441B4E466F1_1759680619234.png";
+import eyesOpenIcon from "@assets/488275F9-C2F8-4686-9680-05EBA7B874E4_1759680641570.png";
 
 const getSessionIcon = (week: number) => {
   const iconProps = {
@@ -358,22 +360,11 @@ export default function Home() {
               >
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <svg 
-                      width="20" 
-                      height="20" 
-                      viewBox="0 0 32 40" 
-                      fill="none" 
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="text-white flex-shrink-0"
-                    >
-                      <ellipse cx="16" cy="20" rx="7" ry="9" stroke="currentColor" strokeWidth="1.3"/>
-                      <path d="M12 17 Q 13 16, 14 17" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                      <path d="M18 17 Q 19 16, 20 17" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                      <path d="M13 25 Q 16 26.5, 19 25" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                      <path d="M7 12 Q 9 8, 11 10 Q 13 6, 16 5 Q 19 6, 21 10 Q 23 8, 25 12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" fill="none"/>
-                      <path d="M8 14 Q 7 20, 8 28 Q 10 32, 12 34" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" opacity="0.7"/>
-                      <path d="M24 14 Q 25 20, 24 28 Q 22 32, 20 34" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" opacity="0.7"/>
-                    </svg>
+                    <img 
+                      src={eyesClosedIcon} 
+                      alt="Practice" 
+                      className="w-5 h-5 flex-shrink-0 brightness-0 invert"
+                    />
                     <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -396,23 +387,21 @@ export default function Home() {
                         className="bg-white rounded-full p-4 shadow-lg hover:scale-105 transition-transform"
                         data-testid="button-start-practice"
                       >
-                        <svg 
-                          width="32" 
-                          height="40" 
-                          viewBox="0 0 32 44" 
-                          fill="none" 
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="text-green-500"
-                        >
-                          <ellipse cx="16" cy="22" rx="8" ry="10" stroke="currentColor" strokeWidth="1.8"/>
-                          <path d="M11 19 Q 12.5 17.5, 14 19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                          <path d="M18 19 Q 19.5 17.5, 21 19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                          <path d="M12 28 Q 16 30, 20 28" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                          <path d="M6 13 Q 8 8, 11 11 Q 13 6, 16 5 Q 19 6, 21 11 Q 24 8, 26 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
-                          <path d="M7 15 Q 6 22, 7 32 Q 9 37, 11 40" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.8"/>
-                          <path d="M25 15 Q 26 22, 25 32 Q 23 37, 21 40" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.8"/>
-                        </svg>
+                        <img 
+                          src={eyesOpenIcon} 
+                          alt="Start Practice" 
+                          className="w-12 h-12"
+                        />
                       </button>
+                    )}
+                    {showPracticePlayer && (
+                      <div className="bg-white rounded-full p-4 shadow-lg">
+                        <img 
+                          src={eyesClosedIcon} 
+                          alt="Practicing" 
+                          className="w-12 h-12"
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
