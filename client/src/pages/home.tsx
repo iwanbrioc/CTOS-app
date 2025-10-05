@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Settings, Play, BookOpen, Sparkles, Pause } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
-import type { User, Session, UserProgress, HandyHack, JournalEntry } from "@shared/schema";
+import type { User, Session, UserProgress, JournalEntry } from "@shared/schema";
 
 const getSessionIcon = (week: number) => {
   const iconProps = {
@@ -140,18 +140,9 @@ export default function Home() {
     enabled: !!user?.id,
   });
 
-  const { data: randomHack } = useQuery<HandyHack>({
-    queryKey: ["/api/handy-hacks/random"],
-  });
-
   const { data: journalEntries = [] } = useQuery<JournalEntry[]>({
     queryKey: ["/api/users", user?.id, "journal"],
     enabled: !!user?.id,
-  });
-
-  const { data: hackCounts } = useQuery<{ today: number; thisWeek: number }>({
-    queryKey: [`/api/users/${user?.id}/hacks/${randomHack?.id}/practice-counts`],
-    enabled: !!user?.id && !!randomHack?.id,
   });
 
   const completedSessions = userProgress.filter(p => p.completed).length;
@@ -239,21 +230,6 @@ export default function Home() {
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
-  
-  const practiceHackMutation = useMutation({
-    mutationFn: async () => {
-      if (!randomHack) return;
-      await apiRequest("POST", `/api/users/${user.id}/hacks/${randomHack.id}/complete`, {});
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}/hacks/${randomHack?.id}/practice-counts`] });
-      toast({
-        title: "Great!",
-        description: "Handy hack practiced. Keep it up!",
-        duration: 2000,
-      });
-    }
-  });
 
   if (sessionsLoading) {
     return (
@@ -450,35 +426,21 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-4">
               
               {/* Handy Hack Card - Half Screen */}
-              {randomHack && (
+              {practiceSession && (
                 <div 
                   className="bg-gradient-to-br from-pink-400 to-rose-500 rounded-3xl p-5 shadow-xl"
-                  data-testid={`card-hack-${randomHack.id}`}
+                  data-testid={`card-hack-week-${practiceSession.week}`}
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="h-5 w-5 text-white" />
                     <span className="text-white text-xs font-bold">HANDY HACK</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2 line-clamp-2">
-                    {randomHack.title}
+                  <h3 className="text-base font-bold text-white mb-3 leading-tight">
+                    {practiceSession.handyHack}
                   </h3>
-                  <p className="text-white text-opacity-90 text-sm mb-4 line-clamp-3">
-                    {randomHack.description}
+                  <p className="text-white text-opacity-90 text-xs mb-2">
+                    This week's practice
                   </p>
-                  <Button 
-                    onClick={() => practiceHackMutation.mutate()}
-                    disabled={practiceHackMutation.isPending}
-                    className="w-full bg-white text-pink-600 hover:bg-pink-50 font-semibold"
-                    size="sm"
-                    data-testid="button-practice-hack"
-                  >
-                    Practice
-                  </Button>
-                  <div className="mt-3 text-center">
-                    <span className="text-white text-xs font-medium">
-                      Today: {hackCounts?.today || 0}x
-                    </span>
-                  </div>
                 </div>
               )}
 
@@ -492,13 +454,10 @@ export default function Home() {
                     <BookOpen className="h-5 w-5 text-white" />
                     <span className="text-white text-xs font-bold">JOURNAL</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">
-                    Daily Journal
+                  <h3 className="text-base font-bold text-white mb-3 leading-tight">
+                    {practiceSession?.journaling || 'Daily Journal'}
                   </h3>
-                  <p className="text-white text-opacity-90 text-sm mb-4">
-                    {todaysJournal ? 'Continue writing' : 'Start journaling'}
-                  </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     {todaysJournal?.morningCompleted && (
                       <span className="text-xs bg-white bg-opacity-30 text-white px-2 py-1 rounded-full">
                         Morning ✓
