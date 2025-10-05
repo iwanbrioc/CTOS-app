@@ -236,6 +236,32 @@ export default function Home() {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  const completeHackMutation = useMutation({
+    mutationFn: async (hackId: number) => {
+      await apiRequest("POST", `/api/users/${user?.id}/hacks/${hackId}/complete`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "hack-completions"] });
+      toast({
+        title: "Practice logged!",
+        description: "Keep up the great work!",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to log practice. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleHackClick = () => {
+    if (practiceSession) {
+      completeHackMutation.mutate(currentWeek);
+    }
+  };
+
   if (sessionsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
@@ -434,8 +460,9 @@ export default function Home() {
               {/* Handy Hack Card - Half Screen */}
               {practiceSession && (
                 <div 
-                  className="bg-gradient-to-br from-pink-400 to-rose-500 rounded-3xl p-5 shadow-xl"
+                  className="bg-gradient-to-br from-pink-400 to-rose-500 rounded-3xl p-5 shadow-xl cursor-pointer hover:shadow-2xl transition-all active:scale-95"
                   data-testid={`card-hack-week-${practiceSession.week}`}
+                  onClick={handleHackClick}
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="h-5 w-5 text-white" />
@@ -444,13 +471,13 @@ export default function Home() {
                   <h3 className="text-base font-bold text-white mb-3 leading-tight">
                     {practiceSession.handyHack}
                   </h3>
-                  <div className="flex items-center justify-between">
-                    <p className="text-white text-opacity-90 text-xs">
-                      This week's practice
-                    </p>
-                    <span className="text-xs bg-white bg-opacity-30 text-white px-2 py-1 rounded-full font-semibold" data-testid="hack-completion-count">
-                      {hackCompletions.length}x
-                    </span>
+                  <div className="flex gap-1 flex-wrap" data-testid="hack-completion-sticks">
+                    {Array.from({ length: hackCompletions.length }).map((_, i) => (
+                      <div 
+                        key={i}
+                        className="w-1 h-6 bg-white rounded-full opacity-80"
+                      />
+                    ))}
                   </div>
                 </div>
               )}
