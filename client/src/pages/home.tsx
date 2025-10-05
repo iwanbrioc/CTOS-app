@@ -471,13 +471,32 @@ export default function Home() {
                   <h3 className="text-base font-bold text-white mb-3 leading-tight">
                     {practiceSession.handyHack}
                   </h3>
-                  <div className="flex gap-1 flex-wrap" data-testid="hack-completion-sticks">
-                    {Array.from({ length: hackCompletions.length }).map((_, i) => (
-                      <div 
-                        key={i}
-                        className="w-1 h-6 bg-white rounded-full opacity-80"
-                      />
-                    ))}
+                  <div className="flex gap-2 flex-wrap items-center" data-testid="hack-completion-sticks">
+                    {(() => {
+                      const count = hackCompletions.length;
+                      const completeGates = Math.floor(count / 5);
+                      const remaining = count % 5;
+                      
+                      return (
+                        <>
+                          {Array.from({ length: completeGates }).map((_, i) => (
+                            <svg key={`gate-${i}`} width="20" height="24" viewBox="0 0 20 24" className="flex-shrink-0">
+                              <line x1="3" y1="2" x2="3" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+                              <line x1="7" y1="2" x2="7" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+                              <line x1="11" y1="2" x2="11" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+                              <line x1="15" y1="2" x2="15" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+                              <line x1="1" y1="20" x2="17" y2="4" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+                            </svg>
+                          ))}
+                          {Array.from({ length: remaining }).map((_, i) => (
+                            <div 
+                              key={`stick-${i}`}
+                              className="w-0.5 h-6 bg-white rounded-full opacity-80"
+                            />
+                          ))}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               )}
