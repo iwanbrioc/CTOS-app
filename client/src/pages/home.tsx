@@ -289,7 +289,7 @@ export default function Home() {
         <StatusBar />
         
         {/* Header - App Title */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-6 shadow-lg">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-6 shadow-lg rounded-b-3xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img 
