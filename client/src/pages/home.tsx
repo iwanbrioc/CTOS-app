@@ -259,11 +259,13 @@ export default function Home() {
                       xmlns="http://www.w3.org/2000/svg"
                       className="text-white flex-shrink-0"
                     >
-                      <ellipse cx="16" cy="18" rx="10" ry="12" stroke="currentColor" strokeWidth="2"/>
-                      <circle cx="16" cy="8" r="3" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M12 15 C 12 15, 13 14, 14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M20 15 C 20 15, 19 14, 18 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <path d="M14 21 Q 16 22, 18 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                      <path d="M8 16 C 8 10, 11 6, 16 6 C 21 6, 24 10, 24 16 C 24 22, 21 26, 16 26 C 11 26, 8 22, 8 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="7" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
+                      <circle cx="25" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M11 14 Q 12 13, 13 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M21 14 Q 20 13, 19 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <line x1="16" y1="16" x2="16" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <line x1="14" y1="22" x2="18" y2="22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
                     <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
                   </div>
