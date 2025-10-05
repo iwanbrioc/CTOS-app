@@ -217,32 +217,42 @@ export function SessionCard({ session, sessionState, onStartPractice, onFutureSe
           {/* Content Section */}
           <div className="p-4">
             <div className="mb-3">
-              <div className="flex-1">
-                <h3 className={cn(
-                  "font-bold text-base mb-1 tracking-tight",
-                  isLocked ? "text-black/70" : "text-black"
-                )}>
-                  {session.title}
-                </h3>
-                <p className="text-sm text-black/90 mb-2">
-                  {session.description}
-                </p>
-                
-                {/* Handy Hack & Journaling Dashboard Info */}
-                {session.handyHack && (
-                  <div className="mt-3 space-y-2">
-                    <div className="flex items-start space-x-2">
-                      <span className="text-xs font-semibold text-black/90 whitespace-nowrap">Handy Hack:</span>
-                      <span className="text-xs text-black/80">{session.handyHack}</span>
-                    </div>
-                    {session.journaling && (
+              <div className="flex items-start gap-3">
+                {/* Session Icon */}
+                <div className="flex-shrink-0 w-12 h-12 bg-white/30 rounded-xl p-2 backdrop-blur-sm">
+                  <img 
+                    src={getSessionImage(session.illustration)}
+                    alt={`${session.title} icon`}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className={cn(
+                    "font-bold text-base mb-1 tracking-tight",
+                    isLocked ? "text-black/70" : "text-black"
+                  )}>
+                    {session.title}
+                  </h3>
+                  <p className="text-sm text-black/90 mb-2">
+                    {session.description}
+                  </p>
+                  
+                  {/* Handy Hack & Journaling Dashboard Info */}
+                  {session.handyHack && (
+                    <div className="mt-3 space-y-2">
                       <div className="flex items-start space-x-2">
-                        <span className="text-xs font-semibold text-black/90 whitespace-nowrap">Journaling:</span>
-                        <span className="text-xs text-black/80">{session.journaling}</span>
+                        <span className="text-xs font-semibold text-black/90 whitespace-nowrap">Handy Hack:</span>
+                        <span className="text-xs text-black/80">{session.handyHack}</span>
                       </div>
-                    )}
-                  </div>
-                )}
+                      {session.journaling && (
+                        <div className="flex items-start space-x-2">
+                          <span className="text-xs font-semibold text-black/90 whitespace-nowrap">Journaling:</span>
+                          <span className="text-xs text-black/80">{session.journaling}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             

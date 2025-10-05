@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { StatusBar } from "@/components/status-bar";
@@ -7,7 +7,7 @@ import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Play, BookOpen, Sparkles } from "lucide-react";
+import { Settings, Play, BookOpen, Sparkles, Pause } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
 import type { User, Session, UserProgress, HandyHack, JournalEntry } from "@shared/schema";
@@ -33,6 +33,11 @@ export default function Home() {
     timezone: "UTC" 
   };
   const [showNotificationBanner, setShowNotificationBanner] = useState(false);
+  const [showPracticePlayer, setShowPracticePlayer] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
@@ -72,6 +77,76 @@ export default function Home() {
 
   const getUserProgressForSession = (sessionId: number) => {
     return userProgress.find(p => p.sessionId === sessionId);
+  };
+
+  useEffect(() => {
+    if (!showPracticePlayer) return;
+    
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+    };
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [showPracticePlayer]);
+
+  const handleStartPractice = () => {
+    setShowPracticePlayer(true);
+    setTimeout(() => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.load();
+      }
+    }, 100);
+  };
+
+  const handlePlayPause = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    try {
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        if (audio.readyState < 2) {
+          await new Promise((resolve) => {
+            audio.addEventListener('loadeddata', resolve, { once: true });
+            audio.load();
+          });
+        }
+        await audio.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error("Audio playback error:", error);
+      setIsPlaying(false);
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
   
   const practiceHackMutation = useMutation({
@@ -137,7 +212,7 @@ export default function Home() {
 
         {/* Main Content - Scrollable */}
         <div className="flex-1 overflow-y-auto pb-32">
-          <div className="p-4 space-y-4">
+          <div className="p-4 space-y-6">
             
             {/* Session Title and Picture Card */}
             {practiceSession && (
@@ -168,13 +243,13 @@ export default function Home() {
               </div>
             )}
 
-            {/* Daily Practice Card with Play Button */}
+            {/* Daily Practice Card with Integrated Player */}
             {practiceSession && (
-              <Link href={`/session/${practiceSession.id}`}>
-                <div 
-                  className="bg-gradient-to-br from-green-400 to-teal-500 rounded-3xl p-6 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow"
-                  data-testid="card-daily-practice"
-                >
+              <div 
+                className="bg-gradient-to-br from-green-400 to-teal-500 rounded-3xl shadow-xl overflow-hidden"
+                data-testid="card-daily-practice"
+              >
+                <div className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-white mb-2">
@@ -189,12 +264,73 @@ export default function Home() {
                         </span>
                       )}
                     </div>
-                    <div className="bg-white rounded-full p-4 shadow-lg">
-                      <Play className="h-8 w-8 text-green-500 fill-green-500" />
-                    </div>
+                    {!showPracticePlayer && (
+                      <button
+                        onClick={handleStartPractice}
+                        className="bg-white rounded-full p-4 shadow-lg hover:scale-105 transition-transform"
+                        data-testid="button-start-practice"
+                      >
+                        <svg 
+                          width="32" 
+                          height="32" 
+                          viewBox="0 0 32 32" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="text-green-500"
+                        >
+                          <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2"/>
+                          <path d="M16 8C16 8 12 10 12 12C12 14 12 18 12 20C12 22 16 24 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M16 8C16 8 20 10 20 12C20 14 20 18 20 20C20 22 16 24 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <line x1="10" y1="14" x2="12" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <line x1="20" y1="14" x2="22" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 </div>
-              </Link>
+
+                {showPracticePlayer && (
+                  <div className="bg-white bg-opacity-20 backdrop-blur-sm p-4 border-t border-white/20">
+                    <audio
+                      ref={audioRef}
+                      src={practiceSession.audioUrl}
+                      preload="metadata"
+                      crossOrigin="anonymous"
+                    />
+                    
+                    <div className="flex items-center space-x-3">
+                      <Button
+                        onClick={handlePlayPause}
+                        size="lg"
+                        className={`flex-shrink-0 ${
+                          isPlaying 
+                            ? "bg-white hover:bg-gray-100 text-green-600" 
+                            : "bg-white hover:bg-gray-100 text-green-600"
+                        }`}
+                        data-testid="audio-play-pause-btn"
+                      >
+                        {isPlaying ? (
+                          <Pause className="h-6 w-6" />
+                        ) : (
+                          <Play className="h-6 w-6 ml-0.5" />
+                        )}
+                      </Button>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-white mb-1 font-medium">
+                          {formatTime(currentTime)} / {formatTime(duration)}
+                        </div>
+                        <div className="w-full bg-white/30 rounded-full h-2">
+                          <div 
+                            className="bg-white h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Half Screen Cards: Handy Hack | Journal */}
