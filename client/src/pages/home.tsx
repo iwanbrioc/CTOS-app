@@ -365,11 +365,17 @@ export default function Home() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-4">
-                        <img 
-                          src={smallPracticeIcon} 
-                          alt="Practice" 
-                          className="w-7 h-7 flex-shrink-0"
-                        />
+                        <div className="w-7 h-7 flex-shrink-0 relative">
+                          <img 
+                            src={smallPracticeIcon} 
+                            alt="Practice" 
+                            className="absolute inset-0 w-full h-full object-contain"
+                            style={{
+                              filter: 'invert(1) brightness(2)',
+                              mixBlendMode: 'screen'
+                            }}
+                          />
+                        </div>
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">
