@@ -368,7 +368,8 @@ export default function Home() {
                         <img 
                           src={smallPracticeIcon} 
                           alt="Practice" 
-                          className="w-5 h-5 flex-shrink-0 brightness-0 invert opacity-90"
+                          className="w-5 h-5 flex-shrink-0 opacity-90"
+                          style={{ filter: 'drop-shadow(0 0 2px rgba(255,255,255,0.3))' }}
                         />
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
