@@ -478,27 +478,31 @@ export default function Home() {
                   <h3 className="text-base font-bold text-white mb-3 leading-tight">
                     {practiceSession.handyHack}
                   </h3>
-                  <div className="flex gap-2 flex-wrap items-center" data-testid="hack-completion-sticks">
+                  <div className="min-h-[32px] flex gap-2 flex-wrap items-center bg-white/10 rounded-lg px-3 py-2" data-testid="hack-completion-sticks">
                     {(() => {
                       const count = hackCompletions.length;
                       const completeGates = Math.floor(count / 5);
                       const remaining = count % 5;
                       
+                      if (count === 0) {
+                        return <span className="text-white/50 text-xs italic">Tap to log practice</span>;
+                      }
+                      
                       return (
                         <>
                           {Array.from({ length: completeGates }).map((_, i) => (
-                            <svg key={`gate-${i}`} width="20" height="24" viewBox="0 0 20 24" className="flex-shrink-0">
-                              <line x1="3" y1="2" x2="3" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
-                              <line x1="7" y1="2" x2="7" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
-                              <line x1="11" y1="2" x2="11" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
-                              <line x1="15" y1="2" x2="15" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
-                              <line x1="1" y1="20" x2="17" y2="4" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+                            <svg key={`gate-${i}`} width="24" height="28" viewBox="0 0 24 28" className="flex-shrink-0">
+                              <line x1="4" y1="4" x2="4" y2="24" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                              <line x1="9" y1="4" x2="9" y2="24" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                              <line x1="14" y1="4" x2="14" y2="24" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                              <line x1="19" y1="4" x2="19" y2="24" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+                              <line x1="2" y1="22" x2="21" y2="6" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
                             </svg>
                           ))}
                           {Array.from({ length: remaining }).map((_, i) => (
                             <div 
                               key={`stick-${i}`}
-                              className="w-0.5 h-6 bg-white rounded-full opacity-80"
+                              className="w-1 h-7 bg-white rounded-sm"
                             />
                           ))}
                         </>
