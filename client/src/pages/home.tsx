@@ -384,22 +384,22 @@ export default function Home() {
                     {!showPracticePlayer && (
                       <button
                         onClick={handleStartPractice}
-                        className="hover:scale-105 transition-transform"
+                        className="rounded-full p-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 hover:scale-105 transition-all"
                         data-testid="button-start-practice"
                       >
                         <img 
                           src={eyesOpenIcon} 
                           alt="Start Practice" 
-                          className="w-16 h-16 opacity-90 brightness-0 invert mix-blend-overlay"
+                          className="w-14 h-14 brightness-0 invert opacity-90"
                         />
                       </button>
                     )}
                     {showPracticePlayer && (
-                      <div>
+                      <div className="rounded-full p-3 bg-white/10 backdrop-blur-sm">
                         <img 
                           src={eyesClosedIcon} 
                           alt="Practicing" 
-                          className="w-16 h-16 opacity-80 brightness-0 invert mix-blend-overlay"
+                          className="w-14 h-14 brightness-0 invert opacity-90"
                         />
                       </div>
                     )}
