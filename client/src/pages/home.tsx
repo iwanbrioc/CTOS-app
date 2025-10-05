@@ -365,12 +365,15 @@ export default function Home() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-4">
-                        <img 
-                          src={smallPracticeIcon} 
-                          alt="Practice" 
-                          className="w-7 h-7 flex-shrink-0"
-                          style={{ background: 'transparent' }}
-                        />
+                        <svg className="w-7 h-7 flex-shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <ellipse cx="50" cy="50" rx="45" ry="48" fill="white" fillOpacity="0.9"/>
+                          <path d="M 25 35 Q 30 30, 40 35" stroke="#333" strokeWidth="4" strokeLinecap="round" fill="none"/>
+                          <path d="M 60 35 Q 70 30, 75 35" stroke="#333" strokeWidth="4" strokeLinecap="round" fill="none"/>
+                          <ellipse cx="32" cy="42" rx="8" ry="3" fill="#333"/>
+                          <ellipse cx="68" cy="42" rx="8" ry="3" fill="#333"/>
+                          <path d="M 42 60 Q 45 58, 48 58 Q 52 58, 55 58 Q 58 58, 58 60" stroke="#333" strokeWidth="3" strokeLinecap="round" fill="none"/>
+                          <path d="M 45 70 Q 50 72, 55 70" stroke="#333" strokeWidth="3" strokeLinecap="round" fill="none"/>
+                        </svg>
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">
