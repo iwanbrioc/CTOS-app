@@ -368,8 +368,7 @@ export default function Home() {
                         <img 
                           src={smallPracticeIcon} 
                           alt="Practice" 
-                          className="w-7 h-7 flex-shrink-0 opacity-80"
-                          style={{ mixBlendMode: 'multiply' }}
+                          className="w-7 h-7 flex-shrink-0"
                         />
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
