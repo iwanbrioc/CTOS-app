@@ -373,14 +373,14 @@ export default function Home() {
                         <img 
                           src={eyesClosedIcon} 
                           alt="Practice" 
-                          className="w-8 h-8 flex-shrink-0"
+                          className="w-8 h-8 flex-shrink-0 brightness-0 invert"
                         />
                       )}
                       {showPracticePlayer && (
                         <img 
                           src={eyesClosedIcon} 
                           alt="Practicing" 
-                          className="w-8 h-8 flex-shrink-0"
+                          className="w-8 h-8 flex-shrink-0 brightness-0 invert"
                         />
                       )}
                       <div>
