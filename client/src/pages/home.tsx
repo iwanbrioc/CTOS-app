@@ -297,11 +297,13 @@ export default function Home() {
                           xmlns="http://www.w3.org/2000/svg"
                           className="text-green-500"
                         >
-                          <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2"/>
-                          <path d="M16 8C16 8 12 10 12 12C12 14 12 18 12 20C12 22 16 24 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <path d="M16 8C16 8 20 10 20 12C20 14 20 18 20 20C20 22 16 24 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <line x1="10" y1="14" x2="12" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <line x1="20" y1="14" x2="22" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M8 16 C 8 10, 11 6, 16 6 C 21 6, 24 10, 24 16 C 24 22, 21 26, 16 26 C 11 26, 8 22, 8 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <circle cx="7" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
+                          <circle cx="25" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
+                          <path d="M11 14 Q 12 13, 13 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M21 14 Q 20 13, 19 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <line x1="16" y1="16" x2="16" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <line x1="14" y1="22" x2="18" y2="22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                         </svg>
                       </button>
                     )}
