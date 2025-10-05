@@ -368,38 +368,54 @@ export default function Home() {
                     <span className="text-white text-xs font-bold">DAILY PRACTICE</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-white mb-2">
-                        Start Today's Practice
-                      </h3>
-                      <p className="text-white text-opacity-90 text-sm mb-2">
-                        {practiceSession.duration} minute meditation
-                      </p>
-                      {getUserProgressForSession(practiceSession.id)?.completed && (
-                        <span className="inline-block bg-white bg-opacity-30 text-white text-xs font-medium px-3 py-1 rounded-full">
-                          Completed ✓
-                        </span>
+                    <div className="flex-1 flex items-center gap-3">
+                      {!showPracticePlayer && (
+                        <img 
+                          src={eyesClosedIcon} 
+                          alt="Practice" 
+                          className="w-8 h-8 flex-shrink-0"
+                        />
                       )}
+                      {showPracticePlayer && (
+                        <img 
+                          src={eyesClosedIcon} 
+                          alt="Practicing" 
+                          className="w-8 h-8 flex-shrink-0"
+                        />
+                      )}
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-2">
+                          Start Today's Practice
+                        </h3>
+                        <p className="text-white text-opacity-90 text-sm mb-2">
+                          {practiceSession.duration} minute meditation
+                        </p>
+                        {getUserProgressForSession(practiceSession.id)?.completed && (
+                          <span className="inline-block bg-white bg-opacity-30 text-white text-xs font-medium px-3 py-1 rounded-full">
+                            Completed ✓
+                          </span>
+                        )}
+                      </div>
                     </div>
                     {!showPracticePlayer && (
                       <button
                         onClick={handleStartPractice}
-                        className="hover:scale-105 transition-transform"
+                        className="bg-white rounded-full p-4 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
                         data-testid="button-start-practice"
                       >
                         <img 
                           src={eyesOpenIcon} 
                           alt="Start Practice" 
-                          className="w-16 h-16"
+                          className="w-14 h-14"
                         />
                       </button>
                     )}
                     {showPracticePlayer && (
-                      <div>
+                      <div className="rounded-full p-4">
                         <img 
                           src={eyesClosedIcon} 
                           alt="Practicing" 
-                          className="w-16 h-16"
+                          className="w-14 h-14"
                         />
                       </div>
                     )}
