@@ -114,6 +114,14 @@ This is a mobile-first mindfulness application built as a progressive web app (P
 - **NODE_ENV**: Environment mode (development/production)
 
 ## Recent Changes
+- October 6, 2025: Implemented week navigation with swipe gestures and interactive indicators
+  - Added swipe left/right gestures to navigate between weeks 1-8
+  - Implemented week indicator dots showing current progress and viewed week
+  - Added visual distinction between current week (gradient) and viewed week (elongated bar)
+  - Created "Return to Current Week" button when browsing other weeks
+  - Dashboard content dynamically updates to show selected week's session, practice, hack, and journaling
+  - Touch gesture support with 50px minimum swipe distance for smooth navigation
+  - All navigation features verified through end-to-end testing
 - October 2, 2025: Redesigned dashboard with NYT-style vibrant colorful layout
   - Implemented full-screen colorful card-based design inspired by NYT quizzing app
   - Created session title and picture card with yellow/orange gradient (full width)
