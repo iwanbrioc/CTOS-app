@@ -76,6 +76,75 @@ const getWeekGradient = (week: number) => {
   }
 };
 
+const getPracticeGradient = (week: number) => {
+  switch (week) {
+    case 1:
+      return "bg-gradient-to-br from-green-400 to-teal-500";
+    case 2:
+      return "bg-gradient-to-br from-emerald-400 to-green-600";
+    case 3:
+      return "bg-gradient-to-br from-teal-400 to-cyan-500";
+    case 4:
+      return "bg-gradient-to-br from-lime-400 to-green-500";
+    case 5:
+      return "bg-gradient-to-br from-cyan-400 to-teal-600";
+    case 6:
+      return "bg-gradient-to-br from-green-500 to-emerald-600";
+    case 7:
+      return "bg-gradient-to-br from-teal-500 to-green-600";
+    case 8:
+      return "bg-gradient-to-br from-emerald-500 to-teal-600";
+    default:
+      return "bg-gradient-to-br from-green-400 to-teal-500";
+  }
+};
+
+const getHackGradient = (week: number) => {
+  switch (week) {
+    case 1:
+      return "bg-gradient-to-br from-pink-400 to-rose-500";
+    case 2:
+      return "bg-gradient-to-br from-rose-400 to-pink-600";
+    case 3:
+      return "bg-gradient-to-br from-fuchsia-400 to-pink-500";
+    case 4:
+      return "bg-gradient-to-br from-pink-500 to-rose-600";
+    case 5:
+      return "bg-gradient-to-br from-rose-500 to-pink-600";
+    case 6:
+      return "bg-gradient-to-br from-pink-600 to-fuchsia-600";
+    case 7:
+      return "bg-gradient-to-br from-fuchsia-500 to-rose-600";
+    case 8:
+      return "bg-gradient-to-br from-rose-600 to-pink-700";
+    default:
+      return "bg-gradient-to-br from-pink-400 to-rose-500";
+  }
+};
+
+const getJournalGradient = (week: number) => {
+  switch (week) {
+    case 1:
+      return "bg-gradient-to-br from-purple-400 to-indigo-500";
+    case 2:
+      return "bg-gradient-to-br from-indigo-400 to-purple-600";
+    case 3:
+      return "bg-gradient-to-br from-violet-400 to-indigo-500";
+    case 4:
+      return "bg-gradient-to-br from-purple-500 to-violet-600";
+    case 5:
+      return "bg-gradient-to-br from-indigo-500 to-purple-600";
+    case 6:
+      return "bg-gradient-to-br from-violet-500 to-purple-600";
+    case 7:
+      return "bg-gradient-to-br from-purple-600 to-indigo-700";
+    case 8:
+      return "bg-gradient-to-br from-indigo-600 to-violet-700";
+    default:
+      return "bg-gradient-to-br from-purple-400 to-indigo-500";
+  }
+};
+
 
 export default function Home() {
   const { user: authUser, isLoading: userLoading } = useAuth();
@@ -469,7 +538,7 @@ export default function Home() {
                     opacity: 0 
                   }}
                   transition={isDragging ? { type: "tween", duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
-                  className="bg-gradient-to-br from-green-400 to-teal-500 rounded-3xl shadow-xl overflow-hidden"
+                  className={`${getPracticeGradient(viewedWeek)} rounded-3xl shadow-xl overflow-hidden`}
                   data-testid="card-daily-practice"
                 >
                 <div className="p-6">
@@ -567,7 +636,7 @@ export default function Home() {
               {/* Handy Hack Card - Half Screen */}
               {practiceSession && (
                 <div 
-                  className="bg-gradient-to-br from-pink-400 to-rose-500 rounded-3xl p-5 shadow-xl cursor-pointer hover:shadow-2xl transition-all active:scale-95"
+                  className={`${getHackGradient(viewedWeek)} rounded-3xl p-5 shadow-xl cursor-pointer hover:shadow-2xl transition-all active:scale-95`}
                   data-testid={`card-hack-week-${practiceSession.week}`}
                   onClick={handleHackClick}
                 >
@@ -619,7 +688,7 @@ export default function Home() {
               {/* Journal Card - Half Screen */}
               <Link href="/journal">
                 <div 
-                  className="bg-gradient-to-br from-purple-400 to-indigo-500 rounded-3xl p-5 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow h-full"
+                  className={`${getJournalGradient(viewedWeek)} rounded-3xl p-5 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow h-full`}
                   data-testid="card-journal"
                 >
                   <div className="flex items-center gap-2 mb-3">
