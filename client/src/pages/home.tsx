@@ -85,13 +85,13 @@ const getPracticeGradient = (week: number) => {
     case 3:
       return "bg-gradient-to-br from-pink-400 to-rose-500";
     case 4:
-      return "bg-gradient-to-br from-emerald-400 to-green-500";
+      return "bg-gradient-to-br from-rose-400 to-pink-500";
     case 5:
-      return "bg-gradient-to-br from-purple-400 to-violet-500";
+      return "bg-gradient-to-br from-teal-400 to-cyan-500";
     case 6:
       return "bg-gradient-to-br from-red-400 to-rose-500";
     case 7:
-      return "bg-gradient-to-br from-teal-400 to-cyan-500";
+      return "bg-gradient-to-br from-cyan-400 to-teal-500";
     case 8:
       return "bg-gradient-to-br from-indigo-400 to-purple-500";
     default:
@@ -108,13 +108,13 @@ const getHackGradient = (week: number) => {
     case 3:
       return "bg-gradient-to-br from-violet-400 to-purple-500";
     case 4:
-      return "bg-gradient-to-br from-lime-400 to-green-600";
+      return "bg-gradient-to-br from-orange-400 to-red-500";
     case 5:
-      return "bg-gradient-to-br from-fuchsia-400 to-pink-500";
+      return "bg-gradient-to-br from-emerald-400 to-green-500";
     case 6:
       return "bg-gradient-to-br from-orange-400 to-amber-600";
     case 7:
-      return "bg-gradient-to-br from-cyan-400 to-teal-600";
+      return "bg-gradient-to-br from-teal-400 to-cyan-600";
     case 8:
       return "bg-gradient-to-br from-violet-400 to-indigo-600";
     default:
@@ -131,9 +131,9 @@ const getJournalGradient = (week: number) => {
     case 3:
       return "bg-gradient-to-br from-purple-400 to-pink-600";
     case 4:
-      return "bg-gradient-to-br from-green-400 to-emerald-600";
+      return "bg-gradient-to-br from-red-400 to-orange-600";
     case 5:
-      return "bg-gradient-to-br from-pink-400 to-fuchsia-600";
+      return "bg-gradient-to-br from-green-400 to-teal-600";
     case 6:
       return "bg-gradient-to-br from-amber-400 to-red-500";
     case 7:
