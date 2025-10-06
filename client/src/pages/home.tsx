@@ -13,7 +13,7 @@ import { Link } from "wouter";
 import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
 import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_1759681457952.png";
 import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759686357223.png";
-import smallPracticeIcon from "@assets/image_1759695759238.png";
+import smallPracticeIcon from "@assets/image_1759766192326.png";
 import sevenStationsSpineImg from "@assets/seven stations of the spine_1750084108018.png";
 import journalingFlowImg from "@assets/journaling for flow_1750084108018.png";
 import mindBodyMovementImg from "@assets/mind in body, body in movement, movement in mind_1750084108019.png";
