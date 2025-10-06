@@ -432,7 +432,7 @@ export default function Home() {
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">
-                        {practiceSession.title}
+                        {practiceSession.practiceName || practiceSession.title}
                       </h3>
                       <p className="text-white text-opacity-90 text-sm mb-3">
                         {practiceSession.duration} minute meditation

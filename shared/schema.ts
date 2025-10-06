@@ -35,6 +35,7 @@ export const meditationSessions = pgTable("meditation_sessions", {
   id: serial("id").primaryKey(),
   week: integer("week").notNull(),
   title: text("title").notNull(),
+  practiceName: text("practice_name"), // Name of the meditation practice
   description: text("description").notNull(),
   audioUrl: text("audio_url").notNull(),
   duration: integer("duration").notNull(), // in minutes
