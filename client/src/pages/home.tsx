@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Settings, Play, BookOpen, Sparkles, Pause } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
 import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
 import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_1759681457952.png";
 import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759686357223.png";
@@ -107,6 +108,7 @@ export default function Home() {
   const [viewedWeek, setViewedWeek] = useState(user?.currentWeek || 1);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
@@ -273,16 +275,19 @@ export default function Home() {
 
     if (isLeftSwipe && viewedWeek < 8) {
       // Swipe left: go to next week
+      setSwipeDirection('left');
       setViewedWeek(prev => Math.min(8, prev + 1));
     }
     
     if (isRightSwipe && viewedWeek > 1) {
       // Swipe right: go to previous week
+      setSwipeDirection('right');
       setViewedWeek(prev => Math.max(1, prev - 1));
     }
   };
 
   const handleWeekDotClick = (week: number) => {
+    setSwipeDirection(week > viewedWeek ? 'left' : 'right');
     setViewedWeek(week);
   };
 
@@ -386,40 +391,65 @@ export default function Home() {
           <div className="p-4 space-y-6">
             
             {/* Session Title and Picture Card */}
-            {practiceSession && (
-              <div 
-                className={`${getWeekGradient(viewedWeek)} rounded-3xl p-6 shadow-xl relative overflow-hidden`}
-                data-testid={`card-session-display-${practiceSession.id}`}
-              >
-                <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="bg-white bg-opacity-30 text-white text-xs font-bold px-3 py-1 rounded-full">
-                      WEEK {practiceSession.week}
-                    </span>
+            <AnimatePresence mode="wait">
+              {practiceSession && (
+                <motion.div
+                  key={`session-${viewedWeek}`}
+                  initial={{ 
+                    x: swipeDirection === 'left' ? 300 : swipeDirection === 'right' ? -300 : 0,
+                    opacity: 0 
+                  }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ 
+                    x: swipeDirection === 'left' ? -300 : swipeDirection === 'right' ? 300 : 0,
+                    opacity: 0 
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className={`${getWeekGradient(viewedWeek)} rounded-3xl p-6 shadow-xl relative overflow-hidden`}
+                  data-testid={`card-session-display-${practiceSession.id}`}
+                >
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="bg-white bg-opacity-30 text-white text-xs font-bold px-3 py-1 rounded-full">
+                        WEEK {practiceSession.week}
+                      </span>
+                    </div>
+                    <h2 className="text-3xl font-bold text-white mb-3">
+                      {practiceSession.title}
+                    </h2>
+                    <p className="text-white text-opacity-90 text-base leading-relaxed">
+                      {practiceSession.description}
+                    </p>
                   </div>
-                  <h2 className="text-3xl font-bold text-white mb-3">
-                    {practiceSession.title}
-                  </h2>
-                  <p className="text-white text-opacity-90 text-base leading-relaxed">
-                    {practiceSession.description}
-                  </p>
-                </div>
-                {practiceSession.illustration && (
-                  <img 
-                    src={getSessionImage(practiceSession.illustration)} 
-                    alt={practiceSession.title}
-                    className="absolute top-0 right-0 h-full w-auto object-cover opacity-20 mix-blend-multiply"
-                  />
-                )}
-              </div>
-            )}
+                  {practiceSession.illustration && (
+                    <img 
+                      src={getSessionImage(practiceSession.illustration)} 
+                      alt={practiceSession.title}
+                      className="absolute top-0 right-0 h-full w-auto object-cover opacity-20 mix-blend-multiply"
+                    />
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Daily Practice Card with Integrated Player */}
-            {practiceSession && (
-              <div 
-                className="bg-gradient-to-br from-green-400 to-teal-500 rounded-3xl shadow-xl overflow-hidden"
-                data-testid="card-daily-practice"
-              >
+            <AnimatePresence mode="wait">
+              {practiceSession && (
+                <motion.div
+                  key={`practice-${viewedWeek}`}
+                  initial={{ 
+                    x: swipeDirection === 'left' ? 300 : swipeDirection === 'right' ? -300 : 0,
+                    opacity: 0 
+                  }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ 
+                    x: swipeDirection === 'left' ? -300 : swipeDirection === 'right' ? 300 : 0,
+                    opacity: 0 
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="bg-gradient-to-br from-green-400 to-teal-500 rounded-3xl shadow-xl overflow-hidden"
+                  data-testid="card-daily-practice"
+                >
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
@@ -510,8 +540,9 @@ export default function Home() {
                     </div>
                   </div>
                 )}
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Half Screen Cards: Handy Hack | Journal */}
             <div className="grid grid-cols-2 gap-4">
