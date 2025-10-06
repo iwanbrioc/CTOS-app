@@ -14,6 +14,43 @@ import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, Han
 import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_1759681457952.png";
 import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759686357223.png";
 import smallPracticeIcon from "@assets/image_1759695759238.png";
+import sevenStationsSpineImg from "@assets/seven stations of the spine_1750084108018.png";
+import journalingFlowImg from "@assets/journaling for flow_1750084108018.png";
+import mindBodyMovementImg from "@assets/mind in body, body in movement, movement in mind_1750084108019.png";
+import droppingBalloonImg from "@assets/dropping the balloon_1750084108019.png";
+import greatSmileImg from "@assets/great smile practice_1750084108019.png";
+import fiveElementsImg from "@assets/five elements_1750084108020.png";
+import theSenseBeingAliveImg from "@assets/the sense of being alive_1750084108017.png";
+import whatIfAllThereIsImg from "@assets/what-if-all-there-is-new.png";
+import turningTowardsDiscomfortImg from "@assets/turning towards discomfort_1750084108017.png";
+import fourPillarsImg from "@assets/the four pillars_1750084108018.png";
+
+const getSessionImage = (illustration: string) => {
+  switch (illustration) {
+    case "dropping-balloon":
+      return droppingBalloonImg;
+    case "seven-stations-spine":
+      return sevenStationsSpineImg;
+    case "the-sense-being-alive":
+      return theSenseBeingAliveImg;
+    case "mind-body-movement":
+      return mindBodyMovementImg;
+    case "what-if-all-there-is":
+      return whatIfAllThereIsImg;
+    case "turning-towards-discomfort":
+      return turningTowardsDiscomfortImg;
+    case "four-pillars":
+      return fourPillarsImg;
+    case "great-smile":
+      return greatSmileImg;
+    case "five-elements":
+      return fiveElementsImg;
+    case "journaling-flow":
+      return journalingFlowImg;
+    default:
+      return droppingBalloonImg;
+  }
+};
 
 const getWeekGradient = (week: number) => {
   switch (week) {
@@ -369,7 +406,7 @@ export default function Home() {
                 </div>
                 {practiceSession.illustration && (
                   <img 
-                    src={practiceSession.illustration} 
+                    src={getSessionImage(practiceSession.illustration)} 
                     alt={practiceSession.title}
                     className="absolute top-0 right-0 h-full w-auto object-cover opacity-20 mix-blend-soft-light"
                   />
