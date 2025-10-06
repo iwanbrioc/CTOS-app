@@ -408,7 +408,7 @@ export default function Home() {
                   <img 
                     src={getSessionImage(practiceSession.illustration)} 
                     alt={practiceSession.title}
-                    className="absolute top-0 right-0 h-full w-auto object-cover opacity-20 mix-blend-soft-light"
+                    className="absolute top-0 right-0 h-full w-auto object-cover opacity-20 mix-blend-multiply"
                   />
                 )}
               </div>
