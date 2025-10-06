@@ -170,7 +170,7 @@ export default function Profile() {
                 
                 <div className="flex justify-center space-x-2 mt-4">
                   <Badge variant="secondary">
-                    {hackCompletions.length} Handy Hacks Completed
+                    {hackCompletions.length} Handy Hack Practices
                   </Badge>
                 </div>
               </CardContent>
