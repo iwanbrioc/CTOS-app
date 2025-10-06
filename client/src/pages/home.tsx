@@ -427,12 +427,12 @@ export default function Home() {
                         <img 
                           src={smallPracticeIcon} 
                           alt="Practice" 
-                          className="w-7 h-7 flex-shrink-0"
+                          className="w-12 h-12 flex-shrink-0"
                         />
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">
-                        Start Today's Practice
+                        {practiceSession.title}
                       </h3>
                       <p className="text-white text-opacity-90 text-sm mb-3">
                         {practiceSession.duration} minute meditation
