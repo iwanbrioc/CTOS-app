@@ -22,15 +22,15 @@ const DEMO_USER_ID = "1";
 
 export default function Profile() {
   const { data: user } = useQuery<UserType>({
-    queryKey: ["/api/users", DEMO_USER_ID],
+    queryKey: [`/api/users/${DEMO_USER_ID}`],
   });
 
   const { data: userProgress = [] } = useQuery<UserProgress[]>({
-    queryKey: ["/api/users", DEMO_USER_ID, "progress"],
+    queryKey: [`/api/users/${DEMO_USER_ID}/progress`],
   });
 
   const { data: hackCompletions = [] } = useQuery<UserHackCompletion[]>({
-    queryKey: ["/api/users", DEMO_USER_ID, "hack-completions"],
+    queryKey: [`/api/users/${DEMO_USER_ID}/hack-completions`],
   });
 
   const completedSessions = userProgress.filter(p => p.completed).length;
@@ -51,7 +51,7 @@ export default function Profile() {
       await apiRequest("PUT", `/api/users/${DEMO_USER_ID}/course-format`, { courseFormat: format });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/users", DEMO_USER_ID] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${DEMO_USER_ID}`] });
       toast({
         title: "Course Format Updated",
         description: "Your course format has been changed successfully.",
