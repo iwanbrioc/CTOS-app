@@ -144,110 +144,11 @@ export function DailyJournal({ userId }: DailyJournalProps) {
   };
 
   const startVoiceRecording = async (type: 'morning' | 'evening') => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      const chunks: BlobPart[] = [];
-
-      // Set up audio level monitoring
-      const audioContext = new AudioContext();
-      const analyser = audioContext.createAnalyser();
-      const microphone = audioContext.createMediaStreamSource(stream);
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      
-      microphone.connect(analyser);
-      analyser.fftSize = 256;
-
-      const updateAudioLevel = () => {
-        analyser.getByteFrequencyData(dataArray);
-        
-        // Calculate overall audio level
-        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-        const normalizedLevel = Math.min(100, (average / 255) * 100);
-        setAudioLevel(prev => ({ ...prev, [type]: normalizedLevel }));
-        
-        // Create waveform data for visualization
-        const waveformSize = 50;
-        const step = Math.floor(dataArray.length / waveformSize);
-        const newWaveform: number[] = [];
-        
-        for (let i = 0; i < waveformSize; i++) {
-          const index = i * step;
-          const value = dataArray[index] || 0;
-          // Normalize to 0-100 range and add some smoothing
-          const normalizedValue = Math.min(100, (value / 255) * 100);
-          newWaveform.push(normalizedValue);
-        }
-        
-        setWaveformData(prev => ({ ...prev, [type]: newWaveform }));
-        
-        if (isRecording[type]) {
-          const frameId = requestAnimationFrame(updateAudioLevel);
-          setAnimationFrameId(frameId);
-        }
-      };
-
-      recorder.ondataavailable = (e) => chunks.push(e.data);
-      recorder.onstop = async () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
-        
-        // Convert blob to base64 data URL for persistent storage
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64AudioUrl = reader.result as string;
-          
-          // Store the blob for transcription
-          setRecordedBlobs(prev => ({ ...prev, [type]: blob }));
-          
-          if (type === 'morning') {
-            updateField('scriptingVoiceNote', base64AudioUrl);
-          } else {
-            updateField('reflectionVoiceNote', base64AudioUrl);
-          }
-          
-          // Auto-save the recording
-          saveMutation.mutate({
-            ...todayEntry,
-            [type === 'morning' ? 'scriptingVoiceNote' : 'reflectionVoiceNote']: base64AudioUrl
-          });
-        };
-        reader.readAsDataURL(blob);
-        
-        setIsRecording(prev => ({ ...prev, [type]: false }));
-        setCurrentRecordingType(null);
-        setAudioLevel(prev => ({ ...prev, [type]: 0 }));
-        setWaveformData(prev => ({ ...prev, [type]: Array(50).fill(0) }));
-        
-        // Clean up animation frame
-        if (animationFrameId) {
-          cancelAnimationFrame(animationFrameId);
-          setAnimationFrameId(null);
-        }
-        
-        stream.getTracks().forEach(track => track.stop());
-        audioContext.close();
-
-        // Start transcription (temporarily disabled due to API key issue)
-        // transcribeAudio(blob, type);
-      };
-
-      setMediaRecorder(recorder);
-      setCurrentRecordingType(type);
-      recorder.start();
-      setIsRecording(prev => ({ ...prev, [type]: true }));
-      updateAudioLevel();
-      
-      toast({
-        title: "Recording Started",
-        description: `Recording your ${type} voice note...`,
-      });
-    } catch (error) {
-      toast({
-        title: "Recording Failed",
-        description: "Unable to access microphone. Please check permissions.",
-        variant: "destructive",
-      });
-    }
+    toast({
+      title: "Voice Recording Unavailable",
+      description: "Voice recording is temporarily disabled. Please use text entry instead.",
+      variant: "default",
+    });
   };
 
   const stopVoiceRecording = () => {
@@ -446,90 +347,12 @@ export function DailyJournal({ userId }: DailyJournalProps) {
                 Script Your Day
               </CardTitle>
               <CardDescription>
-                Record or write how you want your day to unfold
+                Write how you want your day to unfold
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    onClick={() => isRecording.morning ? stopVoiceRecording() : startVoiceRecording('morning')}
-                    variant={isRecording.morning ? "destructive" : "outline"}
-                    size="sm"
-                  >
-                    {isRecording.morning ? <MicOff className="h-4 w-4 mr-2" /> : <Mic className="h-4 w-4 mr-2" />}
-                    {isRecording.morning ? "Stop Recording" : "Record Voice Note"}
-                  </Button>
-                  
-                  {todayEntry.scriptingVoiceNote && (
-                    <Button
-                      onClick={() => isPlaying.morning ? stopVoiceNote('morning') : playVoiceNote('morning')}
-                      variant="outline"
-                      size="sm"
-                    >
-                      {isPlaying.morning ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
-                      {isPlaying.morning ? "Pause" : "Play"}
-                    </Button>
-                  )}
-                  
-                  {isTranscribing.morning && (
-                    <Badge variant="secondary">Transcribing...</Badge>
-                  )}
-                  
-                  {todayEntry.scriptingVoiceNote && !isTranscribing.morning && (
-                    <Badge variant="secondary">Voice note recorded</Badge>
-                  )}
-                </div>
-
-                {/* Sound Wave Visualization */}
-                {isRecording.morning && (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Mic className="h-4 w-4 text-purple-500" />
-                      <span className="text-sm text-gray-600">Recording...</span>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                        <span className="text-sm text-red-500 font-medium">LIVE</span>
-                      </div>
-                    </div>
-                    
-                    {/* Interactive Waveform */}
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="flex items-end justify-center space-x-1 h-20">
-                        {waveformData.morning.map((amplitude, index) => (
-                          <div
-                            key={index}
-                            className="bg-gradient-to-t from-purple-600 to-purple-400 rounded-full transition-all duration-100 ease-out"
-                            style={{
-                              height: `${Math.max(2, amplitude * 0.8)}px`,
-                              width: '4px',
-                              opacity: amplitude > 5 ? 1 : 0.3,
-                              transform: `scaleY(${1 + (amplitude / 100) * 0.5})`,
-                            }}
-                          />
-                        ))}
-                      </div>
-                      
-                      {/* Audio Level Bar */}
-                      <div className="mt-3">
-                        <div className="flex justify-between text-xs text-gray-500 mb-1">
-                          <span>Volume</span>
-                          <span>{Math.round(audioLevel.morning)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-100"
-                            style={{ width: `${audioLevel.morning}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
               <div>
-                <Label htmlFor="scriptingText">Or write your day script</Label>
+                <Label htmlFor="scriptingText">Write your day script</Label>
                 <Textarea
                   id="scriptingText"
                   placeholder="Describe how you want your day to go... What will make it meaningful and successful?"
@@ -563,86 +386,8 @@ export function DailyJournal({ userId }: DailyJournalProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    onClick={() => isRecording.evening ? stopVoiceRecording() : startVoiceRecording('evening')}
-                    variant={isRecording.evening ? "destructive" : "outline"}
-                    size="sm"
-                  >
-                    {isRecording.evening ? <MicOff className="h-4 w-4 mr-2" /> : <Mic className="h-4 w-4 mr-2" />}
-                    {isRecording.evening ? "Stop Recording" : "Record Reflection"}
-                  </Button>
-                  
-                  {todayEntry.reflectionVoiceNote && (
-                    <Button
-                      onClick={() => isPlaying.evening ? stopVoiceNote('evening') : playVoiceNote('evening')}
-                      variant="outline"
-                      size="sm"
-                    >
-                      {isPlaying.evening ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
-                      {isPlaying.evening ? "Pause" : "Play"}
-                    </Button>
-                  )}
-                  
-                  {isTranscribing.evening && (
-                    <Badge variant="secondary">Transcribing...</Badge>
-                  )}
-                  
-                  {todayEntry.reflectionVoiceNote && !isTranscribing.evening && (
-                    <Badge variant="secondary">Reflection recorded</Badge>
-                  )}
-                </div>
-
-                {/* Sound Wave Visualization */}
-                {isRecording.evening && (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Mic className="h-4 w-4 text-indigo-500" />
-                      <span className="text-sm text-gray-600">Recording...</span>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                        <span className="text-sm text-red-500 font-medium">LIVE</span>
-                      </div>
-                    </div>
-                    
-                    {/* Interactive Waveform */}
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="flex items-end justify-center space-x-1 h-20">
-                        {waveformData.evening.map((amplitude, index) => (
-                          <div
-                            key={index}
-                            className="bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-full transition-all duration-100 ease-out"
-                            style={{
-                              height: `${Math.max(2, amplitude * 0.8)}px`,
-                              width: '4px',
-                              opacity: amplitude > 5 ? 1 : 0.3,
-                              transform: `scaleY(${1 + (amplitude / 100) * 0.5})`,
-                            }}
-                          />
-                        ))}
-                      </div>
-                      
-                      {/* Audio Level Bar */}
-                      <div className="mt-3">
-                        <div className="flex justify-between text-xs text-gray-500 mb-1">
-                          <span>Volume</span>
-                          <span>{Math.round(audioLevel.evening)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-2 rounded-full transition-all duration-100"
-                            style={{ width: `${audioLevel.evening}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
               <div>
-                <Label htmlFor="reflectionText">Or write your reflection</Label>
+                <Label htmlFor="reflectionText">Write your reflection</Label>
                 <Textarea
                   id="reflectionText"
                   placeholder="How did your day unfold? What did you learn? What are you grateful for? What would you do differently?"
