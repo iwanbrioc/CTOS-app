@@ -350,33 +350,31 @@ export default function Home() {
             
             {/* Session Title and Picture Card */}
             {practiceSession && (
-              <Link href="/sessions">
-                <div 
-                  className={`${getWeekGradient(viewedWeek)} rounded-3xl p-6 shadow-xl relative overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all`}
-                  data-testid={`card-session-display-${practiceSession.id}`}
-                >
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="bg-white bg-opacity-30 text-white text-xs font-bold px-3 py-1 rounded-full">
-                        WEEK {practiceSession.week}
-                      </span>
-                    </div>
-                    <h2 className="text-3xl font-bold text-white mb-3">
-                      {practiceSession.title}
-                    </h2>
-                    <p className="text-white text-opacity-90 text-base leading-relaxed">
-                      {practiceSession.description}
-                    </p>
+              <div 
+                className={`${getWeekGradient(viewedWeek)} rounded-3xl p-6 shadow-xl relative overflow-hidden`}
+                data-testid={`card-session-display-${practiceSession.id}`}
+              >
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="bg-white bg-opacity-30 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      WEEK {practiceSession.week}
+                    </span>
                   </div>
-                  {practiceSession.illustration && (
-                    <img 
-                      src={practiceSession.illustration} 
-                      alt={practiceSession.title}
-                      className="absolute bottom-0 right-0 w-32 h-32 object-contain opacity-30"
-                    />
-                  )}
+                  <h2 className="text-3xl font-bold text-white mb-3">
+                    {practiceSession.title}
+                  </h2>
+                  <p className="text-white text-opacity-90 text-base leading-relaxed">
+                    {practiceSession.description}
+                  </p>
                 </div>
-              </Link>
+                {practiceSession.illustration && (
+                  <img 
+                    src={practiceSession.illustration} 
+                    alt={practiceSession.title}
+                    className="absolute top-0 right-0 h-full w-auto object-cover opacity-20 mix-blend-soft-light"
+                  />
+                )}
+              </div>
             )}
 
             {/* Daily Practice Card with Integrated Player */}
