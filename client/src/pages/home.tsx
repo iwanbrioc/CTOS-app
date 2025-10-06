@@ -15,94 +15,26 @@ import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_175968145
 import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759686357223.png";
 import smallPracticeIcon from "@assets/image_1759695759238.png";
 
-const getSessionIcon = (week: number) => {
-  const iconProps = {
-    width: "28",
-    height: "28",
-    viewBox: "0 0 32 32",
-    fill: "none",
-    xmlns: "http://www.w3.org/2000/svg",
-    className: "text-white flex-shrink-0"
-  };
-
+const getWeekGradient = (week: number) => {
   switch (week) {
-    case 1: // Dropping the Balloon
-      return (
-        <svg {...iconProps}>
-          <circle cx="16" cy="22" r="8" stroke="currentColor" strokeWidth="2"/>
-          <path d="M16 14 L 16 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M14 7 Q 16 4, 18 7" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-        </svg>
-      );
-    case 2: // Seven Stations Spine
-      return (
-        <svg {...iconProps}>
-          <path d="M16 6 L 16 26" stroke="currentColor" strokeWidth="2"/>
-          <circle cx="16" cy="7" r="2" stroke="currentColor" strokeWidth="1.5"/>
-          <circle cx="16" cy="12" r="2" stroke="currentColor" strokeWidth="1.5"/>
-          <circle cx="16" cy="17" r="2" stroke="currentColor" strokeWidth="1.5"/>
-          <circle cx="16" cy="22" r="2" stroke="currentColor" strokeWidth="1.5"/>
-          <circle cx="16" cy="27" r="2" stroke="currentColor" strokeWidth="1.5"/>
-        </svg>
-      );
-    case 3: // Coming to Our Senses
-      return (
-        <svg {...iconProps}>
-          <circle cx="16" cy="16" r="3" stroke="currentColor" strokeWidth="2"/>
-          <circle cx="16" cy="16" r="8" stroke="currentColor" strokeWidth="2"/>
-          <circle cx="16" cy="16" r="13" stroke="currentColor" strokeWidth="2"/>
-          <line x1="16" y1="3" x2="16" y2="5" stroke="currentColor" strokeWidth="2"/>
-          <line x1="16" y1="27" x2="16" y2="29" stroke="currentColor" strokeWidth="2"/>
-          <line x1="3" y1="16" x2="5" y2="16" stroke="currentColor" strokeWidth="2"/>
-          <line x1="27" y1="16" x2="29" y2="16" stroke="currentColor" strokeWidth="2"/>
-        </svg>
-      );
-    case 4: // Body Movement Mind
-      return (
-        <svg {...iconProps}>
-          <path d="M8 16 C 8 12, 10 8, 16 8 C 22 8, 24 12, 24 16" stroke="currentColor" strokeWidth="2" fill="none"/>
-          <path d="M8 16 C 8 20, 10 24, 16 24 C 22 24, 24 20, 24 16" stroke="currentColor" strokeWidth="2" fill="none"/>
-          <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
-          <circle cx="20" cy="16" r="1.5" fill="currentColor"/>
-        </svg>
-      );
-    case 5: // What If All There Is
-      return (
-        <svg {...iconProps}>
-          <path d="M16 8 C 10 8, 6 12, 6 16 C 6 20, 10 24, 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
-          <path d="M16 8 C 22 8, 26 12, 26 16 C 26 20, 22 24, 16 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
-          <circle cx="16" cy="16" r="3" stroke="currentColor" strokeWidth="2"/>
-        </svg>
-      );
-    case 6: // Turning Towards Discomfort
-      return (
-        <svg {...iconProps}>
-          <path d="M16 8 C 10 8, 6 12, 6 18 C 6 24, 16 28, 16 28 C 16 28, 26 24, 26 18 C 26 12, 22 8, 16 8" stroke="currentColor" strokeWidth="2" fill="none"/>
-          <path d="M16 14 L 16 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          <circle cx="16" cy="21" r="1" fill="currentColor"/>
-        </svg>
-      );
-    case 7: // Four Pillars
-      return (
-        <svg {...iconProps}>
-          <line x1="8" y1="8" x2="8" y2="24" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="14" y1="8" x2="14" y2="24" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="18" y1="8" x2="18" y2="24" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="24" y1="8" x2="24" y2="24" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-          <line x1="6" y1="24" x2="26" y2="24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      );
-    case 8: // Great Smile
-      return (
-        <svg {...iconProps}>
-          <circle cx="16" cy="16" r="12" stroke="currentColor" strokeWidth="2"/>
-          <circle cx="12" cy="13" r="1.5" fill="currentColor"/>
-          <circle cx="20" cy="13" r="1.5" fill="currentColor"/>
-          <path d="M10 19 Q 16 23, 22 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
-        </svg>
-      );
+    case 1:
+      return "bg-gradient-to-br from-yellow-400 to-orange-500";
+    case 2:
+      return "bg-gradient-to-br from-blue-400 to-indigo-600";
+    case 3:
+      return "bg-gradient-to-br from-purple-400 to-pink-500";
+    case 4:
+      return "bg-gradient-to-br from-red-400 to-rose-600";
+    case 5:
+      return "bg-gradient-to-br from-green-400 to-emerald-600";
+    case 6:
+      return "bg-gradient-to-br from-orange-400 to-red-500";
+    case 7:
+      return "bg-gradient-to-br from-cyan-400 to-blue-600";
+    case 8:
+      return "bg-gradient-to-br from-violet-400 to-purple-600";
     default:
-      return null;
+      return "bg-gradient-to-br from-yellow-400 to-orange-500";
   }
 };
 
@@ -420,12 +352,11 @@ export default function Home() {
             {practiceSession && (
               <Link href="/sessions">
                 <div 
-                  className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-3xl p-6 shadow-xl relative overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all"
+                  className={`${getWeekGradient(viewedWeek)} rounded-3xl p-6 shadow-xl relative overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all`}
                   data-testid={`card-session-display-${practiceSession.id}`}
                 >
                   <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-3">
-                      {getSessionIcon(practiceSession.week)}
                       <span className="bg-white bg-opacity-30 text-white text-xs font-bold px-3 py-1 rounded-full">
                         WEEK {practiceSession.week}
                       </span>
