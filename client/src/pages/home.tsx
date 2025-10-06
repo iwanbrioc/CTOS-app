@@ -475,12 +475,7 @@ export default function Home() {
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-4">
-                        <img 
-                          src={smallPracticeIcon} 
-                          alt="Practice" 
-                          className="w-12 h-12 flex-shrink-0"
-                        />
+                      <div className="mb-4">
                         <span className="text-white text-xs font-bold tracking-wide">DAILY PRACTICE</span>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">
