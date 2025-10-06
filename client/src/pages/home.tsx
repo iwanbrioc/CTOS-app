@@ -109,6 +109,8 @@ export default function Home() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
@@ -260,14 +262,25 @@ export default function Home() {
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(0);
     setTouchStart(e.targetTouches[0].clientX);
+    setIsDragging(true);
+    setDragOffset(0);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    if (!isDragging) return;
+    const currentTouch = e.targetTouches[0].clientX;
+    setTouchEnd(currentTouch);
+    const offset = currentTouch - touchStart;
+    setDragOffset(offset);
   };
 
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+    setIsDragging(false);
+    
+    if (!touchStart || !touchEnd) {
+      setDragOffset(0);
+      return;
+    }
     
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
@@ -277,12 +290,15 @@ export default function Home() {
       // Swipe left: go to next week
       setSwipeDirection('left');
       setViewedWeek(prev => Math.min(8, prev + 1));
-    }
-    
-    if (isRightSwipe && viewedWeek > 1) {
+      setDragOffset(0);
+    } else if (isRightSwipe && viewedWeek > 1) {
       // Swipe right: go to previous week
       setSwipeDirection('right');
       setViewedWeek(prev => Math.max(1, prev - 1));
+      setDragOffset(0);
+    } else {
+      // Snap back to original position
+      setDragOffset(0);
     }
   };
 
@@ -399,12 +415,15 @@ export default function Home() {
                     x: swipeDirection === 'left' ? 300 : swipeDirection === 'right' ? -300 : 0,
                     opacity: 0 
                   }}
-                  animate={{ x: 0, opacity: 1 }}
+                  animate={{ 
+                    x: isDragging ? dragOffset : 0, 
+                    opacity: isDragging ? 1 - Math.abs(dragOffset) / 400 : 1 
+                  }}
                   exit={{ 
                     x: swipeDirection === 'left' ? -300 : swipeDirection === 'right' ? 300 : 0,
                     opacity: 0 
                   }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  transition={isDragging ? { type: "tween", duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
                   className={`${getWeekGradient(viewedWeek)} rounded-3xl p-6 shadow-xl relative overflow-hidden`}
                   data-testid={`card-session-display-${practiceSession.id}`}
                 >
@@ -441,12 +460,15 @@ export default function Home() {
                     x: swipeDirection === 'left' ? 300 : swipeDirection === 'right' ? -300 : 0,
                     opacity: 0 
                   }}
-                  animate={{ x: 0, opacity: 1 }}
+                  animate={{ 
+                    x: isDragging ? dragOffset : 0, 
+                    opacity: isDragging ? 1 - Math.abs(dragOffset) / 400 : 1 
+                  }}
                   exit={{ 
                     x: swipeDirection === 'left' ? -300 : swipeDirection === 'right' ? 300 : 0,
                     opacity: 0 
                   }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  transition={isDragging ? { type: "tween", duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
                   className="bg-gradient-to-br from-green-400 to-teal-500 rounded-3xl shadow-xl overflow-hidden"
                   data-testid="card-daily-practice"
                 >
