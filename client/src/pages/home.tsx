@@ -133,6 +133,12 @@ export default function Home() {
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
+  
+  // Swipe navigation state
+  const [viewedWeek, setViewedWeek] = useState(user?.currentWeek || 1);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
     queryKey: ["/api/sessions"],
@@ -162,7 +168,12 @@ export default function Home() {
   const progressPercentage = totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0;
 
   const currentWeek = user?.currentWeek || 1;
-  const practiceSession = sessions.find(s => s.week === currentWeek);
+  const practiceSession = sessions.find(s => s.week === viewedWeek);
+  
+  // Sync viewedWeek with currentWeek when user changes
+  useEffect(() => {
+    setViewedWeek(currentWeek);
+  }, [currentWeek]);
 
   const today = new Date().toDateString();
   const todaysJournal = journalEntries.find(entry => 
@@ -272,6 +283,40 @@ export default function Home() {
     }
   };
 
+  // Swipe gesture handlers
+  const minSwipeDistance = 50;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(0);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && viewedWeek < 8) {
+      // Swipe left: go to next week
+      setViewedWeek(prev => Math.min(8, prev + 1));
+    }
+    
+    if (isRightSwipe && viewedWeek > 1) {
+      // Swipe right: go to previous week
+      setViewedWeek(prev => Math.max(1, prev - 1));
+    }
+  };
+
+  const handleWeekDotClick = (week: number) => {
+    setViewedWeek(week);
+  };
+
   if (sessionsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
@@ -319,8 +364,56 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Week Indicator Dots */}
+        <div className="bg-white border-b py-3 px-4">
+          <div className="flex items-center justify-center gap-2">
+            {Array.from({ length: 8 }).map((_, index) => {
+              const week = index + 1;
+              const isCurrentWeek = week === currentWeek;
+              const isViewedWeek = week === viewedWeek;
+              
+              return (
+                <button
+                  key={week}
+                  onClick={() => handleWeekDotClick(week)}
+                  className={`transition-all ${
+                    isViewedWeek 
+                      ? 'w-8 h-2 rounded-full' 
+                      : 'w-2 h-2 rounded-full'
+                  } ${
+                    isCurrentWeek 
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-500' 
+                      : isViewedWeek
+                      ? 'bg-gray-700'
+                      : 'bg-gray-300'
+                  }`}
+                  data-testid={`week-indicator-${week}`}
+                  aria-label={`Week ${week}${isCurrentWeek ? ' (current)' : ''}`}
+                />
+              );
+            })}
+          </div>
+          {viewedWeek !== currentWeek && (
+            <div className="text-center mt-2">
+              <button
+                onClick={() => setViewedWeek(currentWeek)}
+                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                data-testid="return-to-current-week"
+              >
+                ← Return to Week {currentWeek}
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Main Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto pb-32">
+        <div 
+          ref={contentRef}
+          className="flex-1 overflow-y-auto pb-32"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <div className="p-4 space-y-6">
             
             {/* Session Title and Picture Card */}
