@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.ctos.mindfulness',
   appName: 'Coming to Our Senses',
-  webDir: 'dist',
+  webDir: 'dist/public',
   server: {
     androidScheme: 'https'
   },
