@@ -2,11 +2,19 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.ctos.mindfulness',
-  appName: 'Coming to Our Senses',
+  appName: 'CTOS',
   webDir: 'dist/public',
-  server: {
-    androidScheme: 'https'
-  },
+  ...(process.env.API_URL ? {
+    server: {
+      url: process.env.API_URL,
+      cleartext: true,
+      androidScheme: 'https'
+    }
+  } : {
+    server: {
+      androidScheme: 'https'
+    }
+  }),
   ios: {
     contentInset: 'automatic',
     backgroundColor: '#f8f9fa'

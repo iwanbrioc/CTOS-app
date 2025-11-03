@@ -1,6 +1,27 @@
-node_modules
-dist
+node_modules/
+dist/
 .DS_Store
 server/public
 vite.config.ts.*
 *.tar.gz
+.env
+.env.local
+*.log
+
+# Replit specific (optional - remove if not using Replit)
+.replit
+replit.nix
+
+# iOS
+ios/App/Pods/
+ios/App/App/public/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Build outputs
+build/
+*.zip
+
+# Capacitor
+ios/App/App/capacitor.config.json
