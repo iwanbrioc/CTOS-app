@@ -1,0 +1,204 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* NYT Games inspired color palette - bright, modern, playful */
+  --background: hsl(0, 0%, 98%); /* Clean white background */
+  --foreground: hsl(0, 0%, 8%); /* Deep black text */
+  --muted: hsl(0, 0%, 94%); /* Light grey */
+  --muted-foreground: hsl(0, 0%, 45%); /* Medium grey */
+  --popover: hsl(0, 0%, 100%); /* Pure white */
+  --popover-foreground: hsl(0, 0%, 8%);
+  --card: hsl(0, 0%, 100%); /* Pure white cards */
+  --card-foreground: hsl(0, 0%, 8%);
+  --border: hsl(0, 0%, 86%); /* Light grey border */
+  --input: hsl(0, 0%, 96%); /* Light grey input */
+  --primary: hsl(218, 100%, 60%); /* Bright blue */
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(0, 0%, 92%); /* Light grey secondary */
+  --secondary-foreground: hsl(0, 0%, 8%);
+  --accent: hsl(350, 89%, 60%); /* Bright red */
+  --accent-foreground: hsl(0, 0%, 100%);
+  --success: hsl(142, 76%, 55%); /* Bright green */
+  --success-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --ring: hsl(218, 100%, 60%);
+  --radius: 1rem;
+  
+  /* Game colors inspired by NYT Games */
+  --yellow: hsl(45, 100%, 60%);
+  --blue: hsl(218, 100%, 60%);
+  --purple: hsl(270, 60%, 70%);
+  --red: hsl(350, 89%, 60%);
+  --green: hsl(142, 76%, 55%);
+  --orange: hsl(35, 100%, 60%);
+  --mint: hsl(165, 45%, 70%);
+  --grey: hsl(0, 0%, 75%);
+}
+
+.dark {
+  --background: hsl(0, 0%, 8%); /* Deep black background */
+  --foreground: hsl(45, 25%, 92%); /* Cream text */
+  --muted: hsl(0, 0%, 15%); /* Dark grey */
+  --muted-foreground: hsl(45, 15%, 70%); /* Light cream grey */
+  --popover: hsl(0, 0%, 12%);
+  --popover-foreground: hsl(45, 25%, 92%);
+  --card: hsl(0, 0%, 10%); /* Very dark cards */
+  --card-foreground: hsl(45, 25%, 92%);
+  --border: hsl(0, 0%, 20%); /* Dark border */
+  --input: hsl(0, 0%, 15%);
+  --primary: hsl(220, 70%, 60%); /* Lighter blue for contrast */
+  --primary-foreground: hsl(0, 0%, 8%);
+  --secondary: hsl(0, 0%, 18%); /* Dark secondary */
+  --secondary-foreground: hsl(45, 25%, 92%);
+  --accent: hsl(350, 80%, 60%); /* Bright red accent */
+  --accent-foreground: hsl(0, 0%, 8%);
+  --success: hsl(142, 76%, 36%);
+  --success-foreground: hsl(45, 25%, 92%);
+  --destructive: hsl(0, 70%, 55%);
+  --destructive-foreground: hsl(45, 25%, 92%);
+  --ring: hsl(220, 70%, 60%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased text-foreground bg-background;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+}
+
+@layer components {
+  .status-bar {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.05), transparent);
+  }
+  
+  .session-illustration {
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, hsl(45, 20%, 95%) 0%, hsl(45, 15%, 90%) 100%);
+    border: 1px solid hsl(45, 15%, 85%);
+  }
+  
+  .audio-progress {
+    transition: width 0.3s ease;
+  }
+  
+  .notification-slide-in {
+    animation: slideInFromTop 0.3s ease-out;
+  }
+  
+  .notification-slide-out {
+    animation: slideOutToTop 0.3s ease-in;
+  }
+  
+  .course-title {
+    font-weight: 800;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+  }
+  
+  .subtitle {
+    font-weight: 400;
+    letter-spacing: 0.015em;
+  }
+  
+  .card-elegant {
+    background: hsl(0, 0%, 98%);
+    border: 1px solid hsl(45, 15%, 85%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+  
+  .btn-primary {
+    background: hsl(220, 50%, 25%);
+    color: white;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  
+  .btn-primary:hover {
+    background: hsl(220, 50%, 20%);
+  }
+
+  /* Duotone filters for session images */
+  .duotone-yellow {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(30deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-blue {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(200deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-purple {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(270deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-red {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(350deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-green {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(120deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-orange {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(15deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-mint {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(160deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+  
+  .duotone-purple-variant {
+    filter: brightness(1.1) contrast(1.2) sepia(1) hue-rotate(280deg) saturate(1.5);
+    mix-blend-mode: multiply;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToTop {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
