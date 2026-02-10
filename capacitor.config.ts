@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.ctos.mindfulness',
-  appName: 'CTOS',
+  appId: 'com.ctos.app',
+  appName: 'CTOS Mobile',
   webDir: 'dist/public',
   ...(process.env.API_URL ? {
     server: {
