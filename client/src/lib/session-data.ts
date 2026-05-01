@@ -119,21 +119,21 @@ export const sessionData = [
   {
     id: 7,
     week: 7,
-    title: "Finding Your Flow",
-    description: "Every moment is a creative challenge.",
+    title: "The Perfect Distance",
+    description: "When distance collapses, there is simply what is happening — and true response-ability becomes possible.",
     longDescription: [
-      "This week, we challenged you to see that every moment is a creative challenge. As we like to say, CoArts is a creative movement towards awareness of the creative movement of awareness! If life is theatre and we're not writing the script—who is?",
-      "Our habits, conditioning, and circumstances often shape our experience without us realizing it. Attention is our most powerful tool, yet in the 'Attention Economy,' it's constantly being pulled away. That's why we asked: What do I truly want to experience today?",
-      "If we're not choosing where our attention goes, then who—or what—is? Through The Flow Journal System, we explored how scripting—writing down what we expect to see, hear, and feel—helps direct our awareness intentionally.",
-      "We also practiced detached reflection, stepping back to notice what serves us, recognizing progress, and embracing joy. If this is all theatre, then scripting isn't about control—it's about waking up to the roles we play, the stories we tell, and the choices we make."
+      "Most of us carry an idea of \"perfect distance\" as a smart balance: not too much uncertainty, not too much certainty — poised between novelty and predictability. The mind keeps forecasting and adjusting, trying to find that sweet spot where life feels both interesting and safe.",
+      "The simulation game makes this visible in the body. As soon as threat, care, or desire enters the field, distance becomes strategy: we manage proximity, we manage outcomes, we manage one another — and then we call that management \"me.\" The sense of separation tightens around the task of finding the \"right distance.\"",
+      "But the deeper discovery of this session is that the perfect distance in reality is no distance at all. When distance collapses, experience is no longer \"me over here\" dealing with \"life over there.\" There is simply what is happening — seen, felt, heard — and in that immediacy something else becomes possible.",
+      "That \"something else\" is true response-ability: not control, not performance, not a better strategy — but the capacity to respond from presence rather than react from a script. This is why we'll use Journalling for Flow for the next eight weeks: to notice where distance reappears, and to return — again and again — to the closeness where flow can happen."
     ],
-    quote: "A joyful life is an individual creation that cannot be copied from a recipe.",
-    author: "Mihaly Csikszentmihalyi",
+    quote: "An active agent in a complex system controls nothing, but influences everything.",
+    author: "Brian Klaas",
     duration: 22,
     audioSrc: "/attached_assets/fourpillarspractice_1751651309349.mp3",
     color: "bg-gradient-to-br from-cyan-400 to-blue-600",
     illustration: "four-pillars",
-    handyHack: "Scripting & Reflecting",
+    handyHack: "Presence - Set Frame - Release",
     journaling: "Full Flow Journal System (Gratitude, High Flow & High Value Priorities, Script Your Day, Review Your Day)"
   },
   {
@@ -148,8 +148,8 @@ export const sessionData = [
     ],
     quote: "The bad news is you're falling through the air, nothing to hang on to, no parachute. The good news is, there's no ground.",
     author: "Chogyam Trungpa",
-    duration: 10,
-    audioSrc: "/attached_assets/What if all there is is this 10 minute version_1751649984256.mp3",
+    duration: 16,
+    audioSrc: "/attached_assets/great smile practice_1751652000000.mp3",
     color: "bg-gradient-to-br from-violet-400 to-purple-600",
     illustration: "great-smile",
     handyHack: "Great Smile",

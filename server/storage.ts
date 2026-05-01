@@ -737,6 +737,7 @@ export class MemStorage implements IStorage {
         duration: 10,
         illustration: "dropping-balloon",
         isLocked: false,
+        handyHack: "Drop the Balloon (whenever you notice the twitch)",
       },
       {
         week: 2,
@@ -746,6 +747,7 @@ export class MemStorage implements IStorage {
         duration: 20,
         illustration: "seven-stations-spine",
         isLocked: false,
+        handyHack: "Unclench and Breathe",
       },
       {
         week: 3,
@@ -755,6 +757,7 @@ export class MemStorage implements IStorage {
         duration: 20,
         illustration: "the-sense-being-alive",
         isLocked: false,
+        handyHack: "The Three Precious Pills (stillness, silence, spaciousness)",
       },
       {
         week: 4,
@@ -764,6 +767,7 @@ export class MemStorage implements IStorage {
         duration: 10,
         illustration: "mind-body-movement",
         isLocked: false,
+        handyHack: "Exploring Opening and Closing",
       },
       {
         week: 5,
@@ -773,6 +777,7 @@ export class MemStorage implements IStorage {
         duration: 10,
         illustration: "what-if-all-there-is",
         isLocked: false,
+        handyHack: "Watch the Want",
       },
       {
         week: 6,
@@ -782,6 +787,7 @@ export class MemStorage implements IStorage {
         duration: 15,
         illustration: "turning-towards-discomfort",
         isLocked: false,
+        handyHack: "The 5 Elements (anger, sadness, joy, disgust, fear)",
       },
       {
         week: 6,
@@ -794,21 +800,25 @@ export class MemStorage implements IStorage {
       },
       {
         week: 7,
-        title: "The Four Pillars of Wellbeing",
-        description: "Building sustainable foundations for mindful living",
+        title: "The Perfect Distance",
+        practiceName: "The Four Pillars",
+        description: "When distance collapses, there is simply what is happening — and true response-ability becomes possible.",
         audioUrl: "/attached_assets/fourpillarspractice_1751651309349.mp3",
         duration: 22,
         illustration: "four-pillars",
         isLocked: false,
+        handyHack: "Presence - Set Frame - Release",
+        journaling: "Full Flow Journal System (Gratitude, High Flow & High Value Priorities, Script Your Day, Review Your Day)",
       },
       {
         week: 8,
         title: "Great Smile Practice",
         description: "Cultivating joy and positive energy through mindful smiling",
-        audioUrl: "https://soundcloud.com/undoing-agency/great-smile-practice",
+        audioUrl: "/attached_assets/great smile practice_1751652000000.mp3",
         duration: 16,
         illustration: "great-smile",
         isLocked: false,
+        handyHack: "Great Smile",
       },
     ];
 
@@ -1291,4 +1301,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();
