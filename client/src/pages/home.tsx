@@ -7,7 +7,7 @@ import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Play, BookOpen, Sparkles, Pause, X, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { Settings, Play, BookOpen, Sparkles, Pause, X, ChevronLeft, ChevronRight, CheckCircle, Flame, Frown, Meh, Smile } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
@@ -135,10 +135,10 @@ export default function Home() {
   const [dragOffset, setDragOffset] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Mood check-in
+  // Mood check-in (inline in card — no modal)
   const [preMood, setPreMood] = useState<number | null>(null);
   const [postMood, setPostMood] = useState<number | null>(null);
-  const [showMoodModal, setShowMoodModal] = useState<'pre' | 'post' | null>(null);
+  const [moodPhase, setMoodPhase] = useState<'pre' | 'playing' | 'post' | null>(null);
 
   // Celebration screen
   const [showCelebration, setShowCelebration] = useState(false);
@@ -269,8 +269,8 @@ export default function Home() {
     const handleEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
-      // Trigger post-session mood check
-      setShowMoodModal('post');
+      // Show inline post-mood check
+      setMoodPhase('post');
     };
 
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
@@ -299,11 +299,11 @@ export default function Home() {
     },
   });
 
-  // Start practice: show pre-mood modal first
+  // Start practice: show inline pre-mood first
   const handleStartPractice = () => {
     setPreMood(null);
     setPostMood(null);
-    setShowMoodModal('pre');
+    setMoodPhase('pre');
   };
 
   const handleClosePractice = () => {
@@ -315,6 +315,7 @@ export default function Home() {
     setIsPlaying(false);
     setCurrentTime(0);
     setShowPracticePlayer(false);
+    setMoodPhase(null);
   };
 
   // Called when user manually taps "Done" during practice
@@ -322,22 +323,20 @@ export default function Home() {
     const audio = audioRef.current;
     if (audio) audio.pause();
     setIsPlaying(false);
-    setShowMoodModal('post');
+    setMoodPhase('post');
   };
 
   const handleMoodSelect = (mood: number) => {
-    if (showMoodModal === 'pre') {
+    if (moodPhase === 'pre') {
       setPreMood(mood);
-      setShowMoodModal(null);
-      // Now open the player
+      setMoodPhase('playing');
       setShowPracticePlayer(true);
       if (!isSoundCloudUrl(practiceSession?.audioUrl)) {
         setTimeout(() => { audioRef.current?.load(); }, 100);
       }
-    } else if (showMoodModal === 'post') {
+    } else if (moodPhase === 'post') {
       setPostMood(mood);
-      setShowMoodModal(null);
-      // Complete the session and show celebration
+      setMoodPhase(null);
       if (practiceSession) {
         completeSessionMutation.mutate(practiceSession.id);
         setCelebrationSession(practiceSession);
@@ -348,14 +347,14 @@ export default function Home() {
   };
 
   const handleSkipMood = () => {
-    if (showMoodModal === 'pre') {
-      setShowMoodModal(null);
+    if (moodPhase === 'pre') {
+      setMoodPhase('playing');
       setShowPracticePlayer(true);
       if (!isSoundCloudUrl(practiceSession?.audioUrl)) {
         setTimeout(() => { audioRef.current?.load(); }, 100);
       }
-    } else if (showMoodModal === 'post') {
-      setShowMoodModal(null);
+    } else if (moodPhase === 'post') {
+      setMoodPhase(null);
       if (practiceSession) {
         completeSessionMutation.mutate(practiceSession.id);
         setCelebrationSession(practiceSession);
@@ -486,7 +485,7 @@ export default function Home() {
               {/* Streak counter */}
               <div className="flex flex-col items-center">
                 <div className="flex items-center gap-1">
-                  <span className="text-lg leading-none">🔥</span>
+                  <Flame className="w-5 h-5 text-orange-300" />
                   <span className="text-white font-bold text-lg leading-none">
                     {streak > 0 ? streak : '—'}
                   </span>
@@ -714,7 +713,7 @@ export default function Home() {
                           </span>
                         )}
                       </div>
-                      {!showPracticePlayer && (
+                      {!moodPhase && !showPracticePlayer && (
                         <button
                           onClick={handleStartPractice}
                           className="bg-white/20 rounded-full p-4 hover:bg-white/30 hover:scale-105 active:scale-95 transition-all flex-shrink-0"
@@ -729,6 +728,41 @@ export default function Home() {
                         </div>
                       )}
                     </div>
+
+                    {/* Inline mood check-in */}
+                    {(moodPhase === 'pre' || moodPhase === 'post') && (
+                      <div className="mt-4 pt-4 border-t border-white/20">
+                        <p className="text-white font-semibold text-sm mb-1">
+                          {moodPhase === 'pre' ? 'How are you feeling?' : 'How do you feel now?'}
+                        </p>
+                        <p className="text-white/60 text-xs mb-4">
+                          {moodPhase === 'pre' ? 'Before your practice' : 'After your practice'}
+                        </p>
+                        <div className="flex justify-between mb-3">
+                          {[
+                            { icon: Frown, color: 'text-blue-200' },
+                            { icon: Frown, color: 'text-sky-200' },
+                            { icon: Meh,   color: 'text-white/70' },
+                            { icon: Smile, color: 'text-green-200' },
+                            { icon: Smile, color: 'text-emerald-200' },
+                          ].map(({ icon: Icon, color }, i) => (
+                            <button
+                              key={i}
+                              onClick={() => handleMoodSelect(i + 1)}
+                              className="hover:scale-125 active:scale-90 transition-transform p-2 rounded-xl hover:bg-white/10"
+                            >
+                              <Icon className={`w-9 h-9 ${color}`} strokeWidth={i === 4 ? 2.5 : 1.5} />
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={handleSkipMood}
+                          className="w-full text-center text-xs text-white/40 hover:text-white/70 transition-colors py-1"
+                        >
+                          Skip
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {showPracticePlayer && (
@@ -894,52 +928,6 @@ export default function Home() {
 
         <BottomNavigation />
 
-        {/* Mood Check-in Modal */}
-        <AnimatePresence>
-          {showMoodModal && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end"
-            >
-              <motion.div
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="bg-white w-full rounded-t-3xl p-8 pb-10"
-              >
-                <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6" />
-                <h3 className="text-xl font-bold text-center text-gray-800 mb-1">
-                  {showMoodModal === 'pre' ? 'How are you feeling?' : 'How do you feel now?'}
-                </h3>
-                <p className="text-sm text-gray-400 text-center mb-8">
-                  {showMoodModal === 'pre' ? 'Before your practice' : 'After your practice'}
-                </p>
-                <div className="flex justify-around mb-6">
-                  {(['😔', '😕', '😐', '🙂', '😊'] as const).map((emoji, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleMoodSelect(i + 1)}
-                      className="text-4xl hover:scale-125 active:scale-90 transition-transform p-2 rounded-xl"
-                      aria-label={`Mood ${i + 1}`}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={handleSkipMood}
-                  className="w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors py-2"
-                >
-                  Skip
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* Celebration Screen */}
         <AnimatePresence>
           {showCelebration && celebrationSession && (
@@ -954,9 +942,9 @@ export default function Home() {
                   initial={{ scale: 0, rotate: -10 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
-                  className="text-7xl mb-6"
+                  className="mb-6"
                 >
-                  ✨
+                  <Sparkles className="w-20 h-20 text-yellow-200 mx-auto" />
                 </motion.div>
 
                 <motion.h2
@@ -985,9 +973,13 @@ export default function Home() {
                     transition={{ delay: 0.45 }}
                     className="bg-white/20 rounded-2xl px-8 py-5 mb-5 flex items-center justify-center gap-5"
                   >
-                    <span className="text-4xl opacity-80">{(['😔','😕','😐','🙂','😊'])[preMood - 1]}</span>
+                    {[Frown,Frown,Meh,Smile,Smile].map((Icon,i) => i === preMood - 1 && (
+                      <Icon key={i} className="w-10 h-10 text-white/70" strokeWidth={1.5} />
+                    ))}
                     <span className="text-white/50 text-2xl font-light">→</span>
-                    <span className="text-4xl">{(['😔','😕','😐','🙂','😊'])[postMood - 1]}</span>
+                    {[Frown,Frown,Meh,Smile,Smile].map((Icon,i) => i === postMood - 1 && (
+                      <Icon key={i} className="w-10 h-10 text-white" strokeWidth={2} />
+                    ))}
                   </motion.div>
                 )}
 
@@ -999,7 +991,7 @@ export default function Home() {
                     transition={{ delay: 0.55 }}
                     className="flex items-center justify-center gap-2 mb-8"
                   >
-                    <span className="text-2xl">🔥</span>
+                    <Flame className="w-6 h-6 text-orange-300" />
                     <span className="text-white font-semibold text-lg">
                       {streak} day{streak !== 1 ? 's' : ''} in a row
                     </span>
