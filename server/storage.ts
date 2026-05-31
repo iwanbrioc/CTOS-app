@@ -732,6 +732,7 @@ export class MemStorage implements IStorage {
       {
         week: 1,
         title: "Dropping the Balloon",
+        practiceName: "Grounding",
         description: "Learning to let go and recognize when we're in 'keepy-uppy' mode.",
         audioUrl: "/attached_assets/Grounding 10min_1751647354223.mp3",
         duration: 10,
@@ -742,6 +743,7 @@ export class MemStorage implements IStorage {
       {
         week: 2,
         title: "Journey to Now",
+        practiceName: "Seven Stations of the Spine",
         description: "The body as a reliable anchor to the present moment.",
         audioUrl: "/attached_assets/The Seven Stations of the Spine_1751648246548.mp3",
         duration: 20,
@@ -752,6 +754,7 @@ export class MemStorage implements IStorage {
       {
         week: 3,
         title: "Coming to Our Senses",
+        practiceName: "The Sense of Being Alive",
         description: "What if thoughts and emotions were also considered senses?",
         audioUrl: "/attached_assets/The Sense of Being Alive (20 minutes)_1751649276591.mp3",
         duration: 20,
@@ -762,6 +765,7 @@ export class MemStorage implements IStorage {
       {
         week: 4,
         title: "Body, Movement, Mind",
+        practiceName: "Mind in Body, Body in Movement, Movement in Mind",
         description: "Meditation doesn't have to mean stillness.",
         audioUrl: "/attached_assets/Mind in Body, Body in Movement, Movement n Mind (10min)_1751649693383.mp3",
         duration: 10,
@@ -772,6 +776,7 @@ export class MemStorage implements IStorage {
       {
         week: 5,
         title: "What You Really Want",
+        practiceName: "What if All There is is This?",
         description: "Exploring what happens when we fully accept the present moment.",
         audioUrl: "/attached_assets/What if all there is is this 10 minute version_1751649984256.mp3",
         duration: 10,
@@ -782,6 +787,7 @@ export class MemStorage implements IStorage {
       {
         week: 6,
         title: "Leaning into Difficulty",
+        practiceName: "Turning Towards the Difficult",
         description: "Understanding emotions as signals and finding the gold in our wounds.",
         audioUrl: "/attached_assets/turning towards the difficult 15 Minutes_1751650302023.mp3",
         duration: 15,
@@ -813,6 +819,7 @@ export class MemStorage implements IStorage {
       {
         week: 8,
         title: "Falling Awake",
+        practiceName: "Great Smile Practice",
         description: "Embracing the paradox of awakening and falling in love with what is.",
         audioUrl: "/attached_assets/great smile practice_1751652000000.mp3",
         duration: 16,
