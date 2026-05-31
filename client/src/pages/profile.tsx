@@ -128,7 +128,7 @@ export default function Profile() {
             <CardContent className="p-0">
               <div className="flex items-center gap-4 px-5 py-4 bg-gradient-to-br from-stone-50 to-gray-100">
                 <img
-                  src="/attached_assets/travelling-lighter.png"
+                  src="/attached_assets/travellinglighter.jpg"
                   alt="Travelling Lighter"
                   className="w-20 h-20 object-contain shrink-0"
                 />
