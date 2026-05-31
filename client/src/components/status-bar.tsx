@@ -1,11 +1,16 @@
-import { } from "react";
+import { Capacitor } from "@capacitor/core";
 
 export function StatusBar() {
+  // On iOS/Android the native status bar is shown — don't render a duplicate
+  if (Capacitor.isNativePlatform()) {
+    return null;
+  }
+
   const now = new Date();
-  const timeString = now.toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
+  const timeString = now.toLocaleTimeString('en-US', {
+    hour: 'numeric',
     minute: '2-digit',
-    hour12: false 
+    hour12: false
   });
 
   return (
