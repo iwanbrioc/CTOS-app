@@ -240,9 +240,43 @@ export default function Profile() {
 
             {/* Notification Settings */}
             <NotificationSettings userId={DEMO_USER_ID} />
-            
+
             {/* Notification Test Center */}
             <NotificationTest />
+
+            {/* Travelling Lighter Community */}
+            <a
+              href="https://comingtooursenses.org/travelling-lighter"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <Card className="overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
+                <CardContent className="p-0">
+                  <div className="flex items-center gap-4 px-5 py-4 bg-gradient-to-br from-stone-50 to-gray-100">
+                    <img
+                      src="/attached_assets/travelling-lighter.png"
+                      alt="Travelling Lighter"
+                      className="w-20 h-20 object-contain shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold tracking-widest uppercase text-gray-400 mb-0.5">
+                        Community of Practice
+                      </p>
+                      <h3 className="text-base font-semibold text-gray-800 leading-tight">
+                        A Travelling Lighter
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1 leading-snug">
+                        Join a growing community exploring mindfulness in everyday life.
+                      </p>
+                      <span className="inline-block mt-2 text-xs font-semibold text-blue-600">
+                        Subscribe →
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </a>
           </TabsContent>
         </Tabs>
       </main>
