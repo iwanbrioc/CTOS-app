@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@capacitor/android": "^7.4.5",
-    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^7.4.1",
     "@capacitor/core": "^7.4.1",
     "@capacitor/device": "^7.0.1",
@@ -91,6 +90,7 @@
     "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@replit/vite-plugin-cartographer": "^0.2.7",
     "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
     "@tailwindcss/typography": "^0.5.15",
