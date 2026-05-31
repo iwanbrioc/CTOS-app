@@ -8,9 +8,18 @@ vite.config.ts.*
 .env.local
 *.log
 
-# Replit specific (optional - remove if not using Replit)
+# Replit specific
 .replit
 replit.nix
+.config/
+.local/
+
+# IDE
+.idea/
+android/.idea/
+
+# Android build output
+android/app/release/
 
 # iOS
 ios/App/Pods/
