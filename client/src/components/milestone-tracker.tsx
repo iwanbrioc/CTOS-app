@@ -1,10 +1,25 @@
 import { } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Trophy, Target, Clock, Calendar } from "lucide-react";
+import { Trophy, Target, Clock, Calendar, Sprout, Leaf, TreePine, Timer, Compass, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import type { Milestone, UserMilestone, UserProgress } from "@shared/schema";
+
+function MilestoneBadgeIcon({ badge, color, size = 28 }: { badge: string; color: string; size?: number }) {
+  const cls = `shrink-0`;
+  const style = { color, width: size, height: size };
+  switch (badge) {
+    case "🌱": return <Sprout className={cls} style={style} />;
+    case "🌿": return <Leaf className={cls} style={style} />;
+    case "🌳": return <TreePine className={cls} style={style} />;
+    case "⏰":
+    case "🕐": return <Timer className={cls} style={style} />;
+    case "🗓️": return <Compass className={cls} style={style} />;
+    case "🏆": return <Trophy className={cls} style={style} />;
+    default:   return <Star className={cls} style={style} />;
+  }
+}
 
 interface MilestoneTrackerProps {
   userId: string;
@@ -113,7 +128,7 @@ export function MilestoneTracker({ userId }: MilestoneTrackerProps) {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{milestone.badge}</span>
+                      <MilestoneBadgeIcon badge={milestone.badge} color={milestone.color} />
                       <div>
                         <CardTitle className="text-lg">{milestone.title}</CardTitle>
                         <CardDescription className="text-sm">
@@ -150,7 +165,7 @@ export function MilestoneTracker({ userId }: MilestoneTrackerProps) {
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl opacity-60">{milestone.badge}</span>
+                        <MilestoneBadgeIcon badge={milestone.badge} color={milestone.color} size={24} />
                         <div>
                           <CardTitle className="text-lg">{milestone.title}</CardTitle>
                           <CardDescription className="text-sm">

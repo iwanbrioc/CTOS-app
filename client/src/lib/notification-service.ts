@@ -1,256 +1,286 @@
-// Notification Service - Handles scheduling and sending practice reminders
+// Notification Service
+// Uses @capacitor/local-notifications on iOS/Android, browser Notification API on web.
 
-interface NotificationSchedule {
+import { Capacitor } from "@capacitor/core";
+
+// Lazy-import the native plugin so the web build never errors
+async function getLocalNotifications() {
+  const { LocalNotifications } = await import("@capacitor/local-notifications");
+  return LocalNotifications;
+}
+
+// ─── Permission helpers ────────────────────────────────────────────────────
+
+export async function requestNotificationPermission(): Promise<boolean> {
+  if (Capacitor.isNativePlatform()) {
+    const LN = await getLocalNotifications();
+    const result = await LN.requestPermissions();
+    return result.display === "granted";
+  }
+
+  if (!("Notification" in window)) return false;
+  if (Notification.permission === "granted") return true;
+  const result = await Notification.requestPermission();
+  return result === "granted";
+}
+
+export async function checkNotificationPermission(): Promise<"granted" | "denied" | "prompt"> {
+  if (Capacitor.isNativePlatform()) {
+    const LN = await getLocalNotifications();
+    const result = await LN.checkPermissions();
+    if (result.display === "granted") return "granted";
+    if (result.display === "denied") return "denied";
+    return "prompt";
+  }
+
+  if (!("Notification" in window)) return "denied";
+  return Notification.permission as "granted" | "denied" | "prompt";
+}
+
+// ─── Core send ─────────────────────────────────────────────────────────────
+
+let nativeIdCounter = 1000; // start above 0, avoids iOS edge cases
+
+export async function sendNotificationNow(title: string, body: string): Promise<void> {
+  if (Capacitor.isNativePlatform()) {
+    const LN = await getLocalNotifications();
+    await LN.schedule({
+      notifications: [{
+        id: nativeIdCounter++,
+        title,
+        body,
+        schedule: { at: new Date(Date.now() + 500) }, // 0.5 s delay so iOS registers it
+        sound: undefined,
+        actionTypeId: "",
+        extra: null,
+      }],
+    });
+    return;
+  }
+
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+  const n = new Notification(title, { body, icon: "/favicon.ico", tag: "practice-reminder" });
+  setTimeout(() => n.close(), 10000);
+  n.onclick = () => { window.focus(); n.close(); };
+}
+
+// ─── Schedule / cancel helpers ─────────────────────────────────────────────
+
+// We store scheduled native IDs in localStorage so we can cancel them later
+const STORAGE_KEY = "ctos-native-notification-ids";
+
+function loadNativeIds(): number[] {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveNativeIds(ids: number[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+}
+
+async function cancelAllNative(): Promise<void> {
+  const LN = await getLocalNotifications();
+  const ids = loadNativeIds().map(id => ({ id }));
+  if (ids.length > 0) {
+    await LN.cancel({ notifications: ids }).catch(() => {});
+  }
+  saveNativeIds([]);
+}
+
+// ─── User reminder scheduling ──────────────────────────────────────────────
+
+const REMINDER_MESSAGES = [
+  "Time for your daily mindfulness practice",
+  "Take a moment to breathe and be present",
+  "Your meditation session is waiting for you",
+  "A few minutes of mindfulness can transform your day",
+  "Pause, breathe, arrive",
+];
+
+function randomMessage() {
+  return REMINDER_MESSAGES[Math.floor(Math.random() * REMINDER_MESSAGES.length)];
+}
+
+export async function scheduleUserReminders(
+  userId: string,
+  reminderTime: string,
+  reminderDays: number[],
+  enabled: boolean
+): Promise<void> {
+  if (Capacitor.isNativePlatform()) {
+    await scheduleNativeReminders(reminderTime, reminderDays, enabled);
+  } else {
+    await scheduleWebReminders(userId, reminderTime, reminderDays, enabled);
+  }
+}
+
+// ── Native (iOS / Android) ──────────────────────────────────────────────────
+
+async function scheduleNativeReminders(
+  reminderTime: string,
+  reminderDays: number[],
+  enabled: boolean
+): Promise<void> {
+  const LN = await getLocalNotifications();
+
+  // Always cancel existing ones first
+  await cancelAllNative();
+  if (!enabled || reminderDays.length === 0) return;
+
+  const [hours, minutes] = reminderTime.split(":").map(Number);
+  const notifications: {
+    id: number; title: string; body: string;
+    schedule: { at: Date; repeats: boolean; every: "week" };
+    sound: undefined; actionTypeId: string; extra: null;
+  }[] = [];
+  const ids: number[] = [];
+
+  // Schedule one repeating notification per selected weekday (repeats weekly)
+  // We find the next occurrence of each weekday within the next 7 days
+  for (const targetDay of reminderDays) {
+    const now = new Date();
+    const at = new Date();
+    at.setHours(hours, minutes, 0, 0);
+
+    // Advance to the correct weekday
+    const daysUntil = (targetDay - now.getDay() + 7) % 7;
+    at.setDate(at.getDate() + (daysUntil === 0 && at <= now ? 7 : daysUntil));
+
+    const id = nativeIdCounter++;
+    ids.push(id);
+
+    notifications.push({
+      id,
+      title: "Coming to Our Senses",
+      body: randomMessage(),
+      schedule: { at, repeats: true, every: "week" },
+      sound: undefined,
+      actionTypeId: "",
+      extra: null,
+    });
+  }
+
+  await LN.schedule({ notifications });
+  saveNativeIds(ids);
+}
+
+// ── Web (browser) ───────────────────────────────────────────────────────────
+// Uses an in-memory + localStorage poll-based approach (app must be open)
+
+interface WebSchedule {
   id: string;
   title: string;
-  message: string;
-  scheduledTime: Date;
-  isRecurring: boolean;
-  pattern?: 'daily' | 'weekly';
+  body: string;
+  at: string; // ISO
+  recurring: boolean;
 }
 
-class NotificationService {
-  private schedules: Map<string, NotificationSchedule> = new Map();
-  private intervalId: NodeJS.Timeout | null = null;
+const WEB_STORAGE_KEY = "ctos-web-notification-schedules";
+let webIntervalId: ReturnType<typeof setInterval> | null = null;
 
-  constructor() {
-    this.initializePermissions();
-    this.startScheduler();
+function loadWebSchedules(): WebSchedule[] {
+  try {
+    return JSON.parse(localStorage.getItem(WEB_STORAGE_KEY) ?? "[]");
+  } catch {
+    return [];
   }
+}
 
-  async initializePermissions(): Promise<boolean> {
-    if (!('Notification' in window)) {
-      console.warn('This browser does not support notifications');
-      return false;
-    }
+function saveWebSchedules(schedules: WebSchedule[]) {
+  localStorage.setItem(WEB_STORAGE_KEY, JSON.stringify(schedules));
+}
 
-    if (Notification.permission === 'granted') {
-      return true;
-    }
+function startWebScheduler() {
+  if (webIntervalId) return;
+  webIntervalId = setInterval(async () => {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    const now = Date.now();
+    const schedules = loadWebSchedules();
+    const updated: WebSchedule[] = [];
 
-    if (Notification.permission !== 'denied') {
-      const permission = await Notification.requestPermission();
-      return permission === 'granted';
-    }
+    for (const s of schedules) {
+      if (new Date(s.at).getTime() <= now) {
+        const n = new Notification(s.title, { body: s.body, icon: "/favicon.ico" });
+        setTimeout(() => n.close(), 10000);
 
-    return false;
-  }
-
-  async scheduleReminder(
-    id: string,
-    title: string,
-    message: string,
-    scheduledTime: Date,
-    isRecurring: boolean = false,
-    pattern?: 'daily' | 'weekly'
-  ): Promise<void> {
-    const schedule: NotificationSchedule = {
-      id,
-      title,
-      message,
-      scheduledTime,
-      isRecurring,
-      pattern,
-    };
-
-    this.schedules.set(id, schedule);
-    this.saveSchedulesToStorage();
-  }
-
-  async cancelReminder(id: string): Promise<void> {
-    this.schedules.delete(id);
-    this.saveSchedulesToStorage();
-  }
-
-  async sendNotification(title: string, message: string, options?: NotificationOptions): Promise<void> {
-    if (!await this.initializePermissions()) {
-      console.warn('Notifications not permitted');
-      return;
-    }
-
-    const notification = new Notification(title, {
-      body: message,
-      icon: '/favicon.ico',
-      badge: '/favicon.ico',
-      tag: 'practice-reminder',
-      requireInteraction: false,
-      silent: false,
-      ...options,
-    });
-
-    // Auto-close notification after 10 seconds
-    setTimeout(() => {
-      notification.close();
-    }, 10000);
-
-    // Handle notification click
-    notification.onclick = () => {
-      window.focus();
-      notification.close();
-      // Navigate to the app if it's not already focused
-      if (document.hidden) {
-        window.location.href = '/';
-      }
-    };
-  }
-
-  private startScheduler(): void {
-    // Check for due notifications every minute
-    this.intervalId = setInterval(() => {
-      this.checkAndSendDueNotifications();
-    }, 60000); // Check every minute
-
-    // Also check immediately
-    this.checkAndSendDueNotifications();
-  }
-
-  private async checkAndSendDueNotifications(): Promise<void> {
-    const now = new Date();
-    const dueSchedules: NotificationSchedule[] = [];
-
-    this.schedules.forEach((schedule) => {
-      if (schedule.scheduledTime <= now) {
-        dueSchedules.push(schedule);
-      }
-    });
-
-    for (const schedule of dueSchedules) {
-      await this.sendNotification(schedule.title, schedule.message);
-
-      if (schedule.isRecurring && schedule.pattern) {
-        // Reschedule for next occurrence
-        const nextTime = this.getNextScheduledTime(schedule.scheduledTime, schedule.pattern);
-        const newSchedule = {
-          ...schedule,
-          scheduledTime: nextTime,
-        };
-        this.schedules.set(schedule.id, newSchedule);
+        if (s.recurring) {
+          // Reschedule for 7 days later
+          const next = new Date(s.at);
+          next.setDate(next.getDate() + 7);
+          updated.push({ ...s, at: next.toISOString() });
+        }
+        // else drop it (one-time)
       } else {
-        // Remove one-time notification
-        this.schedules.delete(schedule.id);
+        updated.push(s);
       }
     }
 
-    if (dueSchedules.length > 0) {
-      this.saveSchedulesToStorage();
-    }
+    saveWebSchedules(updated);
+  }, 60_000);
+}
+
+async function scheduleWebReminders(
+  userId: string,
+  reminderTime: string,
+  reminderDays: number[],
+  enabled: boolean
+): Promise<void> {
+  if (!enabled || reminderDays.length === 0) {
+    saveWebSchedules([]);
+    return;
   }
 
-  private getNextScheduledTime(currentTime: Date, pattern: 'daily' | 'weekly'): Date {
-    const next = new Date(currentTime);
-    
-    if (pattern === 'daily') {
-      next.setDate(next.getDate() + 1);
-    } else if (pattern === 'weekly') {
-      next.setDate(next.getDate() + 7);
-    }
-    
-    return next;
+  const [hours, minutes] = reminderTime.split(":").map(Number);
+  const schedules: WebSchedule[] = [];
+
+  for (const targetDay of reminderDays) {
+    const now = new Date();
+    const at = new Date();
+    at.setHours(hours, minutes, 0, 0);
+    const daysUntil = (targetDay - now.getDay() + 7) % 7;
+    at.setDate(at.getDate() + (daysUntil === 0 && at <= now ? 7 : daysUntil));
+
+    schedules.push({
+      id: `user-${userId}-day-${targetDay}`,
+      title: "Coming to Our Senses",
+      body: randomMessage(),
+      at: at.toISOString(),
+      recurring: true,
+    });
   }
 
-  private saveSchedulesToStorage(): void {
-    const scheduleArray = Array.from(this.schedules.entries()).map(([scheduleId, schedule]) => ({
-      scheduleId,
-      ...schedule,
-      scheduledTime: schedule.scheduledTime.toISOString(),
-    }));
-    localStorage.setItem('notification-schedules', JSON.stringify(scheduleArray));
-  }
+  saveWebSchedules(schedules);
+  startWebScheduler();
+}
 
-  private loadSchedulesFromStorage(): void {
-    try {
-      const saved = localStorage.getItem('notification-schedules');
-      if (saved) {
-        const scheduleArray = JSON.parse(saved);
-        scheduleArray.forEach((item: any) => {
-          this.schedules.set(item.scheduleId || item.id, {
-            id: item.id,
-            title: item.title,
-            message: item.message,
-            scheduledTime: new Date(item.scheduledTime),
-            isRecurring: item.isRecurring,
-            pattern: item.pattern,
-          });
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load notification schedules:', error);
-    }
-  }
+// Start web scheduler on module load (picks up persisted schedules)
+if (!Capacitor.isNativePlatform()) {
+  startWebScheduler();
+}
 
-  async scheduleUserReminders(
-    userId: number,
+window.addEventListener("beforeunload", () => {
+  if (webIntervalId) clearInterval(webIntervalId);
+});
+
+// ─── Legacy compat export (used by older notification-test component) ───────
+export const notificationService = {
+  sendNotification: sendNotificationNow,
+  scheduleUserReminders: (
+    userId: number | string,
     reminderTime: string,
     reminderDays: number[],
-    enabled: boolean = true
-  ): Promise<void> {
-    // Clear existing reminders for this user
-    const userScheduleIds = Array.from(this.schedules.keys()).filter(id => 
-      id.startsWith(`user-${userId}-`)
-    );
-    userScheduleIds.forEach(id => this.schedules.delete(id));
-
-    if (!enabled) {
-      this.saveSchedulesToStorage();
-      return;
-    }
-
-    const [hours, minutes] = reminderTime.split(':').map(Number);
-    const reminderMessages = [
-      "Time for your daily mindfulness practice! 🧘‍♀️",
-      "Take a moment to breathe and be present 🌱",
-      "Your meditation session is waiting for you ✨",
-      "Remember to pause and practice mindfulness today 🌸",
-      "A few minutes of mindfulness can transform your day 🌟"
-    ];
-
-    // Schedule reminders for the next 7 days
-    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-      const targetDate = new Date();
-      targetDate.setDate(targetDate.getDate() + dayOffset);
-      const dayOfWeek = targetDate.getDay();
-
-      if (reminderDays.includes(dayOfWeek)) {
-        targetDate.setHours(hours, minutes, 0, 0);
-
-        // Only schedule future reminders
-        if (targetDate > new Date()) {
-          const randomMessage = reminderMessages[Math.floor(Math.random() * reminderMessages.length)];
-          const scheduleId = `user-${userId}-${dayOffset}`;
-          
-          await this.scheduleReminder(
-            scheduleId,
-            "Practice Reminder",
-            randomMessage,
-            targetDate,
-            true,
-            'daily'
-          );
-        }
-      }
-    }
-  }
-
-  destroy(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
-  }
-
-  // Get current schedules for debugging
-  getSchedules(): NotificationSchedule[] {
-    return Array.from(this.schedules.values());
-  }
-}
-
-// Create singleton instance
-export const notificationService = new NotificationService();
-
-// Initialize from storage on load
-notificationService['loadSchedulesFromStorage']();
-
-// Global cleanup on page unload
-window.addEventListener('beforeunload', () => {
-  notificationService.destroy();
-});
+    enabled: boolean
+  ) => scheduleUserReminders(String(userId), reminderTime, reminderDays, enabled),
+  scheduleReminder: async (
+    id: string, title: string, message: string, at: Date
+  ) => {
+    const schedules = loadWebSchedules();
+    schedules.push({ id, title, body: message, at: at.toISOString(), recurring: false });
+    saveWebSchedules(schedules);
+    startWebScheduler();
+  },
+  getSchedules: () => loadWebSchedules(),
+};

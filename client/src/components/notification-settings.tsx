@@ -8,7 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { notificationService } from "@/lib/notification-service";
+import {
+  requestNotificationPermission,
+  checkNotificationPermission,
+  sendNotificationNow,
+  scheduleUserReminders,
+} from "@/lib/notification-service";
 import { Bell, Clock, Calendar } from "lucide-react";
 import type { User } from "@shared/schema";
 
@@ -40,7 +45,7 @@ export function NotificationSettings({ userId }: NotificationSettingsProps) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [reminderTime, setReminderTime] = useState("09:00");
   const [selectedDays, setSelectedDays] = useState<number[]>([1, 2, 3, 4, 5]);
-  const [browserPermission, setBrowserPermission] = useState<NotificationPermission>("default");
+  const [browserPermission, setBrowserPermission] = useState<"granted" | "denied" | "prompt">("prompt");
 
   const { data: user } = useQuery<User>({
     queryKey: ["/api/users", userId],
@@ -55,11 +60,9 @@ export function NotificationSettings({ userId }: NotificationSettingsProps) {
     }
   }, [user]);
 
-  // Check browser notification permission
+  // Check notification permission (native or web)
   useEffect(() => {
-    if ('Notification' in window) {
-      setBrowserPermission(Notification.permission);
-    }
+    checkNotificationPermission().then(setBrowserPermission);
   }, []);
 
   const updateSettingsMutation = useMutation({
@@ -88,15 +91,13 @@ export function NotificationSettings({ userId }: NotificationSettingsProps) {
 
   const requestPermissionMutation = useMutation({
     mutationFn: async () => {
-      if ('Notification' in window) {
-        const permission = await Notification.requestPermission();
-        setBrowserPermission(permission);
-        return permission;
-      }
-      throw new Error("Notifications not supported");
+      const granted = await requestNotificationPermission();
+      const status = await checkNotificationPermission();
+      setBrowserPermission(status);
+      return granted;
     },
-    onSuccess: (permission) => {
-      if (permission === "granted") {
+    onSuccess: (granted) => {
+      if (granted) {
         toast({
           title: "Notifications Enabled",
           description: "You'll now receive practice reminders.",
@@ -104,7 +105,7 @@ export function NotificationSettings({ userId }: NotificationSettingsProps) {
       } else {
         toast({
           title: "Notifications Denied",
-          description: "You can enable them later in your browser settings.",
+          description: "Please enable notifications in your device settings.",
           variant: "destructive",
         });
       }
@@ -134,21 +135,9 @@ export function NotificationSettings({ userId }: NotificationSettingsProps) {
       // Schedule backend reminders
       scheduleRemindersMutation.mutate();
       
-      // Also schedule browser notifications via the notification service
-      await notificationService.scheduleUserReminders(
-        userId,
-        reminderTime,
-        selectedDays,
-        notificationsEnabled
-      );
+      await scheduleUserReminders(userId, reminderTime, selectedDays, true);
     } else {
-      // Clear all browser notifications when disabled
-      await notificationService.scheduleUserReminders(
-        userId,
-        reminderTime,
-        selectedDays,
-        false
-      );
+      await scheduleUserReminders(userId, reminderTime, selectedDays, false);
     }
   };
 
@@ -160,24 +149,17 @@ export function NotificationSettings({ userId }: NotificationSettingsProps) {
     );
   };
 
-  const sendTestNotification = () => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification("Coming to Our Senses", {
-        body: "Time for your daily mindfulness practice! 🧘‍♀️",
-        icon: "/favicon.ico",
-        tag: "practice-reminder",
-      });
+  const sendTestNotification = async () => {
+    if (browserPermission !== "granted") {
       toast({
-        title: "Test Notification Sent",
-        description: "Check if you received the notification.",
-      });
-    } else {
-      toast({
-        title: "Notifications Not Available",
-        description: "Please enable browser notifications first.",
+        title: "Notifications Not Enabled",
+        description: "Please enable notifications first.",
         variant: "destructive",
       });
+      return;
     }
+    await sendNotificationNow("Coming to Our Senses", "Time for your daily mindfulness practice");
+    toast({ title: "Test Notification Sent", description: "Check your notifications." });
   };
 
   return (
@@ -194,7 +176,7 @@ export function NotificationSettings({ userId }: NotificationSettingsProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Browser Permission */}
-          {browserPermission !== "granted" && (
+          {browserPermission !== "granted" && browserPermission !== "denied" && (
             <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
@@ -323,20 +305,9 @@ export function NotificationSettings({ userId }: NotificationSettingsProps) {
           <Button 
             variant="outline" 
             className="w-full justify-start"
-            onClick={() => {
-              // Schedule immediate reminder for testing
-              if ('Notification' in window && Notification.permission === 'granted') {
-                setTimeout(() => {
-                  new Notification("Practice Reminder", {
-                    body: "Take a moment to breathe and be present 🌱",
-                    icon: "/favicon.ico",
-                  });
-                }, 2000);
-                toast({
-                  title: "Reminder Set",
-                  description: "You'll receive a test reminder in 2 seconds.",
-                });
-              }
+            onClick={async () => {
+              await sendNotificationNow("Practice Reminder", "Take a moment to breathe and be present");
+              toast({ title: "Reminder Sent", description: "Check your notifications." });
             }}
           >
             <Bell className="h-4 w-4 mr-2" />
