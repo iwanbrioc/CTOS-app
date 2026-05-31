@@ -7,7 +7,7 @@ import { MilestoneManager } from "@/components/milestone-achievement";
 import { NotificationBanner } from "@/components/notification-banner";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Play, BookOpen, Sparkles, Pause, X, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { Settings, Play, BookOpen, Sparkles, Pause, X, ChevronLeft, ChevronRight, CheckCircle, Flame, Frown, Meh, Smile } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
@@ -486,7 +486,7 @@ export default function Home() {
               {/* Streak counter */}
               <div className="flex flex-col items-center">
                 <div className="flex items-center gap-1">
-                  <span className="text-lg leading-none">🔥</span>
+                  <Flame className="w-5 h-5 text-orange-300" />
                   <span className="text-white font-bold text-lg leading-none">
                     {streak > 0 ? streak : '—'}
                   </span>
@@ -918,14 +918,20 @@ export default function Home() {
                   {showMoodModal === 'pre' ? 'Before your practice' : 'After your practice'}
                 </p>
                 <div className="flex justify-around mb-6">
-                  {(['😔', '😕', '😐', '🙂', '😊'] as const).map((emoji, i) => (
+                  {[
+                    { icon: Frown, color: 'text-blue-400', bg: 'hover:bg-blue-50' },
+                    { icon: Frown, color: 'text-sky-400', bg: 'hover:bg-sky-50' },
+                    { icon: Meh,   color: 'text-gray-400', bg: 'hover:bg-gray-50' },
+                    { icon: Smile, color: 'text-green-400', bg: 'hover:bg-green-50' },
+                    { icon: Smile, color: 'text-emerald-500', bg: 'hover:bg-emerald-50' },
+                  ].map(({ icon: Icon, color, bg }, i) => (
                     <button
                       key={i}
                       onClick={() => handleMoodSelect(i + 1)}
-                      className="text-4xl hover:scale-125 active:scale-90 transition-transform p-2 rounded-xl"
+                      className={`${bg} hover:scale-125 active:scale-90 transition-transform p-2 rounded-xl`}
                       aria-label={`Mood ${i + 1}`}
                     >
-                      {emoji}
+                      <Icon className={`w-10 h-10 ${color}`} strokeWidth={i === 4 ? 2.5 : 1.5} />
                     </button>
                   ))}
                 </div>
@@ -954,9 +960,9 @@ export default function Home() {
                   initial={{ scale: 0, rotate: -10 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
-                  className="text-7xl mb-6"
+                  className="mb-6"
                 >
-                  ✨
+                  <Sparkles className="w-20 h-20 text-yellow-200 mx-auto" />
                 </motion.div>
 
                 <motion.h2
@@ -985,9 +991,13 @@ export default function Home() {
                     transition={{ delay: 0.45 }}
                     className="bg-white/20 rounded-2xl px-8 py-5 mb-5 flex items-center justify-center gap-5"
                   >
-                    <span className="text-4xl opacity-80">{(['😔','😕','😐','🙂','😊'])[preMood - 1]}</span>
+                    {[Frown,Frown,Meh,Smile,Smile].map((Icon,i) => i === preMood - 1 && (
+                      <Icon key={i} className="w-10 h-10 text-white/70" strokeWidth={1.5} />
+                    ))}
                     <span className="text-white/50 text-2xl font-light">→</span>
-                    <span className="text-4xl">{(['😔','😕','😐','🙂','😊'])[postMood - 1]}</span>
+                    {[Frown,Frown,Meh,Smile,Smile].map((Icon,i) => i === postMood - 1 && (
+                      <Icon key={i} className="w-10 h-10 text-white" strokeWidth={2} />
+                    ))}
                   </motion.div>
                 )}
 
@@ -999,7 +1009,7 @@ export default function Home() {
                     transition={{ delay: 0.55 }}
                     className="flex items-center justify-center gap-2 mb-8"
                   >
-                    <span className="text-2xl">🔥</span>
+                    <Flame className="w-6 h-6 text-orange-300" />
                     <span className="text-white font-semibold text-lg">
                       {streak} day{streak !== 1 ? 's' : ''} in a row
                     </span>
