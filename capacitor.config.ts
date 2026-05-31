@@ -4,24 +4,16 @@ const config: CapacitorConfig = {
   appId: 'com.ctos.app',
   appName: 'CTOS Mobile',
   webDir: 'dist/public',
-  ...(process.env.API_URL ? {
-    server: {
-      url: process.env.API_URL,
-      cleartext: true,
-      androidScheme: 'https'
-    }
-  } : {
-    server: {
-      androidScheme: 'https'
-    }
-  }),
+  server: {
+    androidScheme: 'https'
+  },
   ios: {
     contentInset: 'automatic',
     backgroundColor: '#f8f9fa'
   },
   plugins: {
     SplashScreen: {
-      launchAutoHide: false,
+      launchAutoHide: true,
       launchShowDuration: 2000,
       backgroundColor: '#f8f9fa',
       androidSplashResourceName: 'splash',
