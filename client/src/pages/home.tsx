@@ -646,7 +646,11 @@ export default function Home() {
                     <img
                       src={getSessionImage(practiceSession.illustration)}
                       alt={practiceSession.title}
-                      className="absolute top-0 right-0 h-full w-auto object-cover opacity-20 mix-blend-multiply"
+                      className="absolute top-0 right-0 h-full w-auto object-cover opacity-25 mix-blend-multiply"
+                      style={{
+                        maskImage: 'linear-gradient(to right, transparent 0%, black 45%)',
+                        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 45%)',
+                      }}
                     />
                   )}
                 </motion.div>
