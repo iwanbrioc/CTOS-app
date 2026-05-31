@@ -191,7 +191,7 @@ export default function Profile() {
                   Course Format
                 </CardTitle>
                 <CardDescription>
-                  Choose between an 8-week or 4-week course format
+                  Three delivery models — each offers a complete experience in its own way
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -200,10 +200,10 @@ export default function Profile() {
                     <RadioGroupItem value="8-week" id="8-week" />
                     <div className="flex-1">
                       <Label htmlFor="8-week" className="font-semibold cursor-pointer">
-                        8-Week Course (Recommended)
+                        8-Week Course
                       </Label>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Complete one session per week for a gentle, thorough exploration
+                        One session per week — space to integrate and practice between sessions
                       </p>
                     </div>
                   </div>
@@ -211,10 +211,21 @@ export default function Profile() {
                     <RadioGroupItem value="4-week" id="4-week" />
                     <div className="flex-1">
                       <Label htmlFor="4-week" className="font-semibold cursor-pointer">
-                        4-Week Intensive Course
+                        4-Week Course
                       </Label>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Complete two sessions per week for a more focused experience
+                        Two sessions per week — a concentrated journey over a shorter period
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50 cursor-pointer">
+                    <RadioGroupItem value="3-day" id="3-day" />
+                    <div className="flex-1">
+                      <Label htmlFor="3-day" className="font-semibold cursor-pointer">
+                        3-Day Intensive
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        All sessions across three full days — immersive and transformative
                       </p>
                     </div>
                   </div>
