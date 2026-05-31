@@ -18,7 +18,7 @@ import sevenStationsSpineImg from "@assets/seven stations of the spine_175008410
 import journalingFlowImg from "@assets/journaling for flow_1750084108018.png";
 import mindBodyMovementImg from "@assets/mind in body, body in movement, movement in mind_1750084108019.png";
 import droppingBalloonImg from "@assets/dropping the balloon_1750084108019.png";
-import greatSmileImg from "@assets/great smile practice_1750084108019.png";
+import figureOnStageImg from "@assets/iwan00246_an_illustrative_drawing_of_a_figure_standing_infront__14bcc794-4d7f-4138-90e3-b0216262e521_1751664292207.png";
 import fiveElementsImg from "@assets/five elements_1750084108020.png";
 import theSenseBeingAliveImg from "@assets/the sense of being alive_1750084108017.png";
 import whatIfAllThereIsImg from "@assets/what-if-all-there-is-new.png";
@@ -34,7 +34,7 @@ const getSessionImage = (illustration: string) => {
     case "what-if-all-there-is": return whatIfAllThereIsImg;
     case "turning-towards-discomfort": return turningTowardsDiscomfortImg;
     case "four-pillars": return fourPillarsImg;
-    case "great-smile": return greatSmileImg;
+    case "great-smile": return figureOnStageImg;
     case "five-elements": return fiveElementsImg;
     case "journaling-flow": return journalingFlowImg;
     default: return droppingBalloonImg;
