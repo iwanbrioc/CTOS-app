@@ -291,8 +291,11 @@ export default function Home() {
 
   // Complete session API call
   const completeSessionMutation = useMutation({
-    mutationFn: async (sessionId: number) => {
-      await apiRequest("POST", `/api/users/${user?.id}/complete/${sessionId}`);
+    mutationFn: async ({ sessionId, preMood, postMood }: { sessionId: number; preMood?: number | null; postMood?: number | null }) => {
+      await apiRequest("POST", `/api/users/${user?.id}/complete/${sessionId}`, {
+        ...(preMood != null ? { preMood } : {}),
+        ...(postMood != null ? { postMood } : {}),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/progress`] });
@@ -338,7 +341,7 @@ export default function Home() {
       setPostMood(mood);
       setMoodPhase(null);
       if (practiceSession) {
-        completeSessionMutation.mutate(practiceSession.id);
+        completeSessionMutation.mutate({ sessionId: practiceSession.id, preMood, postMood: mood });
         setCelebrationSession(practiceSession);
       }
       handleClosePractice();
@@ -356,7 +359,7 @@ export default function Home() {
     } else if (moodPhase === 'post') {
       setMoodPhase(null);
       if (practiceSession) {
-        completeSessionMutation.mutate(practiceSession.id);
+        completeSessionMutation.mutate({ sessionId: practiceSession.id, preMood });
         setCelebrationSession(practiceSession);
       }
       handleClosePractice();
@@ -901,6 +904,7 @@ export default function Home() {
             </div>
 
           </div>
+
         </div>
 
         {/* Progress Bar - Fixed */}
