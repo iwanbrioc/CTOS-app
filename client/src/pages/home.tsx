@@ -12,6 +12,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
+import { sessionData as staticSessionData, handyHacksData as staticHacksData } from "@/lib/session-data";
 import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_1759681457952.png";
 import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759686357223.png";
 import sevenStationsSpineImg from "@assets/seven stations of the spine_1750084108018.png";
@@ -146,9 +147,26 @@ export default function Home() {
   // Calendar
   const [calendarExpanded, setCalendarExpanded] = useState(false);
 
-  const { data: sessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
+  const { data: apiSessions = [], isLoading: sessionsLoading } = useQuery<Session[]>({
     queryKey: ["/api/sessions"],
+    retry: false,
   });
+
+  // Fall back to static session-data.ts when the API is unavailable (e.g. bundled Capacitor app)
+  const sessions: Session[] = apiSessions.length > 0 ? apiSessions : staticSessionData.map(s => ({
+    id: s.id,
+    week: s.week,
+    title: s.title,
+    practiceName: (s as any).practiceName ?? null,
+    description: s.description,
+    audioUrl: s.audioSrc,
+    duration: s.duration,
+    illustration: s.illustration,
+    isLocked: false,
+    handyHack: s.handyHack ?? null,
+    journaling: s.journaling ?? null,
+    color: s.color ?? null,
+  })) as unknown as Session[];
 
   const { data: userProgress = [] } = useQuery<UserProgress[]>({
     queryKey: [`/api/users/${user?.id}/progress`],
@@ -165,9 +183,18 @@ export default function Home() {
     enabled: !!user?.id,
   });
 
-  const { data: allHacks = [] } = useQuery<HandyHack[]>({
+  const { data: apiHacks = [] } = useQuery<HandyHack[]>({
     queryKey: ["/api/handy-hacks"],
+    retry: false,
   });
+
+  // Fall back to static handy hacks data when API is unavailable
+  const allHacks: HandyHack[] = apiHacks.length > 0 ? apiHacks : staticHacksData.map((h, i) => ({
+    id: i + 1,
+    title: h.title,
+    description: h.description,
+    category: h.category,
+  })) as HandyHack[];
 
   const completedSessions = userProgress.filter(p => p.completed).length;
   const totalSessions = sessions.length;
