@@ -805,7 +805,7 @@ export class MemStorage implements IStorage {
         description: "When distance collapses, there is simply what is happening — and true response-ability becomes possible.",
         audioUrl: "/attached_assets/fourpillarspractice_1751651309349.mp3",
         duration: 22,
-        illustration: "four-pillars",
+        illustration: "journaling-flow",
         isLocked: false,
         handyHack: "Presence - Set Frame - Release",
         journaling: "Full Flow Journal System (Gratitude, High Flow & High Value Priorities, Script Your Day, Review Your Day)",

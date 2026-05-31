@@ -132,7 +132,7 @@ export const sessionData = [
     duration: 22,
     audioSrc: "/attached_assets/fourpillarspractice_1751651309349.mp3",
     color: "bg-gradient-to-br from-cyan-400 to-blue-600",
-    illustration: "four-pillars",
+    illustration: "journaling-flow",
     handyHack: "Presence - Set Frame - Release",
     journaling: "Full Flow Journal System (Gratitude, High Flow & High Value Priorities, Script Your Day, Review Your Day)"
   },
