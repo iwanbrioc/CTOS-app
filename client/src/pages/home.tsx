@@ -738,7 +738,6 @@ export default function Home() {
                             ref={audioRef}
                             src={practiceSession.audioUrl}
                             preload="metadata"
-                            crossOrigin="anonymous"
                           />
                           <div className="flex items-center space-x-3">
                             <Button
