@@ -3,13 +3,9 @@ import fs from "fs";
 import path from "path";
 import { tmpdir } from "os";
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY environment variable is required");
-}
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const openai = process.env.OPENAI_API_KEY
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
 
 export async function transcribeAudio(audioBuffer: Buffer, originalFilename: string): Promise<string> {
   let tempFilePath: string | null = null;
@@ -22,6 +18,7 @@ export async function transcribeAudio(audioBuffer: Buffer, originalFilename: str
     // Write buffer to temporary file
     await fs.promises.writeFile(tempFilePath, audioBuffer);
 
+    if (!openai) throw new Error("OpenAI API key not configured");
     // Transcribe using OpenAI Whisper
     const transcription = await openai.audio.transcriptions.create({
       file: fs.createReadStream(tempFilePath),
