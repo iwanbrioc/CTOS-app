@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { SplashScreen } from "@capacitor/splash-screen";
 
 // Register service worker for PWA functionality
 if ('serviceWorker' in navigator) {
@@ -20,3 +21,6 @@ if ('serviceWorker' in navigator) {
 }
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+// Hide splash screen once the app has rendered
+SplashScreen.hide({ fadeOutDuration: 300 });
