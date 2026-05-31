@@ -50,8 +50,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub; // Use authenticated user's ID
       const { courseFormat } = req.body;
       
-      if (courseFormat !== "8-week" && courseFormat !== "4-week") {
-        return res.status(400).json({ error: "Course format must be '8-week' or '4-week'" });
+      if (!["8-week", "4-week", "3-day"].includes(courseFormat)) {
+        return res.status(400).json({ error: "Course format must be '8-week', '4-week', or '3-day'" });
       }
       
       await storage.updateUserCourseFormat(userId, courseFormat);
@@ -208,12 +208,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.params.userId; // Keep as string for consistency
       const sessionId = parseInt(req.params.sessionId);
-      
+
       if (isNaN(sessionId)) {
         return res.status(400).json({ error: "Invalid session ID" });
       }
-      
-      await storage.completeSession(userId, sessionId);
+
+      const { preMood, postMood } = req.body;
+      const parsedPreMood = preMood !== undefined ? parseInt(preMood) : undefined;
+      const parsedPostMood = postMood !== undefined ? parseInt(postMood) : undefined;
+
+      await storage.completeSession(userId, sessionId, parsedPreMood, parsedPostMood);
       res.json({ success: true });
     } catch (error) {
       console.error("Error completing session:", error);

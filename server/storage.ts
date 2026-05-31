@@ -43,7 +43,7 @@ export interface IStorage {
   // User Progress
   getUserProgress(userId: string): Promise<UserProgress[]>;
   updateSessionProgress(userId: string, sessionId: number, progress: Partial<UserProgress>): Promise<void>;
-  completeSession(userId: string, sessionId: number): Promise<void>;
+  completeSession(userId: string, sessionId: number, preMood?: number, postMood?: number): Promise<void>;
 
   // Journal
   getUserJournalEntries(userId: string): Promise<JournalEntry[]>;
@@ -195,11 +195,17 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(userProgress.userId, userId), eq(userProgress.sessionId, sessionId)));
   }
 
-  async completeSession(userId: string, sessionId: number): Promise<void> {
+  async completeSession(userId: string, sessionId: number, preMood?: number, postMood?: number): Promise<void> {
     const { db } = await import("./db");
     const { eq, and } = await import("drizzle-orm");
+    const updateData: Partial<typeof userProgress.$inferInsert> = {
+      completed: true,
+      completedAt: new Date(),
+    };
+    if (preMood !== undefined) updateData.preMood = preMood;
+    if (postMood !== undefined) updateData.postMood = postMood;
     await db.update(userProgress)
-      .set({ completed: true, completedAt: new Date() })
+      .set(updateData)
       .where(and(eq(userProgress.userId, userId), eq(userProgress.sessionId, sessionId)));
   }
 
@@ -865,13 +871,15 @@ export class MemStorage implements IStorage {
     }
   }
 
-  async completeSession(userId: number, sessionId: number): Promise<void> {
+  async completeSession(userId: string, sessionId: number, preMood?: number, postMood?: number): Promise<void> {
     const key = `${userId}-${sessionId}`;
     const existing = this.userProgress.get(key);
-    
+
     if (existing) {
       existing.completed = true;
       existing.completedAt = new Date();
+      if (preMood !== undefined) (existing as any).preMood = preMood;
+      if (postMood !== undefined) (existing as any).postMood = postMood;
       this.userProgress.set(key, existing);
     } else {
       const id = this.currentId++;
@@ -884,7 +892,9 @@ export class MemStorage implements IStorage {
         audioProgress: 0,
         totalListenTime: 0,
         streakDays: 0,
-      };
+        preMood: preMood ?? null,
+        postMood: postMood ?? null,
+      } as any;
       this.userProgress.set(key, newProgress);
     }
   }

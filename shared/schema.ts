@@ -61,6 +61,8 @@ export const userProgress = pgTable("user_progress", {
   skipCount: integer("skip_count").default(0), // times user skipped forward
   pauseCount: integer("pause_count").default(0), // times user paused
   averageSessionRating: integer("average_session_rating").default(0), // 1-5 rating
+  preMood: integer("pre_mood"), // 1-5 mood rating before practice
+  postMood: integer("post_mood"), // 1-5 mood rating after practice
 });
 
 export const milestones = pgTable("milestones", {
