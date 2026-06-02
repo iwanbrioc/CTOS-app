@@ -12,10 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, User, Calendar, Award, Bell, Settings, Calendar as CalendarIcon } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowLeft, User, Calendar, Award, Bell, Settings, Calendar as CalendarIcon, RotateCcw } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { getUserName, setUserName } from "@/lib/user-prefs";
+import { getUserName, setUserName, clearUserPrefs } from "@/lib/user-prefs";
 import { useToast } from "@/hooks/use-toast";
 import type { User as UserType, UserProgress, UserHackCompletion } from "@shared/schema";
 
@@ -45,7 +45,14 @@ export default function Profile() {
     : 0;
 
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [courseFormat, setCourseFormat] = useState<string>(user?.courseFormat || "8-week");
+
+  const handleReset = () => {
+    clearUserPrefs();
+    // Hard reload so App.tsx re-reads isOnboarded() from fresh localStorage
+    window.location.reload();
+  };
 
   const updateCourseFormatMutation = useMutation({
     mutationFn: async (format: string) => {
@@ -278,6 +285,29 @@ export default function Profile() {
 
             {/* Notification Test Center */}
             <NotificationTest />
+
+            {/* Reset onboarding */}
+            <Card className="border-red-100">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm text-red-600">
+                  <RotateCcw className="h-4 w-4" />
+                  Reset &amp; Restart
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Clears your name and replays the intro slideshow. Your practice progress is kept.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-red-200 text-red-600 hover:bg-red-50 w-full"
+                  onClick={handleReset}
+                >
+                  Reset intro &amp; re-enter name
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>
