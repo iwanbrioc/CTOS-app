@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, User, Calendar, Award, Bell, Settings, Calendar as CalendarIcon } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { getUserName, setUserName } from "@/lib/user-prefs";
 import { useToast } from "@/hooks/use-toast";
 import type { User as UserType, UserProgress, UserHackCompletion } from "@shared/schema";
 
@@ -101,7 +102,7 @@ export default function Profile() {
               </div>
               <div className="flex-1">
                 <h2 className="text-xl font-semibold text-primary">
-                  My Journey
+                  {getUserName() ? `${getUserName()}'s Journey` : "My Journey"}
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   Coming to Our Senses

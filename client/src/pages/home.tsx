@@ -13,6 +13,7 @@ import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import type { User, Session, UserProgress, JournalEntry, UserHackCompletion, HandyHack } from "@shared/schema";
 import { sessionData as staticSessionData, handyHacksData as staticHacksData } from "@/lib/session-data";
+import { getUserName } from "@/lib/user-prefs";
 import eyesOpenIcon from "@assets/A18980D3-31A8-40FC-9C97-3F0E7FE444C2_1759681457952.png";
 import eyesClosedIcon from "@assets/8165BDE4-AEE4-46E7-A96B-D3B6B5355DE9_1759686357223.png";
 import sevenStationsSpineImg from "@assets/seven stations of the spine_1750084108018.png";
@@ -480,7 +481,7 @@ export default function Home() {
               <div>
                 <h1 className="text-2xl font-bold text-white">Coming to Our Senses</h1>
                 <p className="text-sm text-blue-100">
-                  {user?.firstName ? `${user.firstName}'s Journey` : 'Your Mindfulness Journey'}
+                  {getUserName() ? `${getUserName()}'s Journey` : 'Your Mindfulness Journey'}
                 </p>
               </div>
             </div>
