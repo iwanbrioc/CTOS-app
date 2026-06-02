@@ -36,31 +36,31 @@ type Slide = ContentSlide | AlertsSlide;
 const slides: Slide[] = [
   {
     type: "content",
-    bg: "from-blue-600 to-indigo-700",
+    bg: "from-blue-700 via-indigo-600 to-violet-800",
     image: "/attached_assets/CTOS Emblem_1751662222205.png",
     label: "Welcome",
     title: "Coming to Our Senses",
-    body: "An 8-week journey into mindfulness — at a pace that suits you. Here's a quick look at everything that's here for you.",
+    body: "An 8-week journey into creative mindfulness — at a pace that suits you. Here's a quick look at everything that's here for you.",
   },
   {
     type: "content",
-    bg: "from-teal-500 to-cyan-700",
+    bg: "from-teal-500 via-cyan-600 to-teal-800",
     image: "/attached_assets/dropping the balloon_1750084108019.png",
     label: "Weekly Practice",
     title: "Guided Meditations",
-    body: "Each week brings a new guided practice — from grounding and body awareness to moving meditation and turning towards difficulty.",
+    body: "Each week brings a new guided practice — from grounding and body awareness to turning towards difficulty, to strengthen the four pillars on which your mental health rests.",
   },
   {
     type: "content",
-    bg: "from-violet-500 to-purple-700",
-    image: "/attached_assets/what if all there is is this?_1750084108016.png",
+    bg: "from-violet-500 via-purple-600 to-indigo-800",
+    image: "/attached_assets/great smile practice_1750084108019.png",
     label: "Handy Hacks",
-    title: "Quick Mindfulness Moments",
+    title: "Quick Creative Mindfulness Moments",
     body: "Short, practical techniques you can use any time — on the bus, at your desk, or wherever life takes you.",
   },
   {
     type: "content",
-    bg: "from-amber-500 to-orange-600",
+    bg: "from-amber-500 via-orange-500 to-rose-700",
     image: "/attached_assets/journaling for flow_1750084108018.png",
     label: "Journal",
     title: "Morning & Evening Rituals",
@@ -68,7 +68,7 @@ const slides: Slide[] = [
   },
   {
     type: "content",
-    bg: "from-emerald-500 to-green-700",
+    bg: "from-emerald-500 via-teal-600 to-green-800",
     image: "/attached_assets/the four pillars_1750084108018.png",
     label: "Your Progress",
     title: "Track Your Journey",
@@ -76,15 +76,15 @@ const slides: Slide[] = [
   },
   {
     type: "content",
-    bg: "from-rose-400 to-pink-600",
+    bg: "from-rose-400 via-pink-500 to-fuchsia-700",
     image: "/attached_assets/travellinglighter.jpg",
     label: "Community",
     title: "A Travelling Lighter",
-    body: "You're not alone. Join a growing community of people exploring mindfulness in everyday life.",
+    body: "You're not alone. Join a growing community of people exploring creative mindfulness in everyday life.",
   },
   {
     type: "alerts",
-    bg: "from-sky-500 to-blue-700",
+    bg: "from-sky-500 via-blue-600 to-indigo-700",
   },
 ];
 
@@ -151,7 +151,7 @@ function AlertsSlideContent() {
         Set Your Alerts
       </h2>
       <p className="text-white/75 text-sm mb-6 max-w-xs">
-        A gentle nudge at the right time helps build a lasting practice.
+        A gentle nudge at the right time helps build a lasting creative mindfulness practice.
       </p>
 
       {/* Toggle */}
@@ -255,10 +255,13 @@ export function Onboarding({ onComplete }: OnboardingProps) {
   const bg = slide.bg;
 
   return (
-    <div className={`min-h-screen flex flex-col bg-gradient-to-br ${bg} transition-all duration-500`}>
+    <div className={`min-h-screen w-full flex flex-col bg-gradient-to-br ${bg} transition-all duration-700 relative`}>
+
+      {/* Subtle vignette overlay — darkens edges, softens gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/25 pointer-events-none" />
 
       {/* Skip */}
-      <div className="flex justify-end px-6 pt-6">
+      <div className="relative flex justify-end px-6 pt-6 z-10">
         <button
           onClick={() => { markOnboarded(); onComplete(); }}
           className="text-white/60 text-sm hover:text-white transition-colors"
@@ -268,7 +271,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       </div>
 
       {/* Slide content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 pb-4 overflow-y-auto">
+      <div className="relative flex-1 flex flex-col items-center justify-center px-8 pb-4 overflow-y-auto z-10">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={index}
@@ -283,20 +286,27 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               <AlertsSlideContent />
             ) : (
               <>
-                <div className="w-48 h-48 mb-6 flex items-center justify-center">
+                {/* Image with soft glow + blend into gradient */}
+                <div className="relative w-56 h-56 mb-6 flex items-center justify-center">
+                  {/* Radial glow behind image */}
+                  <div className="absolute inset-0 rounded-full bg-white/25 blur-3xl scale-75" />
                   <img
                     src={slide.image}
                     alt={slide.title}
-                    className="w-full h-full object-contain drop-shadow-lg"
+                    className="relative w-full h-full object-contain mix-blend-multiply"
+                    style={{ filter: "drop-shadow(0 6px 20px rgba(0,0,0,0.3))" }}
                   />
+                  {/* Gradient fade at bottom — melts image into the background */}
+                  <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/15 to-transparent rounded-b-full" />
                 </div>
-                <span className="text-white/70 text-xs font-semibold tracking-widest uppercase mb-3">
+
+                <span className="text-white/75 text-xs font-semibold tracking-widest uppercase mb-3 drop-shadow-sm">
                   {index === 0 && name ? `Hello, ${name}` : slide.label}
                 </span>
-                <h2 className="text-2xl font-bold text-white mb-4 leading-tight">
+                <h2 className="text-2xl font-bold text-white mb-4 leading-tight drop-shadow-md">
                   {slide.title}
                 </h2>
-                <p className="text-white/80 text-base leading-relaxed max-w-xs">
+                <p className="text-white/85 text-base leading-relaxed max-w-xs drop-shadow-sm">
                   {slide.body}
                 </p>
               </>
@@ -306,7 +316,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       </div>
 
       {/* Bottom controls */}
-      <div className="px-8 pb-10 pt-4 space-y-5 shrink-0">
+      <div className="relative px-8 pb-10 pt-4 space-y-5 shrink-0 z-10">
         {/* Dots */}
         <div className="flex justify-center gap-2">
           {slides.map((_, i) => (
