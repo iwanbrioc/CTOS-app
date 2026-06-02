@@ -29,6 +29,7 @@ interface ContentSlide {
 interface AlertsSlide {
   type: "alerts";
   bg: string;
+  image?: string;
 }
 
 type Slide = ContentSlide | AlertsSlide;
@@ -69,7 +70,7 @@ const slides: Slide[] = [
   {
     type: "content",
     bg: "from-emerald-500 via-teal-600 to-green-800",
-    image: "/attached_assets/the four pillars_1750084108018.png",
+    image: "/attached_assets/seven stations of the spine_1750084108018.png",
     label: "Your Progress",
     title: "Track Your Journey",
     body: "See your mood shift before and after each practice, earn milestones, and watch your journey unfold over 8 weeks.",
@@ -85,6 +86,7 @@ const slides: Slide[] = [
   {
     type: "alerts",
     bg: "from-sky-500 via-blue-600 to-indigo-700",
+    image: "/attached_assets/turning towards discomfort_1750084108017.png",
   },
 ];
 
@@ -259,10 +261,10 @@ export function Onboarding({ onComplete }: OnboardingProps) {
 
       {/* Full-bleed illustration — fades between slides independently */}
       <AnimatePresence mode="wait">
-        {slide.type === "content" && (
+        {(slide.type === "content" || (slide.type === "alerts" && slide.image)) && (
           <motion.img
             key={`bg-${index}`}
-            src={(slide as ContentSlide).image}
+            src={slide.type === "content" ? (slide as ContentSlide).image : (slide as AlertsSlide).image!}
             alt=""
             aria-hidden="true"
             initial={{ opacity: 0, scale: 1.04 }}
