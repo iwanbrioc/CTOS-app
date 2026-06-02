@@ -255,10 +255,28 @@ export function Onboarding({ onComplete }: OnboardingProps) {
   const bg = slide.bg;
 
   return (
-    <div className={`min-h-screen w-full flex flex-col bg-gradient-to-br ${bg} transition-all duration-700 relative`}>
+    <div className={`min-h-screen w-full flex flex-col bg-gradient-to-br ${bg} transition-all duration-700 relative overflow-hidden`}>
 
-      {/* Subtle vignette overlay — darkens edges, softens gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/25 pointer-events-none" />
+      {/* Full-bleed illustration — fades between slides independently */}
+      <AnimatePresence mode="wait">
+        {slide.type === "content" && (
+          <motion.img
+            key={`bg-${index}`}
+            src={(slide as ContentSlide).image}
+            alt=""
+            aria-hidden="true"
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.97 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="absolute top-0 right-0 h-full w-auto object-cover mix-blend-multiply pointer-events-none"
+            style={{ opacity: 0.22 }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Bottom gradient — keeps text readable over the image */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none" />
 
       {/* Skip */}
       <div className="relative flex justify-end px-6 pt-6 z-10">
@@ -271,39 +289,27 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       </div>
 
       {/* Slide content */}
-      <div className="relative flex-1 flex flex-col items-center justify-center px-8 pb-4 overflow-y-auto z-10">
+      <div className="relative flex-1 flex flex-col items-end justify-end px-8 pb-4 z-10">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={index}
             custom={direction}
-            initial={{ opacity: 0, x: direction * 60 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: direction * -60 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="flex flex-col items-center text-center w-full"
+            className="flex flex-col items-start text-left w-full"
           >
             {slide.type === "alerts" ? (
-              <AlertsSlideContent />
+              <div className="w-full flex flex-col items-center text-center">
+                <AlertsSlideContent />
+              </div>
             ) : (
               <>
-                {/* Image with soft glow + blend into gradient */}
-                <div className="relative w-56 h-56 mb-6 flex items-center justify-center">
-                  {/* Radial glow behind image */}
-                  <div className="absolute inset-0 rounded-full bg-white/25 blur-3xl scale-75" />
-                  <img
-                    src={slide.image}
-                    alt={slide.title}
-                    className="relative w-full h-full object-contain mix-blend-multiply"
-                    style={{ filter: "drop-shadow(0 6px 20px rgba(0,0,0,0.3))" }}
-                  />
-                  {/* Gradient fade at bottom — melts image into the background */}
-                  <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/15 to-transparent rounded-b-full" />
-                </div>
-
-                <span className="text-white/75 text-xs font-semibold tracking-widest uppercase mb-3 drop-shadow-sm">
+                <span className="text-white/70 text-xs font-semibold tracking-widest uppercase mb-3 drop-shadow-sm">
                   {index === 0 && name ? `Hello, ${name}` : slide.label}
                 </span>
-                <h2 className="text-2xl font-bold text-white mb-4 leading-tight drop-shadow-md">
+                <h2 className="text-3xl font-bold text-white mb-3 leading-tight drop-shadow-md">
                   {slide.title}
                 </h2>
                 <p className="text-white/85 text-base leading-relaxed max-w-xs drop-shadow-sm">
