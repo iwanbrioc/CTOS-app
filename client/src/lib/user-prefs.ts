@@ -3,7 +3,7 @@
 
 const KEY_USER_ID   = "ctos-user-id";
 const KEY_USER_NAME = "ctos-user-name";
-const KEY_ONBOARDED = "ctos-onboarded";
+const KEY_ONBOARDED  = "ctos-onboarded";  // true once slideshow completed
 
 function generateId(): string {
   // Simple UUID v4
