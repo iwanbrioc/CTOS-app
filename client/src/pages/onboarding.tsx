@@ -1,23 +1,41 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Sparkles } from "lucide-react";
+import { ChevronRight, Sparkles, Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { getUserName, markOnboarded } from "@/lib/user-prefs";
+import {
+  requestNotificationPermission,
+  scheduleUserReminders,
+} from "@/lib/notification-service";
 
 interface OnboardingProps {
   onComplete: () => void;
 }
 
-interface Slide {
-  bg: string;           // Tailwind gradient
-  image: string;        // asset path
-  label: string;        // small eyebrow label
+// ── Slide definitions ────────────────────────────────────────────────────────
+
+type SlideType = "content" | "alerts";
+
+interface ContentSlide {
+  type: "content";
+  bg: string;
+  image: string;
+  label: string;
   title: string;
   body: string;
 }
 
+interface AlertsSlide {
+  type: "alerts";
+  bg: string;
+}
+
+type Slide = ContentSlide | AlertsSlide;
+
 const slides: Slide[] = [
   {
+    type: "content",
     bg: "from-blue-600 to-indigo-700",
     image: "/attached_assets/CTOS Emblem_1751662222205.png",
     label: "Welcome",
@@ -25,6 +43,7 @@ const slides: Slide[] = [
     body: "An 8-week journey into mindfulness — at a pace that suits you. Here's a quick look at everything that's here for you.",
   },
   {
+    type: "content",
     bg: "from-teal-500 to-cyan-700",
     image: "/attached_assets/dropping the balloon_1750084108019.png",
     label: "Weekly Practice",
@@ -32,6 +51,7 @@ const slides: Slide[] = [
     body: "Each week brings a new guided practice — from grounding and body awareness to moving meditation and turning towards difficulty.",
   },
   {
+    type: "content",
     bg: "from-violet-500 to-purple-700",
     image: "/attached_assets/what if all there is is this?_1750084108016.png",
     label: "Handy Hacks",
@@ -39,6 +59,7 @@ const slides: Slide[] = [
     body: "Short, practical techniques you can use any time — on the bus, at your desk, or wherever life takes you.",
   },
   {
+    type: "content",
     bg: "from-amber-500 to-orange-600",
     image: "/attached_assets/journaling for flow_1750084108018.png",
     label: "Journal",
@@ -46,6 +67,7 @@ const slides: Slide[] = [
     body: "A structured journaling space for gratitude, setting intentions, scripting your day, and reflecting each evening.",
   },
   {
+    type: "content",
     bg: "from-emerald-500 to-green-700",
     image: "/attached_assets/the four pillars_1750084108018.png",
     label: "Your Progress",
@@ -53,17 +75,165 @@ const slides: Slide[] = [
     body: "See your mood shift before and after each practice, earn milestones, and watch your journey unfold over 8 weeks.",
   },
   {
+    type: "content",
     bg: "from-rose-400 to-pink-600",
     image: "/attached_assets/travellinglighter.jpg",
     label: "Community",
     title: "A Travelling Lighter",
     body: "You're not alone. Join a growing community of people exploring mindfulness in everyday life.",
   },
+  {
+    type: "alerts",
+    bg: "from-sky-500 to-blue-700",
+  },
 ];
+
+// ── Alert slide component ────────────────────────────────────────────────────
+
+const DAYS = [
+  { value: 1, short: "Mon" },
+  { value: 2, short: "Tue" },
+  { value: 3, short: "Wed" },
+  { value: 4, short: "Thu" },
+  { value: 5, short: "Fri" },
+  { value: 6, short: "Sat" },
+  { value: 0, short: "Sun" },
+];
+
+const TIME_OPTIONS = [
+  "06:00","06:30","07:00","07:30","08:00","08:30","09:00","09:30",
+  "10:00","10:30","11:00","12:00","13:00","14:00","15:00","16:00",
+  "17:00","18:00","19:00","20:00","21:00",
+];
+
+function AlertsSlideContent() {
+  const [enabled, setEnabled] = useState(false);
+  const [time, setTime] = useState("09:00");
+  const [days, setDays] = useState<number[]>([1, 2, 3, 4, 5]);
+  const [saved, setSaved] = useState(false);
+
+  const toggleDay = (d: number) =>
+    setDays(prev =>
+      prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d].sort()
+    );
+
+  const handleSave = async () => {
+    const granted = await requestNotificationPermission();
+    if (granted) {
+      await scheduleUserReminders("1", time, days, true);
+    }
+    setSaved(true);
+  };
+
+  const handleToggle = async (val: boolean) => {
+    setEnabled(val);
+    if (!val) {
+      await scheduleUserReminders("1", time, days, false);
+      setSaved(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center text-center w-full">
+      {/* Icon */}
+      <div className="w-20 h-20 mb-6 rounded-full bg-white/20 flex items-center justify-center">
+        {enabled ? (
+          <Bell className="w-10 h-10 text-white" />
+        ) : (
+          <BellOff className="w-10 h-10 text-white/60" />
+        )}
+      </div>
+
+      <span className="text-white/70 text-xs font-semibold tracking-widest uppercase mb-3">
+        Practice Reminders
+      </span>
+      <h2 className="text-2xl font-bold text-white mb-2">
+        Set Your Alerts
+      </h2>
+      <p className="text-white/75 text-sm mb-6 max-w-xs">
+        A gentle nudge at the right time helps build a lasting practice.
+      </p>
+
+      {/* Toggle */}
+      <div className="flex items-center gap-3 bg-white/15 rounded-2xl px-5 py-3 mb-5 w-full max-w-xs">
+        <span className="text-white text-sm font-medium flex-1 text-left">
+          Remind me to practice
+        </span>
+        <Switch
+          checked={enabled}
+          onCheckedChange={handleToggle}
+          className="data-[state=checked]:bg-white/40"
+        />
+      </div>
+
+      {enabled && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-xs space-y-4"
+        >
+          {/* Time picker */}
+          <div className="bg-white/15 rounded-2xl px-4 py-3">
+            <p className="text-white/70 text-xs font-semibold uppercase tracking-wide mb-2 text-left">
+              Time
+            </p>
+            <select
+              value={time}
+              onChange={e => { setTime(e.target.value); setSaved(false); }}
+              className="w-full bg-transparent text-white text-base font-medium outline-none appearance-none text-center"
+            >
+              {TIME_OPTIONS.map(t => (
+                <option key={t} value={t} className="text-gray-900">{t}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Day chips */}
+          <div className="bg-white/15 rounded-2xl px-4 py-3">
+            <p className="text-white/70 text-xs font-semibold uppercase tracking-wide mb-3 text-left">
+              Days
+            </p>
+            <div className="flex justify-between gap-1">
+              {DAYS.map(d => (
+                <button
+                  key={d.value}
+                  onClick={() => { toggleDay(d.value); setSaved(false); }}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    days.includes(d.value)
+                      ? "bg-white text-blue-700"
+                      : "bg-white/20 text-white/70"
+                  }`}
+                >
+                  {d.short}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Save */}
+          {!saved ? (
+            <button
+              onClick={handleSave}
+              className="w-full py-2.5 rounded-xl bg-white/25 hover:bg-white/35 text-white text-sm font-semibold transition-all border border-white/30"
+            >
+              Save reminders
+            </button>
+          ) : (
+            <p className="text-white/80 text-sm font-medium py-2">
+              ✓ Reminders set for {time}
+            </p>
+          )}
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+// ── Main onboarding component ────────────────────────────────────────────────
 
 export function Onboarding({ onComplete }: OnboardingProps) {
   const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 = forward, -1 = back
+  const [direction, setDirection] = useState(1);
   const name = getUserName();
 
   const go = (next: number) => {
@@ -82,9 +252,10 @@ export function Onboarding({ onComplete }: OnboardingProps) {
 
   const slide = slides[index];
   const isLast = index === slides.length - 1;
+  const bg = slide.bg;
 
   return (
-    <div className={`min-h-screen flex flex-col bg-gradient-to-br ${slide.bg} transition-all duration-500`}>
+    <div className={`min-h-screen flex flex-col bg-gradient-to-br ${bg} transition-all duration-500`}>
 
       {/* Skip */}
       <div className="flex justify-end px-6 pt-6">
@@ -97,7 +268,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       </div>
 
       {/* Slide content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 pb-4">
+      <div className="flex-1 flex flex-col items-center justify-center px-8 pb-4 overflow-y-auto">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={index}
@@ -106,38 +277,36 @@ export function Onboarding({ onComplete }: OnboardingProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: direction * -60 }}
             transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="flex flex-col items-center text-center"
+            className="flex flex-col items-center text-center w-full"
           >
-            {/* Illustration */}
-            <div className="w-52 h-52 mb-8 flex items-center justify-center">
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="w-full h-full object-contain drop-shadow-lg"
-              />
-            </div>
-
-            {/* Label */}
-            <span className="text-white/70 text-xs font-semibold tracking-widest uppercase mb-3">
-              {index === 0 && name ? `Hello, ${name}` : slide.label}
-            </span>
-
-            {/* Title */}
-            <h2 className="text-2xl font-bold text-white mb-4 leading-tight">
-              {slide.title}
-            </h2>
-
-            {/* Body */}
-            <p className="text-white/80 text-base leading-relaxed max-w-xs">
-              {slide.body}
-            </p>
+            {slide.type === "alerts" ? (
+              <AlertsSlideContent />
+            ) : (
+              <>
+                <div className="w-48 h-48 mb-6 flex items-center justify-center">
+                  <img
+                    src={slide.image}
+                    alt={slide.title}
+                    className="w-full h-full object-contain drop-shadow-lg"
+                  />
+                </div>
+                <span className="text-white/70 text-xs font-semibold tracking-widest uppercase mb-3">
+                  {index === 0 && name ? `Hello, ${name}` : slide.label}
+                </span>
+                <h2 className="text-2xl font-bold text-white mb-4 leading-tight">
+                  {slide.title}
+                </h2>
+                <p className="text-white/80 text-base leading-relaxed max-w-xs">
+                  {slide.body}
+                </p>
+              </>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Bottom controls */}
-      <div className="px-8 pb-10 space-y-6">
-
+      <div className="px-8 pb-10 pt-4 space-y-5 shrink-0">
         {/* Dots */}
         <div className="flex justify-center gap-2">
           {slides.map((_, i) => (
@@ -145,15 +314,13 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               key={i}
               onClick={() => go(i)}
               className={`rounded-full transition-all duration-300 ${
-                i === index
-                  ? "w-6 h-2 bg-white"
-                  : "w-2 h-2 bg-white/40"
+                i === index ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/40"
               }`}
             />
           ))}
         </div>
 
-        {/* Next / Get started */}
+        {/* Next / Begin */}
         <Button
           onClick={handleNext}
           className="w-full h-12 text-base font-semibold bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
