@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { setUserName, markOnboarded } from "@/lib/user-prefs";
+import { setUserName } from "@/lib/user-prefs";
 
 interface WelcomeProps {
   onComplete: () => void;
@@ -18,7 +18,6 @@ export function Welcome({ onComplete }: WelcomeProps) {
       return;
     }
     setUserName(trimmed);
-    markOnboarded();
     onComplete();
   };
 

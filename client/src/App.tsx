@@ -6,19 +6,28 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { MilestoneManager } from "@/components/milestone-achievement";
 import { Welcome } from "@/pages/welcome";
+import { Onboarding } from "@/pages/onboarding";
 import Home from "@/pages/home";
 import Sessions from "@/pages/sessions";
 import SessionPage from "@/pages/session";
 import Journal from "@/pages/journal";
 import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
-import { isOnboarded } from "@/lib/user-prefs";
+import { isOnboarded, getUserName } from "@/lib/user-prefs";
+
+type Stage = "welcome" | "onboarding" | "app";
 
 function Router() {
-  const [onboarded, setOnboarded] = useState(isOnboarded());
+  const [stage, setStage] = useState<Stage>(
+    isOnboarded() ? "app" : "welcome"
+  );
 
-  if (!onboarded) {
-    return <Welcome onComplete={() => setOnboarded(true)} />;
+  if (stage === "welcome") {
+    return <Welcome onComplete={() => setStage("onboarding")} />;
+  }
+
+  if (stage === "onboarding") {
+    return <Onboarding onComplete={() => setStage("app")} />;
   }
 
   return (
