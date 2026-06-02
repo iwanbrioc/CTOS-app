@@ -78,7 +78,7 @@ const slides: Slide[] = [
   {
     type: "content",
     bg: "from-rose-400 via-pink-500 to-fuchsia-700",
-    image: "/attached_assets/travellinglighter.jpg",
+    image: "/attached_assets/travellinglighterfigure.png",
     label: "Community",
     title: "A Travelling Lighter",
     body: "You're not alone. Join a growing community of people exploring creative mindfulness in everyday life.",
