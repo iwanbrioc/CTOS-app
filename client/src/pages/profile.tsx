@@ -101,15 +101,15 @@ export default function Profile() {
               </div>
               <div className="flex-1">
                 <h2 className="text-xl font-semibold text-primary">
-                  {user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : "Mindful Practitioner"}
+                  My Journey
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  {user?.email || "user@example.com"}
+                  Coming to Our Senses
                 </p>
                 <div className="flex items-center space-x-2 mt-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
-                    Joined {joinedDaysAgo} days ago
+                    Week {user?.currentWeek || 1} of 8
                   </span>
                 </div>
               </div>

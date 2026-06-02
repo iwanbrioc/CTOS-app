@@ -69,12 +69,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await storage.initializeSessionHandyHacks();
     await storage.initializeMilestones();
     
-    // Ensure demo user exists
+    // Ensure default user exists
     await storage.upsertUser({
       id: "1",
-      email: "demo@example.com",
-      firstName: "Demo",
-      lastName: "User"
+      email: null,
+      firstName: null,
+      lastName: null,
     });
   } catch (error) {
     console.error("Failed to initialize storage:", error);
