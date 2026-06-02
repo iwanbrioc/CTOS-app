@@ -103,12 +103,12 @@ export default function Home() {
 
   const user: User = authUser as User || {
     id: "1",
-    firstName: "Demo",
+    firstName: null,
     currentWeek: 1,
     sessionsPace: 1,
     courseFormat: "8-week",
-    email: "demo@example.com",
-    lastName: "User",
+    email: null,
+    lastName: null,
     profileImageUrl: null,
     joinedAt: new Date(),
     updatedAt: new Date(),
